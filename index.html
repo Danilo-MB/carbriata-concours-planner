@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Carbriata Concours — Master Event Planner & 3D Interactive Map</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+
+  <!-- Google Fonts: Playfair Display, Outfit, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome 6 Free -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- MapLibre GL JS (v4.7.1) -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="./styles/main.css?v=8" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- Brand Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <a class="brand-logo-badge" href="https://www.instagram.com/carbriata/" target="_blank" rel="noopener noreferrer" title="Seguir a @carbriata en Instagram">
+          <!-- Bespoke Carbriata Concours Vector Emblem -->
+          <svg class="brand-emblem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="url(#goldGradient)" stroke-width="2.5" fill="#071810" />
+            <circle cx="50" cy="50" r="41" stroke="#d4af37" stroke-width="0.75" stroke-dasharray="3 2" />
+            <!-- Laurel Wreath Leaves Left & Right -->
+            <path d="M 24 64 C 18 52 20 38 29 28 C 30 33 28 42 33 48 C 30 54 26 59 24 64 Z" fill="url(#goldGradient)" opacity="0.85"/>
+            <path d="M 76 64 C 82 52 80 38 71 28 C 70 33 72 42 67 48 C 70 54 74 59 76 64 Z" fill="url(#goldGradient)" opacity="0.85"/>
+            <!-- Vintage Steering Wheel Center & Monogram CC -->
+            <circle cx="50" cy="50" r="22" stroke="url(#goldGradient)" stroke-width="3" />
+            <line x1="28" y1="50" x2="72" y2="50" stroke="#d4af37" stroke-width="2" />
+            <line x1="50" y1="28" x2="50" y2="72" stroke="#d4af37" stroke-width="2" />
+            <circle cx="50" cy="50" r="10" fill="#071810" stroke="#d4af37" stroke-width="2" />
+            <text x="50" y="54" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="10" fill="#fbf5df" letter-spacing="1">CC</text>
+            <!-- Crossed Checkered Flags Wings Hint -->
+            <path d="M 38 20 L 50 28 L 62 20" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <defs>
+              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fff0c2"/>
+                <stop offset="50%" stop-color="#d4af37"/>
+                <stop offset="100%" stop-color="#8f6e16"/>
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <div class="brand-text">
+            <span class="brand-title">Carbriata Concours</span>
+            <span class="brand-subtitle">
+              <span>Festival de Autos Clásicos & Velocidad</span>
+              <span class="ig-tag"><i class="fa-brands fa-instagram"></i> @carbriata</span>
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Center: Multi-Venue / Multi-Year Location Switcher -->
+      <div class="venue-selector-container">
+        <i class="fa-solid fa-location-dot venue-icon"></i>
+        <select id="venue-select" class="venue-select" title="Cambiar locación o año del evento">
+          <option value="dolores-2026">Autódromo Dolores (Marzo 2026 - Inaugural)</option>
+          <option value="san-isidro">Hipódromo San Isidro (Edición Elegance)</option>
+          <option value="estancia-villa-maria">Estancia Villa María (Edición Parque)</option>
+          <option value="balcarce-fangio">Autódromo Juan Manuel Fangio (Balcarce)</option>
+        </select>
+        <span class="venue-badge">2026</span>
+      </div>
+
+      <!-- Right: Mode Switcher & Tools -->
+      <div class="header-actions">
+        <!-- Switch between Organizer Mode (drawing tools) and Visitor Mode -->
+        <div class="mode-switch-group">
+          <button id="btn-mode-organizer" class="mode-btn active" title="Herramientas para delimitar terrenos, rutas y stands">
+            <i class="fa-solid fa-compass-drafting"></i> Modo Organizador
+          </button>
+          <button id="btn-mode-visitor" class="mode-btn" title="Vista limpia interactiva para visitantes">
+            <i class="fa-solid fa-binoculars"></i> Modo Visitante
+          </button>
+        </div>
+
+        <button id="btn-open-import-export" class="btn-secondary" title="Exportar / Importar Plano">
+          <i class="fa-solid fa-file-export"></i> Guardar / Exportar
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport Body -->
+    <main class="app-body">
+      <!-- Map Area -->
+      <section class="map-viewport">
+        <div id="map"></div>
+
+        <!-- Floating Drawing Toolbar (Top Left) -->
+        <div class="map-floating-bar">
+          <div id="drawing-toolkit" class="drawing-toolkit">
+            <button id="btn-draw-polygon" class="draw-btn" title="Delimitar terrenos o polígonos libres">
+              <i class="fa-solid fa-draw-polygon"></i> Delimitar Libre
+            </button>
+            <button id="btn-draw-box" class="draw-btn" title="Colocar stand o carpa con medidas métricas exactas (ej: 6x3m, 10x5m)">
+              <i class="fa-solid fa-ruler-combined"></i> Stand con Medidas
+            </button>
+            <button id="btn-draw-route" class="draw-btn" title="Trazar recta de aceleración, desfile o accesos">
+              <i class="fa-solid fa-route"></i> Trazar Ruta
+            </button>
+            <button id="btn-place-poi" class="draw-btn" title="Colocar auto clásico o punto de atracción">
+              <i class="fa-solid fa-car-side"></i> Añadir Auto / Stand
+            </button>
+          </div>
+        </div>
+
+        <!-- Precise Dimensions Bar for Stands & Marquees -->
+        <div id="precision-bar" class="precision-bar">
+          <div class="precision-bar-content">
+            <div class="precision-field">
+              <label class="precision-label"><i class="fa-solid fa-shapes"></i> Tipo:</label>
+              <select id="precision-preset-select" class="precision-select">
+                <option value="custom">Personalizado...</option>
+                <option value="car-single" selected>Stand Auto Clásico (6 × 3 m = 18 m²)</option>
+                <option value="box-double">Carpa Box Doble (10 × 5 m = 50 m²)</option>
+                <option value="sponsor">Stand Sponsor / Gazebo (12 × 6 m = 72 m²)</option>
+                <option value="vip-lounge">Hospitality / VIP Lounge (20 × 10 m = 200 m²)</option>
+                <option value="grand-pavilion">Gran Pabellón (40 × 15 m = 600 m²)</option>
+                <option value="gazebo-3x3">Gazebo Cuadrado (3 × 3 m = 9 m²)</option>
+              </select>
+            </div>
+
+            <div class="precision-divider"></div>
+
+            <div class="precision-field">
+              <label class="precision-label">Ancho:</label>
+              <div class="precision-input-wrap">
+                <input type="number" id="box-width-input" class="precision-num-input" value="6" min="1" max="500" step="0.5" />
+                <span class="precision-unit">m</span>
+              </div>
+            </div>
+
+            <span class="precision-times">×</span>
+
+            <div class="precision-field">
+              <label class="precision-label">Largo:</label>
+              <div class="precision-input-wrap">
+                <input type="number" id="box-length-input" class="precision-num-input" value="3" min="1" max="500" step="0.5" />
+                <span class="precision-unit">m</span>
+              </div>
+            </div>
+
+            <div class="precision-divider"></div>
+
+            <div class="precision-field">
+              <label class="precision-label">Giro:</label>
+              <div class="precision-rot-wrap">
+                <button type="button" id="btn-rot-sub" class="precision-btn-step" title="Girar -15° a la izquierda"><i class="fa-solid fa-rotate-left"></i></button>
+                <input type="number" id="box-rot-input" class="precision-num-input" value="0" min="0" max="360" step="5" style="width: 44px; text-align: center;" />
+                <span class="precision-unit">°</span>
+                <button type="button" id="btn-rot-add" class="precision-btn-step" title="Girar +15° a la derecha"><i class="fa-solid fa-rotate-right"></i></button>
+              </div>
+            </div>
+
+            <div class="precision-area-pill">
+              Superficie: <strong id="box-area-pill-val">18 m²</strong>
+            </div>
+
+            <button type="button" id="btn-close-precision" class="precision-close-btn" title="Cerrar barra">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Camera & 2D / 3D Controls (Top Right) -->
+        <div class="camera-controls-bar">
+          <div class="pill-group">
+            <button id="btn-view-2d" class="pill-btn" title="Vista plano cenital top-down 2D">
+              <i class="fa-solid fa-map"></i> 2D
+            </button>
+            <button id="btn-view-3d" class="pill-btn active" title="Vista 3D con perspectiva y volumen de carpas/stands">
+              <i class="fa-solid fa-cubes"></i> 3D
+            </button>
+          </div>
+
+          <button id="btn-toggle-orbit" class="tool-icon-btn" title="Vuelo panorámico Drone 360° en torno al circuito">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+
+        <!-- Drawing Instructions Banner -->
+        <div id="drawing-guide-banner" class="drawing-guide-banner">
+          <span class="guide-badge"><i class="fa-solid fa-pencil"></i> Dibujando</span>
+          <span id="guide-text" class="guide-text">Haz clic en el mapa para marcar vértices.</span>
+          <button id="btn-cancel-draw" class="btn-cancel-draw">Cancelar (Esc)</button>
+        </div>
+
+        <!-- Satellite Layer Switcher (Bottom Left) -->
+        <div class="map-layer-selector">
+          <button class="layer-btn active" data-layer="satellite" title="Satélite HD de máxima resolución">
+            <i class="fa-solid fa-satellite"></i> Satélite HD
+          </button>
+          <button class="layer-btn" data-layer="esri" title="Satélite Esri World Imagery">
+            <i class="fa-solid fa-earth-americas"></i> Esri
+          </button>
+          <button class="layer-btn" data-layer="dark" title="Estilo Carto Dark nocturno">
+            <i class="fa-solid fa-moon"></i> Dark Concours
+          </button>
+          <button class="layer-btn" data-layer="streets" title="Plano catastral de calles y rutas">
+            <i class="fa-solid fa-road"></i> Callejero
+          </button>
+        </div>
+      </section>
+
+      <!-- Sidebar Panel (Right) -->
+      <aside id="sidebar" class="sidebar-panel">
+        <div id="sidebar-toggle" class="sidebar-toggle-tab" title="Mostrar/Ocultar panel">
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="sidebar-tabs">
+          <button class="tab-btn active" data-tab="cars">
+            <i class="fa-solid fa-car"></i>
+            <span>Autos</span>
+          </button>
+          <button class="tab-btn" data-tab="zones">
+            <i class="fa-solid fa-vector-square"></i>
+            <span>Zonas 3D</span>
+          </button>
+          <button class="tab-btn" data-tab="routes">
+            <i class="fa-solid fa-road"></i>
+            <span>Trazados</span>
+          </button>
+          <button class="tab-btn" data-tab="locations">
+            <i class="fa-solid fa-map-pin"></i>
+            <span>Locaciones</span>
+          </button>
+        </nav>
+
+        <!-- Search & Category Filters -->
+        <div class="sidebar-search-box">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar por modelo, piloto o zona..." />
+          </div>
+
+          <div class="category-chips">
+            <button class="chip-filter active" data-cat="all">Todos</button>
+            <button class="chip-filter" data-cat="cars">Autos Clásicos</button>
+            <button class="chip-filter" data-cat="paddock">Paddock & Boxes</button>
+            <button class="chip-filter" data-cat="vip">VIP Lounge</button>
+            <button class="chip-filter" data-cat="food">Food Trucks</button>
+            <button class="chip-filter" data-cat="stage">Escenario</button>
+          </div>
+        </div>
+
+        <!-- Dynamic List Content -->
+        <div id="sidebar-content" class="sidebar-content">
+          <!-- Filled dynamically by UIManager -->
+        </div>
+
+        <!-- Quick Event Footnote Stats -->
+        <footer class="sidebar-footer">
+          <div class="stat-item">
+            <span>Autos Registrados</span>
+            <strong id="stat-cars">0</strong>
+          </div>
+          <div class="stat-item">
+            <span>Áreas Delimitadas</span>
+            <strong id="stat-zones">0</strong>
+          </div>
+          <div class="stat-item">
+            <span>Superficie Total</span>
+            <strong id="stat-area">0 ha</strong>
+          </div>
+        </footer>
+      </aside>
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Attraction / Car Inspector & Editor Modal -->
+  <div id="attraction-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="attr-modal-title" class="modal-title">
+          <i class="fa-solid fa-car-side"></i> Ficha de Auto / Stand
+        </h3>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="attraction-form">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Título / Modelo del Auto *</label>
+              <input type="text" id="attr-title" class="form-input" placeholder="ej: Audi Sport Quattro S1 E2" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Categoría</label>
+              <select id="attr-category" class="form-select">
+                <option value="cars">Auto Clásico / Supercar</option>
+                <option value="paddock">Paddock & Boxes</option>
+                <option value="vip">VIP & Hospitality</option>
+                <option value="food">Gastronomía & Food Trucks</option>
+                <option value="stage">Escenario & Podio</option>
+                <option value="service">Servicios & Acceso</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Subtítulo / Versión Especial</label>
+            <input type="text" id="attr-subtitle" class="form-input" placeholder="ej: Réplica Oficial Grupo B - Dolores 2026" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Año</label>
+              <input type="number" id="attr-year" class="form-input" placeholder="1985" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Potencia (CV / HP)</label>
+              <input type="text" id="attr-hp" class="form-input" placeholder="550 CV" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Motorización / Cilindrada</label>
+              <input type="text" id="attr-engine" class="form-input" placeholder="2.1L 5 Cilindros Turbo" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Propietario / Expositor</label>
+              <input type="text" id="attr-owner" class="form-input" placeholder="Colección Privada / Club" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Distintivo / Badge</label>
+              <input type="text" id="attr-badge" class="form-input" placeholder="ej: Estrella del Evento, Best of Show" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sonido del Motor (Audio Rev)</label>
+              <select id="attr-sound" class="form-select">
+                <option value="">Sin sonido</option>
+                <option value="audi-quattro">Audi 5-Cilindros Turbo (Wastegate)</option>
+                <option value="ferrari-v8">Ferrari V8 Twin-Turbo Scream</option>
+                <option value="v8-muscle">Shelby 427 V8 American Rumble</option>
+                <option value="boxer-6">Porsche Flat-6 Air-Cooled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Photo Manager ("Street View" Alternative for Private Grounds) -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-camera"></i> Galería de Fotos del Auto o Stand
+            </label>
+            <p style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 8px;">
+              Dado que en circuitos o estancias no existe Google Street View, puedes subir fotos reales de la máquina o stand para que los visitantes las aprecien al hacer clic.
+            </p>
+
+            <div id="attr-photo-upload-box" class="photo-uploader-box">
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.6rem; color: var(--gold-400);"></i>
+              <p>Arrastra fotos aquí o <strong>haz clic para seleccionar archivos locales</strong></p>
+              <input type="file" id="attr-photo-file-input" multiple accept="image/*" style="display: none;" />
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <input type="url" id="attr-photo-url-input" class="form-input" placeholder="O pega el enlace de una foto en internet..." style="flex: 1;" />
+              <button type="button" id="btn-add-photo-url" class="btn-secondary">Agregar URL</button>
+            </div>
+
+            <div id="attr-photo-preview-grid" class="photo-gallery-preview"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Reseña / Descripción Histórica</label>
+            <textarea id="attr-desc" class="form-textarea" placeholder="Historia del auto, palmarés en competición o detalles del stand..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-delete-attr-modal" class="btn-secondary" style="color: #ef4444; border-color: rgba(239,68,68,0.3); margin-right: auto; display: none;">
+            <i class="fa-solid fa-trash"></i> Eliminar
+          </button>
+          <button type="button" class="btn-secondary btn-cancel-modal">Cancelar</button>
+          <button type="submit" class="btn-gold"><i class="fa-solid fa-check"></i> Aceptar y Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Zone / Stand Delimitation Modal (Polygons 2D/3D) -->
+  <div id="zone-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="zone-modal-title" class="modal-title">
+          <i class="fa-solid fa-draw-polygon"></i> Delimitar Área o Stand
+        </h3>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="zone-form">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nombre del Sector / Stand *</label>
+              <input type="text" id="zone-name-input" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de Zona</label>
+              <select id="zone-cat-select" class="form-select">
+                <option value="paddock">Paddock & Boxes</option>
+                <option value="vip">Carpa VIP / Hospitality</option>
+                <option value="cars">Lawn de Exhibición Clásicos</option>
+                <option value="food">Patio Gastronómico / Food Trucks</option>
+                <option value="service">Estacionamiento / Helipuerto</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Color de Identificación</label>
+              <input type="color" id="zone-color-input" class="form-input" value="#d4af37" style="height: 42px; padding: 4px;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Superficie Medida</label>
+              <div id="zone-area-display" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; font-family: var(--font-mono); color: var(--gold-400); font-weight: 700;">
+                0 m²
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Altura 3D de Carpa / Edificio (<span id="zone-height-val">4 m</span>)</label>
+              <input type="range" id="zone-height-input" min="0" max="15" step="0.5" value="4" style="accent-color: var(--gold-500);" />
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Crea volumen arquitectónico en la vista 3D</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Opacidad</label>
+              <input type="range" id="zone-opacity-input" min="0.2" max="1.0" step="0.05" value="0.7" style="accent-color: var(--gold-500);" />
+            </div>
+          </div>
+
+          <!-- Dimension Adjustment Card -->
+          <div class="zone-dimensions-card">
+            <div class="zone-dim-header">
+              <span class="zone-dim-title">
+                <i class="fa-solid fa-ruler-combined"></i> Medidas Métricas & Ajuste Exacto
+              </span>
+              <span id="zone-perimeter-display" class="zone-dim-perimeter">Perímetro: -- m</span>
+            </div>
+            <p class="zone-dim-hint">
+              Puedes reajustar esta parcela a un rectángulo métrico exacto centrado en esta posición:
+            </p>
+            <div class="zone-dim-controls">
+              <div class="zone-dim-input-group">
+                <label>Ancho (m):</label>
+                <input type="number" id="zone-edit-w" class="form-input" min="1" step="0.5" placeholder="10" />
+              </div>
+              <span class="zone-dim-times">×</span>
+              <div class="zone-dim-input-group">
+                <label>Largo (m):</label>
+                <input type="number" id="zone-edit-l" class="form-input" min="1" step="0.5" placeholder="5" />
+              </div>
+              <div class="zone-dim-input-group">
+                <label>Giro (°):</label>
+                <input type="number" id="zone-edit-rot" class="form-input" min="0" max="360" step="5" placeholder="0" />
+              </div>
+              <button type="button" id="btn-apply-zone-dimensions" class="btn-secondary zone-dim-apply-btn">
+                <i class="fa-solid fa-arrows-rotate"></i> Aplicar
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descripción o Instrucciones de Ingreso</label>
+            <textarea id="zone-desc-input" class="form-textarea" placeholder="Instrucciones para expositores, capacidad de autos o dimensiones del stand..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-delete-zone-modal" class="btn-secondary" style="color: #ef4444; border-color: rgba(239,68,68,0.3); margin-right: auto; display: none;">
+            <i class="fa-solid fa-trash"></i> Eliminar
+          </button>
+          <button type="button" class="btn-secondary btn-cancel-modal">Cancelar</button>
+          <button type="submit" class="btn-gold"><i class="fa-solid fa-check"></i> Aceptar y Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Route Delimitation Modal (Lines) -->
+  <div id="route-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="route-modal-title" class="modal-title">
+          <i class="fa-solid fa-route"></i> Trazado de Pista / Desfile
+        </h3>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="route-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nombre del Trazado *</label>
+            <input type="text" id="route-name-input" class="form-input" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Color de Pista</label>
+              <input type="color" id="route-color-input" class="form-input" value="#ef4444" style="height: 42px; padding: 4px;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Longitud Calculada</label>
+              <div id="route-length-display" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; font-family: var(--font-mono); color: var(--gold-400); font-weight: 700;">
+                0 m
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Ancho de Línea (Pista)</label>
+            <input type="range" id="route-width-input" min="3" max="15" step="1" value="6" style="accent-color: var(--gold-500);" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descripción / Régimen de Velocidad</label>
+            <textarea id="route-desc-input" class="form-textarea" placeholder="ej: Recta para aceleración individual con bandera de largada, velocidad controlada en retome..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-delete-route-modal" class="btn-secondary" style="color: #ef4444; border-color: rgba(239,68,68,0.3); margin-right: auto; display: none;">
+            <i class="fa-solid fa-trash"></i> Eliminar
+          </button>
+          <button type="button" class="btn-secondary btn-cancel-modal">Cancelar</button>
+          <button type="submit" class="btn-gold"><i class="fa-solid fa-check"></i> Aceptar y Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Spotlight Lightbox Showcase Modal (Viewer Mode / Fullscreen Photos) -->
+  <div id="spotlight-modal" class="modal-overlay">
+    <div class="modal-container spotlight-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fa-solid fa-trophy"></i> <span id="spotlight-title">Audi Sport Quattro S1</span>
+        </h3>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="spotlight-hero-img-wrap">
+          <img id="spotlight-hero-img" class="spotlight-hero-img" src="" alt="Auto Clásico" />
+          <span id="spotlight-badge" class="spotlight-badge">Carbriata Icon</span>
+        </div>
+
+        <div id="spotlight-thumbs" class="spotlight-carousel-thumbs"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+          <div>
+            <h4 id="spotlight-subtitle" style="font-size: 1.05rem; color: #fff; font-weight: 700;"></h4>
+          </div>
+          <button id="spotlight-rev-btn" class="btn-card-action btn-sound-rev" style="padding: 6px 14px; font-size: 0.8rem;">
+            <i class="fa-solid fa-volume-high"></i> Escuchar Rugido
+          </button>
+        </div>
+
+        <p id="spotlight-desc" style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5;"></p>
+
+        <div id="spotlight-specs-grid" class="spotlight-specs-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Import / Export / Year Archival Modal -->
+  <div id="import-export-modal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-floppy-disk"></i> Gestión y Guardado del Plano</h3>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5;">
+          Puedes guardar el trazado de este año, exportarlo a tu computadora para compartirlo con patrocinadores o comisarios, e importar planos de ediciones anteriores.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+          <button id="btn-export-json" class="btn-gold" style="justify-content: center;">
+            <i class="fa-solid fa-download"></i> Descargar Plano Carbriata (.JSON)
+          </button>
+
+          <button id="btn-export-geojson" class="btn-secondary" style="justify-content: center;">
+            <i class="fa-solid fa-map-location"></i> Exportar Capas GIS (.GeoJSON)
+          </button>
+
+          <div style="border-top: 1px solid var(--border-subtle); margin: 8px 0; padding-top: 12px;">
+            <label class="form-label" style="display: block; margin-bottom: 6px;">Cargar Plano Guardado:</label>
+            <input type="file" id="file-import-input" accept=".json,.geojson" class="form-input" style="width: 100%;" />
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); margin-top: 4px; padding-top: 10px;">
+            <button id="btn-reset-default" class="btn-secondary" style="color: #f87171; width: 100%; justify-content: center;">
+              <i class="fa-solid fa-arrow-rotate-left"></i> Restaurar Plano Original Dolores Marzo 2026
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Bootstrap Module -->
+  <script type="module" src="./src/app.js?v=8"></script>
+</body>
+</html>
