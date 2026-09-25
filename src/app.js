@@ -864,16 +864,16 @@ class CarbriataApp {
 
     if (mode === 'box') {
       banner.classList.add('show');
-      guideText.innerHTML = `Dimensiones: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${this.drawManager.boxWidth}m × ${this.drawManager.boxLength}m (${Math.round(this.drawManager.boxWidth * this.drawManager.boxLength)} m²)</strong> &bull; Orientación: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${this.drawManager.boxRotation}°</strong> (Shift + Rueda del mouse para rotar. <strong>Clic para ubicar</strong>)`;
+      guideText.innerHTML = `<strong>${this.drawManager.boxWidth}×${this.drawManager.boxLength}m (${Math.round(this.drawManager.boxWidth * this.drawManager.boxLength)} m²)</strong> &bull; Toca para ubicar`;
     } else if (mode === 'polygon') {
       banner.classList.add('show');
-      guideText.innerHTML = `Haz clic en el mapa para marcar vértices del terreno/stand. <strong>Doble clic o clic en el inicio</strong> para cerrar el polígono. (Esc para cancelar)`;
+      guideText.innerHTML = `Toca para marcar vértices. <strong>Doble clic</strong> para cerrar.`;
     } else if (mode === 'route') {
       banner.classList.add('show');
-      guideText.innerHTML = `Haz clic a lo largo de la pista o camino. <strong>Doble clic o tecla Enter</strong> para finalizar la ruta. (Esc para cancelar)`;
+      guideText.innerHTML = `Toca para trazar camino. <strong>Doble clic</strong> para finalizar.`;
     } else if (mode === 'point') {
       banner.classList.add('show');
-      guideText.innerHTML = `Haz <strong>un clic en el mapa</strong> donde desees situar el auto clásico o atracción. (Esc para cancelar)`;
+      guideText.innerHTML = `Toca en el mapa para situar la atracción.`;
     } else {
       banner.classList.remove('show');
     }
@@ -884,11 +884,11 @@ class CarbriataApp {
     if (!guideText) return;
 
     if (data.mode === 'box') {
-      guideText.innerHTML = `Dimensiones: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${data.width}m × ${data.length}m (${data.areaM2} m²)</strong> &bull; Orientación: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${data.rotation}°</strong> (Shift + Rueda para rotar. <strong>Clic para ubicar</strong>)`;
+      guideText.innerHTML = `<strong>${data.width}×${data.length}m</strong> &bull; Giro: ${data.rotation}° &bull; Toca para ubicar`;
     } else if (data.mode === 'polygon') {
-      guideText.innerHTML = `Lado actual: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${Math.round(data.currentSegmentM)} m</strong> &bull; Perímetro: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${Math.round(data.totalPerimeterM)} m</strong> &bull; Superficie: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${data.liveAreaM2.toLocaleString()} m²</strong> (Doble clic para cerrar)`;
+      guideText.innerHTML = `Lado: <strong>${Math.round(data.currentSegmentM)}m</strong> &bull; Superficie: <strong>${data.liveAreaM2.toLocaleString()}m²</strong> &bull; <strong>Doble clic</strong> para cerrar`;
     } else if (data.mode === 'route') {
-      guideText.innerHTML = `Tramo actual: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${Math.round(data.currentSegmentM)} m</strong> &bull; Longitud total: <strong style="color:var(--gold-400); font-family:var(--font-mono);">${Math.round(data.totalLengthM)} m</strong> (Doble clic o Enter para finalizar)`;
+      guideText.innerHTML = `Tramo: <strong>${Math.round(data.currentSegmentM)}m</strong> &bull; Total: <strong>${Math.round(data.totalLengthM)}m</strong> &bull; <strong>Doble clic</strong> para finalizar`;
     }
   }
 

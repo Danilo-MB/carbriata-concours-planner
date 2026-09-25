@@ -494,12 +494,13 @@ html, body {
   transform: translateX(-50%);
   background: linear-gradient(135deg, rgba(16, 48, 32, 0.95), rgba(7, 22, 15, 0.95));
   border: 1px solid var(--gold-500);
-  border-radius: var(--radius-full);
-  padding: 8px 20px;
+  border-radius: 20px;
+  padding: 6px 16px;
+  max-width: 90vw;
   z-index: 25;
   display: none;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), var(--shadow-gold);
   animation: fadeInDown 0.25s ease-out forwards;
 }
@@ -1815,5 +1816,42 @@ html, body {
     flex-wrap: wrap;
     gap: 6px;
     justify-content: center;
+  }
+
+  /* Compact, non-tall drawing indications banner on mobile */
+  .drawing-guide-banner {
+    top: 56px;
+    padding: 5px 10px;
+    gap: 8px;
+    border-radius: 8px;
+    width: auto;
+    max-width: calc(100vw - 24px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+    background: rgba(7, 24, 16, 0.96);
+  }
+
+  .guide-badge {
+    display: none; /* Hide [DIBUJANDO] badge on mobile to save horizontal space */
+  }
+
+  .guide-text {
+    font-size: 0.74rem;
+    line-height: 1.25;
+    text-align: center;
+    color: #f1f5f9;
+  }
+
+  .btn-cancel-draw {
+    padding: 3px 6px;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  .btn-cancel-draw .cancel-text {
+    display: none; /* Icon-only on mobile */
   }
 }
