@@ -1707,20 +1707,113 @@ html, body {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Responsive */
+/* Responsive - Mobile Optimization */
 @media (max-width: 900px) {
-  .app-header {
-    padding: 0 12px;
+  /* Completely remove the right panel on mobile as requested */
+  .sidebar-panel {
+    display: none !important;
   }
+
+  .map-viewport {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .app-header {
+    padding: 0 10px;
+    gap: 8px;
+    height: auto;
+    min-height: 52px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .brand-subtitle {
     display: none;
   }
-  .sidebar-panel {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    max-width: 360px;
+
+  .brand-title {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .brand-emblem {
+    width: 34px;
+    height: 34px;
+  }
+
+  .venue-selector-container {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .venue-select {
+    font-size: 0.72rem;
+  }
+
+  .mode-switch-group {
+    flex-shrink: 0;
+  }
+
+  .mode-btn {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  #btn-open-import-export {
+    display: none;
+  }
+
+  /* Map Toolbars on Mobile */
+  .map-floating-bar {
+    top: 10px;
+    left: 10px;
+    max-width: calc(100vw - 20px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .drawing-toolkit {
+    flex-shrink: 0;
+    padding: 3px;
+  }
+
+  .draw-btn {
+    padding: 6px 9px;
+    font-size: 0.74rem;
+    white-space: nowrap;
+  }
+
+  .camera-controls-bar {
+    top: auto;
+    bottom: 80px;
+    right: 12px;
+    flex-direction: column;
+  }
+
+  .map-layer-selector {
+    bottom: 14px;
+    left: 10px;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .layer-btn {
+    padding: 4px 6px;
+    font-size: 0.65rem;
+  }
+
+  .precision-bar {
+    top: 54px;
+    width: 94vw;
+    padding: 6px 10px;
+  }
+
+  .precision-bar-content {
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
   }
 }
