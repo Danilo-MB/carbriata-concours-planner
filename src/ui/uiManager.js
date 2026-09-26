@@ -6,6 +6,42 @@
 import { engineAudio } from '../utils/audio.js';
 import { CATEGORIES } from '../data/defaultData.js';
 
+export const OFFICIAL_ZONE_COLORS = [
+  { hex: '#D4AF37', label: 'Oro Carbriata (General & Paddock)' },
+  { hex: '#8B5CF6', label: 'Púrpura VIP (Lounge & Hospitality)' },
+  { hex: '#10B981', label: 'Verde British (Lawn de Clásicos)' },
+  { hex: '#EF4444', label: 'Rojo Corsa (Supercars & Recta)' },
+  { hex: '#0284C7', label: 'Azul Podio (Escenario & Premiación)' },
+  { hex: '#F59E0B', label: 'Ámbar (Food Trucks & Gastronomía)' },
+  { hex: '#64748B', label: 'Gris Titanio (Servicios & Logística)' },
+  { hex: '#14B8A6', label: 'Turquesa (Estacionamiento)' },
+  { hex: '#F8FAFC', label: 'Blanco Nieve (Carpas & Pabellón)' },
+  { hex: '#1E293B', label: 'Negro Carbón (Sponsors & Marcas)' },
+  { hex: '#EC4899', label: 'Rosa Magenta (Puntos de Encuentro)' },
+  { hex: '#F97316', label: 'Naranja Pista (Pit Lane & Boxes)' }
+];
+
+export const OFFICIAL_ROUTE_COLORS = [
+  { hex: '#EF4444', label: 'Rojo Corsa (Pista Principal / Recta)' },
+  { hex: '#D4AF37', label: 'Oro Concours (Desfile de Honor)' },
+  { hex: '#3B82F6', label: 'Azul Boxes (Acceso Paddock)' },
+  { hex: '#10B981', label: 'Verde Pista (Circuito de Pruebas)' },
+  { hex: '#F59E0B', label: 'Ámbar (Paso Vehicular & Tránsito)' },
+  { hex: '#8B5CF6', label: 'Púrpura VIP (Acceso Exclusivo)' },
+  { hex: '#EC4899', label: 'Rosa (Paseo de Clásicos)' },
+  { hex: '#64748B', label: 'Gris Neutro (Circulación General)' }
+];
+
+export const CATEGORY_DEFAULT_COLORS = {
+  cars: '#10B981',
+  paddock: '#D4AF37',
+  vip: '#8B5CF6',
+  food: '#F59E0B',
+  stage: '#0284C7',
+  track: '#EF4444',
+  service: '#64748B'
+};
+
 export class UIManager {
   constructor(app) {
     this.app = app;
@@ -18,6 +54,8 @@ export class UIManager {
     this._bindElements();
     this._setupTabListeners();
     this._setupSearchListeners();
+    this._setupColorPaletteControls('zone');
+    this._setupColorPaletteControls('route');
   }
 
   _bindElements() {
@@ -632,11 +670,15 @@ export class UIManager {
       perimeterDisplay.innerText = `Perímetro: ${currentPerimeter} m`;
     }
 
+    // Fresh user presets
+    this._renderUserPresets('zone');
+
+    let initialColor = '#D4AF37';
     if (zone) {
       document.getElementById('zone-modal-title').innerText = 'Editar Área / Parcela Delimitada';
       titleInput.value = zone.name || '';
       catSelect.value = zone.category || 'paddock';
-      colorInput.value = zone.color || '#d4af37';
+      initialColor = zone.color || '#D4AF37';
       heightInput.value = zone.height || 4;
       heightVal.innerText = `${zone.height || 4} m`;
       opacityInput.value = zone.opacity || 0.7;
@@ -672,7 +714,7 @@ export class UIManager {
         titleInput.value = 'Nuevo Stand / Parcela';
       }
 
-      colorInput.value = '#d4af37';
+      initialColor = (meta && meta.preset === 'vip-lounge') ? '#8B5CF6' : (CATEGORY_DEFAULT_COLORS[catSelect.value] || '#D4AF37');
       heightInput.value = 4;
       heightVal.innerText = '4 m';
       opacityInput.value = 0.7;
@@ -682,6 +724,15 @@ export class UIManager {
       if (editL) editL.value = meta ? meta.length : 5;
       if (editRot) editRot.value = meta ? (meta.rotation || 0) : 0;
     }
+
+    this._setColor('zone', initialColor);
+
+    catSelect.onchange = () => {
+      const chosenCat = catSelect.value;
+      if (CATEGORY_DEFAULT_COLORS[chosenCat]) {
+        this._setColor('zone', CATEGORY_DEFAULT_COLORS[chosenCat]);
+      }
+    };
 
     // Apply exact dimensions handler inside modal
     if (btnApplyDim) {
@@ -733,6 +784,8 @@ export class UIManager {
     const descInput = document.getElementById('route-desc-input');
     const lengthDisplay = document.getElementById('route-length-display');
 
+    this._renderUserPresets('route');
+
     const deleteRouteBtn = document.getElementById('btn-delete-route-modal');
     if (deleteRouteBtn) {
       if (route) {
@@ -748,22 +801,203 @@ export class UIManager {
       }
     }
 
+    let initialColor = '#EF4444';
     if (route) {
       document.getElementById('route-modal-title').innerText = 'Editar Trazado / Ruta';
       titleInput.value = route.name || '';
-      colorInput.value = route.color || '#ef4444';
+      initialColor = route.color || '#EF4444';
       widthInput.value = route.width || 6;
       descInput.value = route.description || '';
       lengthDisplay.innerText = `${(route.lengthMeters || 0).toLocaleString()} m`;
     } else {
       document.getElementById('route-modal-title').innerText = 'Trazar Nueva Ruta o Pista';
       titleInput.value = 'Recta de Aceleración / Ruta';
-      colorInput.value = '#ef4444';
+      initialColor = '#EF4444';
       widthInput.value = 6;
       lengthDisplay.innerText = `${lengthM.toLocaleString()} m`;
     }
 
+    this._setColor('route', initialColor);
+
     this.routeModal.classList.add('open');
+  }
+
+  // --- Color Palette & Presets Management ---
+  _getUserColorPresets() {
+    try {
+      const saved = localStorage.getItem('carbriata_user_color_presets');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  _saveUserColorPreset(hex) {
+    if (!hex) return;
+    let cleanHex = hex.trim().toUpperCase();
+    if (!cleanHex.startsWith('#')) cleanHex = '#' + cleanHex;
+    if (!/^#[0-9A-F]{6}$/i.test(cleanHex)) return;
+
+    let presets = this._getUserColorPresets();
+    presets = presets.filter(c => c.toUpperCase() !== cleanHex);
+    presets.unshift(cleanHex);
+    if (presets.length > 14) presets = presets.slice(0, 14);
+
+    try {
+      localStorage.setItem('carbriata_user_color_presets', JSON.stringify(presets));
+      this.showToast(`Color ${cleanHex} guardado en tus predeterminados ⭐`);
+      this._renderUserPresets('zone');
+      this._renderUserPresets('route');
+      this._updateActiveSwatch('zone', cleanHex);
+      this._updateActiveSwatch('route', cleanHex);
+    } catch (e) {
+      console.warn('Failed to save preset to localStorage', e);
+    }
+  }
+
+  _clearUserColorPresets() {
+    try {
+      localStorage.removeItem('carbriata_user_color_presets');
+      this.showToast('Colores guardados eliminados');
+      this._renderUserPresets('zone');
+      this._renderUserPresets('route');
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  _renderOfficialSwatches(prefix) {
+    const container = document.getElementById(`${prefix}-official-swatches`);
+    if (!container) return;
+    const presets = prefix === 'zone' ? OFFICIAL_ZONE_COLORS : OFFICIAL_ROUTE_COLORS;
+    container.innerHTML = '';
+
+    presets.forEach(p => {
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch-item';
+      swatch.style.backgroundColor = p.hex;
+      swatch.setAttribute('data-color', p.hex.toUpperCase());
+      swatch.title = `${p.label} (${p.hex})`;
+      swatch.addEventListener('click', () => {
+        this._setColor(prefix, p.hex);
+      });
+      container.appendChild(swatch);
+    });
+  }
+
+  _renderUserPresets(prefix) {
+    const container = document.getElementById(`${prefix}-user-swatches`);
+    const block = document.getElementById(`${prefix}-user-presets-block`);
+    if (!container || !block) return;
+
+    const userPresets = this._getUserColorPresets();
+    if (userPresets.length === 0) {
+      block.style.display = 'none';
+      container.innerHTML = '';
+      return;
+    }
+
+    block.style.display = 'block';
+    container.innerHTML = '';
+
+    userPresets.forEach(hex => {
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch-item';
+      swatch.style.backgroundColor = hex;
+      swatch.setAttribute('data-color', hex.toUpperCase());
+      swatch.title = `Color Guardado: ${hex}`;
+      swatch.addEventListener('click', () => {
+        this._setColor(prefix, hex);
+      });
+      container.appendChild(swatch);
+    });
+  }
+
+  _updateActiveSwatch(prefix, hex) {
+    const norm = (hex || '').trim().toUpperCase();
+    const allSwatches = document.querySelectorAll(
+      `#${prefix}-official-swatches .color-swatch-item, #${prefix}-user-swatches .color-swatch-item`
+    );
+    allSwatches.forEach(swatch => {
+      if (swatch.getAttribute('data-color') === norm) {
+        swatch.classList.add('active');
+      } else {
+        swatch.classList.remove('active');
+      }
+    });
+  }
+
+  _setColor(prefix, hex) {
+    if (!hex) return;
+    let cleanHex = hex.trim().toUpperCase();
+    if (!cleanHex.startsWith('#')) cleanHex = '#' + cleanHex;
+
+    if (/^#[0-9A-F]{3}$/i.test(cleanHex)) {
+      cleanHex = '#' + cleanHex[1] + cleanHex[1] + cleanHex[2] + cleanHex[2] + cleanHex[3] + cleanHex[3];
+    }
+
+    if (!/^#[0-9A-F]{6}$/i.test(cleanHex)) return;
+
+    const inputNative = document.getElementById(`${prefix}-color-input`);
+    const bubble = document.getElementById(`${prefix}-color-bubble`);
+    const hexInput = document.getElementById(`${prefix}-color-hex-input`);
+    const hexBadge = document.getElementById(`${prefix}-color-hex`);
+
+    if (inputNative) inputNative.value = cleanHex.toLowerCase();
+    if (bubble) bubble.style.backgroundColor = cleanHex;
+    if (hexInput && document.activeElement !== hexInput) {
+      hexInput.value = cleanHex.replace('#', '');
+    }
+    if (hexBadge) hexBadge.innerText = cleanHex;
+
+    this._updateActiveSwatch(prefix, cleanHex);
+  }
+
+  _setupColorPaletteControls(prefix) {
+    this._renderOfficialSwatches(prefix);
+    this._renderUserPresets(prefix);
+
+    const inputNative = document.getElementById(`${prefix}-color-input`);
+    const hexInput = document.getElementById(`${prefix}-color-hex-input`);
+    const btnSave = document.getElementById(`btn-save-${prefix}-preset`);
+    const btnClear = document.getElementById(`btn-clear-${prefix}-presets`);
+
+    if (inputNative) {
+      inputNative.addEventListener('input', (e) => {
+        this._setColor(prefix, e.target.value);
+      });
+    }
+
+    if (hexInput) {
+      hexInput.addEventListener('input', (e) => {
+        let raw = e.target.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();
+        hexInput.value = raw;
+        if (raw.length === 6 || raw.length === 3) {
+          this._setColor(prefix, '#' + raw);
+        }
+      });
+
+      hexInput.addEventListener('blur', () => {
+        if (inputNative) {
+          hexInput.value = inputNative.value.replace('#', '').toUpperCase();
+        }
+      });
+    }
+
+    if (btnSave) {
+      btnSave.addEventListener('click', () => {
+        const curColor = inputNative ? inputNative.value : (prefix === 'zone' ? '#D4AF37' : '#EF4444');
+        this._saveUserColorPreset(curColor);
+      });
+    }
+
+    if (btnClear) {
+      btnClear.addEventListener('click', () => {
+        if (confirm('¿Eliminar todos tus colores predeterminados guardados?')) {
+          this._clearUserColorPresets();
+        }
+      });
+    }
   }
 
   closeAllModals() {

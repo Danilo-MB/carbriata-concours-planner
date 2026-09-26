@@ -1358,6 +1358,218 @@ html, body {
   resize: vertical;
 }
 
+/* Color Palette & Custom Presets System */
+.color-section-group {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.color-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.color-hex-badge {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold-300);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.color-picker-control-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.color-input-bubble-wrap {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-400);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.color-input-bubble-wrap:hover {
+  transform: scale(1.08);
+}
+
+.color-wheel-native {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 60px;
+  height: 60px;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.color-bubble-preview {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.color-hex-text-wrap {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0 8px;
+  height: 38px;
+  transition: border-color 0.2s;
+}
+
+.color-hex-text-wrap:focus-within {
+  border-color: var(--gold-400);
+}
+
+.color-hex-hash {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-right: 2px;
+}
+
+.color-hex-text-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  width: 68px;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.btn-preset-action {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid var(--gold-500);
+  border-radius: var(--radius-sm);
+  color: var(--gold-300);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0 12px;
+  height: 38px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-preset-action:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fff;
+  border-color: var(--gold-400);
+  transform: translateY(-1px);
+}
+
+.palette-swatches-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.palette-subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.palette-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.btn-clear-presets-link {
+  background: transparent;
+  border: none;
+  color: #f87171;
+  font-size: 0.68rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.btn-clear-presets-link:hover {
+  opacity: 1;
+}
+
+.swatches-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-swatch-item {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.color-swatch-item:hover {
+  transform: scale(1.22);
+  border-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  z-index: 5;
+}
+
+.color-swatch-item.active {
+  transform: scale(1.18);
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--gold-400), 0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.color-swatch-item.active::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px #000;
+}
+
 /* Photo Upload / Gallery Manager */
 .photo-uploader-box {
   border: 2px dashed rgba(212, 175, 55, 0.35);

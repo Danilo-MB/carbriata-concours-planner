@@ -22,7 +22,7 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="./styles/main.css?v=12" />
+  <link rel="stylesheet" href="./styles/main.css?v=13" />
 </head>
 <body>
   <div id="app-container">
@@ -432,24 +432,55 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Color de Identificación</label>
-              <input type="color" id="zone-color-input" class="form-input" value="#d4af37" style="height: 42px; padding: 4px;" />
-            </div>
-            <div class="form-group">
               <label class="form-label">Superficie Medida</label>
               <div id="zone-area-display" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; font-family: var(--font-mono); color: var(--gold-400); font-weight: 700;">
                 0 m²
               </div>
             </div>
-          </div>
-
-          <div class="form-row">
             <div class="form-group">
               <label class="form-label">Altura 3D de Carpa / Edificio (<span id="zone-height-val">4 m</span>)</label>
               <input type="range" id="zone-height-input" min="0" max="15" step="0.5" value="4" style="accent-color: var(--gold-500);" />
               <span style="font-size: 0.72rem; color: var(--text-muted);">Crea volumen arquitectónico en la vista 3D</span>
             </div>
-            <div class="form-group">
+          </div>
+
+          <!-- Color Palette & Presets Section -->
+          <div class="form-group color-section-group">
+            <div class="color-header-row">
+              <label class="form-label"><i class="fa-solid fa-palette"></i> Color de Identificación</label>
+              <span class="color-hex-badge" id="zone-color-hex">#D4AF37</span>
+            </div>
+
+            <div class="color-picker-control-bar">
+              <div class="color-input-bubble-wrap" title="Haz clic para abrir el selector de color libre">
+                <input type="color" id="zone-color-input" class="color-wheel-native" value="#d4af37" />
+                <span class="color-bubble-preview" id="zone-color-bubble" style="background-color: #d4af37;"></span>
+              </div>
+              <div class="color-hex-text-wrap">
+                <span class="color-hex-hash">#</span>
+                <input type="text" id="zone-color-hex-input" class="color-hex-text-input" value="D4AF37" maxlength="6" placeholder="D4AF37" />
+              </div>
+              <button type="button" id="btn-save-zone-preset" class="btn-preset-action" title="Guardar este color en Mis Predeterminados">
+                <i class="fa-solid fa-bookmark"></i> Guardar Color
+              </button>
+            </div>
+
+            <div class="palette-swatches-block">
+              <span class="palette-subtitle">Colores Predeterminados Oficiales:</span>
+              <div class="swatches-grid" id="zone-official-swatches"></div>
+            </div>
+
+            <div class="palette-swatches-block" id="zone-user-presets-block" style="display: none;">
+              <div class="palette-subtitle-row">
+                <span class="palette-subtitle">Mis Colores Guardados:</span>
+                <button type="button" id="btn-clear-zone-presets" class="btn-clear-presets-link">Borrar guardados</button>
+              </div>
+              <div class="swatches-grid" id="zone-user-swatches"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Opacidad</label>
               <input type="range" id="zone-opacity-input" min="0.2" max="1.0" step="0.05" value="0.7" style="accent-color: var(--gold-500);" />
             </div>
@@ -521,15 +552,46 @@
           </div>
 
           <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Color de Pista</label>
-              <input type="color" id="route-color-input" class="form-input" value="#ef4444" style="height: 42px; padding: 4px;" />
-            </div>
-            <div class="form-group">
+            <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Longitud Calculada</label>
               <div id="route-length-display" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; font-family: var(--font-mono); color: var(--gold-400); font-weight: 700;">
                 0 m
               </div>
+            </div>
+          </div>
+
+          <!-- Route Color Palette & Presets Section -->
+          <div class="form-group color-section-group">
+            <div class="color-header-row">
+              <label class="form-label"><i class="fa-solid fa-palette"></i> Color de Pista</label>
+              <span class="color-hex-badge" id="route-color-hex">#EF4444</span>
+            </div>
+
+            <div class="color-picker-control-bar">
+              <div class="color-input-bubble-wrap" title="Haz clic para abrir el selector de color libre">
+                <input type="color" id="route-color-input" class="color-wheel-native" value="#ef4444" />
+                <span class="color-bubble-preview" id="route-color-bubble" style="background-color: #ef4444;"></span>
+              </div>
+              <div class="color-hex-text-wrap">
+                <span class="color-hex-hash">#</span>
+                <input type="text" id="route-color-hex-input" class="color-hex-text-input" value="EF4444" maxlength="6" placeholder="EF4444" />
+              </div>
+              <button type="button" id="btn-save-route-preset" class="btn-preset-action" title="Guardar este color en Mis Predeterminados">
+                <i class="fa-solid fa-bookmark"></i> Guardar Color
+              </button>
+            </div>
+
+            <div class="palette-swatches-block">
+              <span class="palette-subtitle">Colores Predeterminados de Trazado:</span>
+              <div class="swatches-grid" id="route-official-swatches"></div>
+            </div>
+
+            <div class="palette-swatches-block" id="route-user-presets-block" style="display: none;">
+              <div class="palette-subtitle-row">
+                <span class="palette-subtitle">Mis Colores Guardados:</span>
+                <button type="button" id="btn-clear-route-presets" class="btn-clear-presets-link">Borrar guardados</button>
+              </div>
+              <div class="swatches-grid" id="route-user-swatches"></div>
             </div>
           </div>
 
@@ -627,6 +689,6 @@
   </div>
 
   <!-- App Bootstrap Module -->
-  <script type="module" src="./src/app.js?v=12"></script>
+  <script type="module" src="./src/app.js?v=13"></script>
 </body>
 </html>
