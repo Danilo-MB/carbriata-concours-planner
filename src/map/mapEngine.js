@@ -175,7 +175,7 @@ export class MapEngine {
         'fill-extrusion-color': ['get', 'color'],
         'fill-extrusion-height': ['get', 'height'],
         'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': ['get', 'opacity']
+        'fill-extrusion-opacity': 0.75
       }
     });
 

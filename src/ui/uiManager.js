@@ -111,6 +111,24 @@ export class UIManager {
         this.app.drawManager.setMode('point');
         this.showToast('Haz clic en el mapa donde quieras ubicar el auto');
       });
+
+      // Detect and offer cleanup for duplicate vehicles
+      const duplicateCount = this._countDuplicateAttractions();
+      if (duplicateCount > 0) {
+        const dupBanner = document.createElement('div');
+        dupBanner.style.cssText = 'margin: 6px 14px; padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; flex-shrink: 0;';
+        dupBanner.innerHTML = `
+          <span style="color: #fca5a5; font-weight: 500;"><i class="fa-solid fa-clone"></i> ${duplicateCount} autos duplicados</span>
+          <button type="button" class="btn-clean-duplicates" style="background: rgba(239,68,68,0.25); border: 1px solid #ef4444; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; cursor: pointer; font-weight: 700;">
+            Limpiar
+          </button>
+        `;
+        this.sidebarContent.appendChild(dupBanner);
+
+        dupBanner.querySelector('.btn-clean-duplicates').addEventListener('click', () => {
+          this.app.cleanDuplicateAttractions();
+        });
+      }
     }
 
     // Filter by Category
@@ -530,8 +548,22 @@ export class UIManager {
       this.tempUploadedPhotos = item.photos ? [...item.photos] : [];
     } else {
       document.getElementById('attr-modal-title').innerText = 'Nueva Atracción o Auto en Mapa';
+      titleInput.value = '';
+      subInput.value = '';
+      catSelect.value = 'cars';
+      yearInput.value = '';
+      hpInput.value = '';
+      engineInput.value = '';
+      ownerInput.value = '';
+      badgeInput.value = '';
+      descInput.value = '';
+      soundSelect.value = '';
+      this.tempUploadedPhotos = [];
       this.editingFeature.coords = validCoords;
     }
+
+    const modalBody = this.attractionModal.querySelector('.modal-body');
+    if (modalBody) modalBody.scrollTop = 0;
 
     this._renderPhotoUploadPreview();
     this.attractionModal.classList.add('open');
@@ -737,5 +769,44 @@ export class UIManager {
   closeAllModals() {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
     this.editingFeature = null;
+  }
+
+  showToast(message, duration = 3000) {
+    let container = document.getElementById('concours-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'concours-toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'concours-toast';
+    toast.innerHTML = `
+      <i class="fa-solid fa-circle-check" style="color: var(--gold-400);"></i>
+      <span>${message}</span>
+    `;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add('hide');
+      setTimeout(() => toast.remove(), 260);
+    }, duration);
+  }
+
+  _countDuplicateAttractions() {
+    if (!this.app || !this.app.data || !this.app.data.attractions) return 0;
+    const seen = new Set();
+    let duplicates = 0;
+    this.app.data.attractions.forEach(item => {
+      const coordStr = item.coordinates ? item.coordinates.map(n => Number(n).toFixed(5)).join(',') : '';
+      const key = `${(item.title || '').trim().toLowerCase()}_${coordStr}`;
+      if (seen.has(key)) {
+        duplicates++;
+      } else {
+        seen.add(key);
+      }
+    });
+    return duplicates;
   }
 }

@@ -3,10 +3,10 @@
  * Coordinates MapEngine, DrawManager, UIManager, and LocalStorage State
  */
 
-import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=11';
-import { MapEngine } from './map/mapEngine.js?v=11';
-import { DrawManager } from './map/drawManager.js?v=11';
-import { UIManager } from './ui/uiManager.js?v=11';
+import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=12';
+import { MapEngine } from './map/mapEngine.js?v=12';
+import { DrawManager } from './map/drawManager.js?v=12';
+import { UIManager } from './ui/uiManager.js?v=12';
 
 class CarbriataApp {
   constructor() {
@@ -271,6 +271,32 @@ class CarbriataApp {
       this.isOrganizerMode
     );
     this.saveState();
+  }
+
+  cleanDuplicateAttractions() {
+    const seen = new Set();
+    const unique = [];
+    let removedCount = 0;
+
+    this.data.attractions.forEach(item => {
+      const coordStr = item.coordinates ? item.coordinates.map(n => Number(n).toFixed(5)).join(',') : '';
+      const key = `${(item.title || '').trim().toLowerCase()}_${coordStr}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(item);
+      } else {
+        removedCount++;
+      }
+    });
+
+    if (removedCount > 0) {
+      this.data.attractions = unique;
+      this.refreshMapData();
+      this.ui.renderSidebar();
+      this.ui.showToast(`Se eliminaron ${removedCount} autos duplicados`);
+    } else {
+      this.ui.showToast('No se encontraron autos duplicados');
+    }
   }
 
   handleFeatureClick(type, id) {
@@ -664,12 +690,13 @@ class CarbriataApp {
             photos: [...this.ui.tempUploadedPhotos]
           };
           this.data.attractions.push(newAttr);
-          this.ui.showToast(`Auto añadido con éxito: ${title}`);
         }
 
+        const isEditing = Boolean(feat && feat.data);
+        this.ui.closeAllModals();
         this.refreshMapData();
         this.ui.renderSidebar();
-        this.ui.closeAllModals();
+        this.ui.showToast(isEditing ? `Cambios guardados: ${title}` : `Auto añadido con éxito: ${title}`);
       });
     }
 
