@@ -96,6 +96,23 @@ export class UIManager {
   _renderAttractionsList() {
     let items = this.app.data.attractions;
 
+    // Quick Add Car Button at top of sidebar list for organizers
+    if (this.app.isOrganizerMode) {
+      const addBanner = document.createElement('div');
+      addBanner.className = 'sidebar-add-car-banner';
+      addBanner.innerHTML = `
+        <button type="button" class="btn-sidebar-add-car" id="btn-sidebar-add-car">
+          <i class="fa-solid fa-plus-circle"></i> Añadir Auto al Plano
+        </button>
+      `;
+      this.sidebarContent.appendChild(addBanner);
+
+      addBanner.querySelector('#btn-sidebar-add-car').addEventListener('click', () => {
+        this.app.drawManager.setMode('point');
+        this.showToast('Haz clic en el mapa donde quieras ubicar el auto');
+      });
+    }
+
     // Filter by Category
     if (this.currentCategoryFilter !== 'all') {
       items = items.filter(i => i.category === this.currentCategoryFilter);
@@ -112,12 +129,13 @@ export class UIManager {
     }
 
     if (items.length === 0) {
-      this.sidebarContent.innerHTML = `
-        <div style="text-align: center; padding: 40px 10px; color: var(--text-muted);">
-          <i class="fa-solid fa-car-tunnel" style="font-size: 2rem; margin-bottom: 10px; color: var(--gold-500); opacity: 0.5;"></i>
-          <p>No se encontraron autos o atracciones con ese criterio.</p>
-        </div>
+      const emptyMsg = document.createElement('div');
+      emptyMsg.style.cssText = 'text-align: center; padding: 40px 10px; color: var(--text-muted);';
+      emptyMsg.innerHTML = `
+        <i class="fa-solid fa-car-tunnel" style="font-size: 2rem; margin-bottom: 10px; color: var(--gold-500); opacity: 0.5;"></i>
+        <p>No se encontraron autos o atracciones con ese criterio.</p>
       `;
+      this.sidebarContent.appendChild(emptyMsg);
       return;
     }
 
@@ -460,7 +478,12 @@ export class UIManager {
 
   // --- Attraction Editor Modal ---
   openAttractionEditor(item = null, defaultCoords = null) {
-    this.editingFeature = { type: 'attraction', data: item };
+    this.closeAllModals();
+
+    const center = this.app.mapEngine ? this.app.mapEngine.map.getCenter() : { lng: -57.6972, lat: -36.3265 };
+    const validCoords = defaultCoords || [center.lng, center.lat];
+
+    this.editingFeature = { type: 'attraction', data: item, coords: validCoords };
     const form = document.getElementById('attraction-form');
     form.reset();
 
@@ -507,7 +530,7 @@ export class UIManager {
       this.tempUploadedPhotos = item.photos ? [...item.photos] : [];
     } else {
       document.getElementById('attr-modal-title').innerText = 'Nueva Atracción o Auto en Mapa';
-      this.editingFeature.coords = defaultCoords;
+      this.editingFeature.coords = validCoords;
     }
 
     this._renderPhotoUploadPreview();

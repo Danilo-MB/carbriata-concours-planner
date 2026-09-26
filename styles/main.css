@@ -1512,39 +1512,52 @@ html, body {
 }
 
 /* Custom Map Marker Pins (Compact Concours Medallions) */
+/* Custom Map Marker Pins (Zero-Drift Ground-Anchored Medallions) */
 .maplibregl-marker {
-  width: auto !important;
-  height: auto !important;
-  max-width: max-content !important;
   overflow: visible !important;
 }
 
-.custom-car-marker {
-  cursor: pointer;
-  position: relative;
-  display: inline-flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  width: auto !important;
-  max-width: 130px !important;
-  user-select: none;
-  pointer-events: auto;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.custom-car-marker,
+.custom-cluster-marker {
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
   z-index: 10;
-}
-
-.custom-car-marker:hover {
-  transform: scale(1.18) translateY(-4px);
-  z-index: 99 !important;
+  /* CRITICAL: Never apply transition: transform or CSS transform on the marker root! */
 }
 
 .marker-pin-wrapper {
-  display: inline-flex;
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  user-select: none;
   width: max-content;
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  z-index: 12;
+}
+
+.marker-pin-wrapper:hover,
+.marker-pin-wrapper.active {
+  transform: translateX(-50%) scale(1.16) translateY(-4px);
+  z-index: 99 !important;
+}
+
+.marker-pin-wrapper.dragging {
+  cursor: grabbing !important;
+  transform: translateX(-50%) scale(1.22) translateY(-8px);
+  z-index: 100 !important;
 }
 
 /* Compact Floating Label Tag */
@@ -1555,7 +1568,7 @@ html, body {
   background: rgba(6, 17, 12, 0.92);
   border: 1px solid rgba(212, 175, 55, 0.45);
   border-radius: 4px;
-  padding: 1px 5px;
+  padding: 1px 6px;
   margin-bottom: 2px;
   white-space: nowrap;
   max-width: 95px;
@@ -1567,8 +1580,8 @@ html, body {
   transition: all 0.2s ease;
 }
 
-.custom-car-marker:hover .marker-title-pill {
-  max-width: 170px;
+.marker-pin-wrapper:hover .marker-title-pill {
+  max-width: 190px;
   background: rgba(6, 17, 12, 0.98);
   border-color: var(--gold-400);
   color: var(--gold-200);
@@ -1591,8 +1604,8 @@ html, body {
   transition: all 0.2s ease;
 }
 
-.custom-car-marker:hover .marker-medallion {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8), 0 0 16px var(--gold-500);
+.marker-pin-wrapper:hover .marker-medallion {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8), 0 0 16px var(--gold-500);
 }
 
 .marker-thumb-img {
@@ -1630,6 +1643,226 @@ html, body {
   border-top: 5px solid var(--gold-500);
   margin-top: -1px;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* ============================================================
+   CLUSTERING & SPIDERFIER ("EXPLODE") LUXURY CONCOURS STYLES
+   ============================================================ */
+
+/* Collapsed Cluster Badge */
+.cluster-collapsed-wrapper {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  width: max-content;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  z-index: 15;
+}
+
+.cluster-collapsed-wrapper:hover {
+  transform: translateX(-50%) scale(1.15) translateY(-4px);
+  z-index: 99 !important;
+}
+
+.cluster-medallion-stack {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cluster-stack-leaf-1 {
+  position: absolute;
+  top: -3px;
+  left: -4px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(16, 48, 32, 0.65);
+  border: 1.5px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cluster-stack-leaf-2 {
+  position: absolute;
+  top: -1px;
+  right: -4px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(16, 48, 32, 0.85);
+  border: 1.5px solid rgba(212, 175, 55, 0.65);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+.cluster-medallion-main {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-400);
+  background: #081a11;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 14px rgba(212, 175, 55, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.cluster-collapsed-wrapper:hover .cluster-medallion-main {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 20px var(--gold-400);
+}
+
+.cluster-badge-count {
+  position: absolute;
+  bottom: -4px;
+  right: -8px;
+  background: linear-gradient(135deg, #d4af37, #9a7b1c);
+  color: #06140d;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.66rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  border: 1.5px solid #081a11;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+}
+
+.cluster-title-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--gold-200);
+  background: linear-gradient(135deg, rgba(16, 48, 32, 0.95), rgba(6, 17, 12, 0.98));
+  border: 1px solid var(--gold-400);
+  border-radius: 4px;
+  padding: 2px 7px;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.cluster-collapsed-wrapper:hover .cluster-title-pill {
+  max-width: 220px;
+  color: #fff;
+  border-color: var(--gold-300);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* Spiderfier (Exploded State) Radial Elements */
+.spiderfy-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 50;
+}
+
+.spiderfy-svg {
+  position: absolute;
+  top: -160px;
+  left: -160px;
+  width: 320px;
+  height: 320px;
+  pointer-events: none;
+  z-index: 45;
+}
+
+.spiderfy-center-btn {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #103020, #081a11);
+  border: 2px solid var(--gold-400);
+  color: var(--gold-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 14px rgba(212, 175, 55, 0.5);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 60;
+}
+
+.spiderfy-center-btn:hover {
+  background: var(--gold-500);
+  color: #06140d;
+  transform: scale(1.18);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 20px var(--gold-500);
+}
+
+.spiderfy-exploded-node {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  animation: spiderfyPop 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  z-index: 55;
+}
+
+@keyframes spiderfyPop {
+  0% {
+    transform: translate(0, 0) scale(0.15);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Sidebar Quick Add Car Button */
+.sidebar-add-car-banner {
+  padding: 10px 14px 4px;
+}
+
+.btn-sidebar-add-car {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.08));
+  border: 1px solid var(--gold-500);
+  border-radius: var(--radius-sm);
+  color: var(--gold-300);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.btn-sidebar-add-car:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(212, 175, 55, 0.18));
+  color: #fff;
+  border-color: var(--gold-400);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.25);
+  transform: translateY(-1px);
 }
 
 /* MapLibre Popup Customization */

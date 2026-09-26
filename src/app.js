@@ -3,10 +3,10 @@
  * Coordinates MapEngine, DrawManager, UIManager, and LocalStorage State
  */
 
-import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=8';
-import { MapEngine } from './map/mapEngine.js?v=8';
-import { DrawManager } from './map/drawManager.js?v=8';
-import { UIManager } from './ui/uiManager.js?v=8';
+import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=11';
+import { MapEngine } from './map/mapEngine.js?v=11';
+import { DrawManager } from './map/drawManager.js?v=11';
+import { UIManager } from './ui/uiManager.js?v=11';
 
 class CarbriataApp {
   constructor() {
@@ -32,11 +32,19 @@ class CarbriataApp {
     this.justHandledClick = false;
 
     this.mapEngine = new MapEngine('map', {
+      isDrawingActive: () => this.drawManager && this.drawManager.currentMode !== 'idle',
       onFeatureClick: (type, id) => {
+        if (this.drawManager && this.drawManager.currentMode !== 'idle') return;
         if (this.justDragged || this.justHandledClick) return;
         this.handleFeatureClick(type, id);
       },
       onMapClick: (e) => {
+        // 0. If a cluster is currently exploded, collapse it on background click
+        if (this.mapEngine && this.mapEngine.expandedClusterId) {
+          this.mapEngine.collapseCluster();
+          return;
+        }
+
         // 1. If currently drawing, let DrawManager handle the click
         if (this.drawManager && this.drawManager.currentMode !== 'idle') {
           this.drawManager.handleMapClick(e);
@@ -634,7 +642,12 @@ class CarbriataApp {
           feat.data.soundRev = soundRev;
           feat.data.photos = [...this.ui.tempUploadedPhotos];
         } else {
-          // New attraction
+          // New attraction with validated coordinates
+          const center = this.mapEngine ? this.mapEngine.map.getCenter() : { lng: -57.6972, lat: -36.3265 };
+          const coords = (feat && feat.coords && Array.isArray(feat.coords) && feat.coords.length === 2 && !isNaN(feat.coords[0]))
+            ? feat.coords
+            : [center.lng, center.lat];
+
           const newAttr = {
             id: 'car-' + Date.now(),
             title: title,
@@ -647,10 +660,11 @@ class CarbriataApp {
             badge: badge || 'Destacado',
             description: desc,
             soundRev: soundRev,
-            coordinates: feat.coords,
+            coordinates: coords,
             photos: [...this.ui.tempUploadedPhotos]
           };
           this.data.attractions.push(newAttr);
+          this.ui.showToast(`Auto añadido con éxito: ${title}`);
         }
 
         this.refreshMapData();
@@ -873,7 +887,7 @@ class CarbriataApp {
       guideText.innerHTML = `Toca para trazar camino. <strong>Doble clic</strong> para finalizar.`;
     } else if (mode === 'point') {
       banner.classList.add('show');
-      guideText.innerHTML = `Toca en el mapa para situar la atracción.`;
+      guideText.innerHTML = `Toca en el mapa para situar el auto o atracción.`;
     } else {
       banner.classList.remove('show');
     }
