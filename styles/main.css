@@ -2397,9 +2397,219 @@ html, body {
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-@keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+/* Precision Bar Groups */
+.precision-fields-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Floating Trash Dropzone */
+.floating-trash-zone {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
+  background: rgba(16, 26, 20, 0.88);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  backdrop-filter: var(--glass-blur);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  z-index: 25;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.floating-trash-zone:hover {
+  background: rgba(24, 38, 30, 0.95);
+  border-color: var(--gold-400);
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.3);
+  transform: translateX(-50%) scale(1.05);
+}
+
+.trash-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f87171;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.trash-label-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.trash-label-main {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.trash-label-sub {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* When an item is actively being dragged */
+.floating-trash-zone.trash-active {
+  transform: translateX(-50%) scale(1.12);
+  border-color: #ef4444;
+  background: rgba(28, 12, 16, 0.95);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.45);
+  animation: trashPulse 1.4s infinite alternate ease-in-out;
+}
+
+.floating-trash-zone.trash-active .trash-icon-wrap {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+  border-color: #ef4444;
+}
+
+/* When the dragged item is hovering over the trash dropzone */
+.floating-trash-zone.trash-hover {
+  transform: translateX(-50%) scale(1.24) !important;
+  background: rgba(220, 38, 38, 0.95) !important;
+  border-color: #fff !important;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.8), 0 0 15px #fff !important;
+}
+
+.floating-trash-zone.trash-hover .trash-icon-wrap {
+  background: #fff !important;
+  color: #dc2626 !important;
+  transform: scale(1.15) rotate(-10deg);
+}
+
+.floating-trash-zone.trash-hover .trash-label-main {
+  color: #fff !important;
+  font-weight: 900;
+}
+
+.floating-trash-zone.trash-hover .trash-label-sub {
+  color: #fee2e2 !important;
+  font-weight: 700;
+}
+
+@keyframes trashPulse {
+  0% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); transform: translateX(-50%) scale(1.08); }
+  100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.65); transform: translateX(-50%) scale(1.15); }
+}
+
+/* Draggable items in sidebar */
+.item-card[draggable="true"], .zone-card[draggable="true"] {
+  cursor: grab;
+}
+
+.item-card[draggable="true"]:active, .zone-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* Delete Confirmation Modal Styles */
+.modal-confirm-container {
+  max-width: 420px !important;
+  text-align: center;
+}
+
+.modal-header-danger {
+  border-bottom: 1px solid rgba(239, 68, 68, 0.25) !important;
+}
+
+.modal-title-danger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f87171;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.modal-body-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px !important;
+}
+
+.confirm-icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  border: 2px solid rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #ef4444;
+  margin-bottom: 16px;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.confirm-item-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.confirm-item-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.confirm-item-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--gold-300);
+}
+
+.modal-footer-confirm {
+  justify-content: center !important;
+  gap: 12px;
+}
+
+.btn-danger-solid {
+  background: #dc2626;
+  border: 1px solid #ef4444;
+  color: #fff;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.btn-danger-solid:hover {
+  background: #b91c1c;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
 }
 
 /* Responsive - Mobile Optimization */
@@ -2493,6 +2703,27 @@ html, body {
   .layer-btn {
     padding: 4px 6px;
     font-size: 0.65rem;
+  }
+
+  /* Mobile Floating Trash Zone */
+  .floating-trash-zone {
+    bottom: 16px;
+    padding: 6px 14px;
+    gap: 8px;
+  }
+
+  .trash-icon-wrap {
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .trash-label-main {
+    font-size: 0.74rem;
+  }
+
+  .trash-label-sub {
+    display: none;
   }
 
   .precision-bar {

@@ -3,10 +3,10 @@
  * Coordinates MapEngine, DrawManager, UIManager, and LocalStorage State
  */
 
-import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=12';
-import { MapEngine } from './map/mapEngine.js?v=12';
-import { DrawManager } from './map/drawManager.js?v=12';
-import { UIManager } from './ui/uiManager.js?v=12';
+import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=16';
+import { MapEngine } from './map/mapEngine.js?v=16';
+import { DrawManager } from './map/drawManager.js?v=16';
+import { UIManager } from './ui/uiManager.js?v=16';
 
 class CarbriataApp {
   constructor() {
@@ -19,6 +19,7 @@ class CarbriataApp {
     this.mapEngine = null;
     this.drawManager = null;
     this.ui = null;
+    this.pendingDeleteItem = null;
   }
 
   async init() {
@@ -37,6 +38,21 @@ class CarbriataApp {
         if (this.drawManager && this.drawManager.currentMode !== 'idle') return;
         if (this.justDragged || this.justHandledClick) return;
         this.handleFeatureClick(type, id);
+      },
+      onMarkerDragStart: (item) => {
+        this.showTrashZone(true);
+      },
+      onMarkerDrag: (marker, item) => {
+        this.checkMarkerOverTrash(marker);
+      },
+      onMarkerDragEndCheck: (marker, item) => {
+        const isOver = this.checkMarkerOverTrash(marker);
+        this.showTrashZone(false);
+        if (isOver) {
+          this.openDeleteConfirmation('attraction', item, marker);
+          return true; // Deletion modal opened, don't update coords automatically
+        }
+        return false;
       },
       onMapClick: (e) => {
         // 0. If a cluster is currently exploded, collapse it on background click
@@ -91,6 +107,7 @@ class CarbriataApp {
           hasMoved: false
         };
         this.mapEngine.map.dragPan.disable();
+        this.showTrashZone(true);
         return;
       }
 
@@ -105,6 +122,7 @@ class CarbriataApp {
           hasMoved: false
         };
         this.mapEngine.map.dragPan.disable();
+        this.showTrashZone(true);
         return;
       }
     });
@@ -117,6 +135,11 @@ class CarbriataApp {
         if (Math.hypot(dx, dy) > 4) {
           this.dragState.hasMoved = true;
           this.mapEngine.map.getCanvas().style.cursor = 'grabbing';
+
+          // Check hover over floating trash zone
+          if (e.originalEvent) {
+            this.checkPointOverTrash(e.originalEvent.clientX, e.originalEvent.clientY);
+          }
 
           const dLng = e.lngLat.lng - this.dragState.startLngLat.lng;
           const dLat = e.lngLat.lat - this.dragState.startLngLat.lat;
@@ -152,14 +175,27 @@ class CarbriataApp {
       }
     });
 
-    // Mouseup on map: drop element and save state
-    const handleMouseUp = () => {
+    // Mouseup on map: drop element and save state or delete if dropped on trash
+    const handleMouseUp = (e) => {
       if (this.dragState && this.dragState.item) {
         this.mapEngine.map.dragPan.enable();
         const wasMoved = this.dragState.hasMoved;
         const draggedType = this.dragState.type;
         const draggedItem = this.dragState.item;
+        const origCoords = this.dragState.originalCoords;
+        const wasOverTrash = e && e.originalEvent ? this.checkPointOverTrash(e.originalEvent.clientX, e.originalEvent.clientY) : false;
+
         this.dragState = null;
+        this.showTrashZone(false);
+
+        if (wasMoved && wasOverTrash) {
+          // Revert position on map, then prompt for deletion confirmation
+          draggedItem.coordinates = origCoords;
+          if (draggedType === 'zone') this.mapEngine.updateZones(this.data.zones);
+          if (draggedType === 'route') this.mapEngine.updateRoutes(this.data.routes);
+          this.openDeleteConfirmation(draggedType, draggedItem);
+          return;
+        }
 
         if (wasMoved) {
           this.justDragged = true;
@@ -186,9 +222,10 @@ class CarbriataApp {
     };
 
     this.mapEngine.map.on('mouseup', handleMouseUp);
-    window.addEventListener('mouseup', () => {
+    window.addEventListener('mouseup', (e) => {
       if (this.dragState) {
         this.mapEngine.map.dragPan.enable();
+        this.showTrashZone(false);
         if (this.dragState.hasMoved) {
           this.saveState();
         }
@@ -211,8 +248,13 @@ class CarbriataApp {
         this._updateDrawToolbarUI(mode);
       },
       onRotationChange: (rotDeg) => {
-        const boxRotInput = document.getElementById('box-rot-input');
-        if (boxRotInput) boxRotInput.value = rotDeg;
+        if (this.drawManager && this.drawManager.currentMode === 'triangle') {
+          const triRotInput = document.getElementById('tri-rot-input');
+          if (triRotInput) triRotInput.value = rotDeg;
+        } else {
+          const boxRotInput = document.getElementById('box-rot-input');
+          if (boxRotInput) boxRotInput.value = rotDeg;
+        }
       },
       onDrawProgress: (data) => {
         this._updateDrawProgressUI(data);
@@ -415,6 +457,7 @@ class CarbriataApp {
         btnModeOrg.classList.add('active');
         btnModeVis.classList.remove('active');
         if (leftToolsPanel) leftToolsPanel.classList.remove('hidden-mode');
+        this.showTrashZone(false);
         this.refreshMapData();
         this.ui.renderSidebar();
         if (this.mapEngine && this.mapEngine.map) this.mapEngine.map.resize();
@@ -425,6 +468,7 @@ class CarbriataApp {
         btnModeVis.classList.add('active');
         btnModeOrg.classList.remove('active');
         if (leftToolsPanel) leftToolsPanel.classList.add('hidden-mode');
+        this.showTrashZone(false);
         if (this.drawManager) this.drawManager.cancelDraw();
         this.refreshMapData();
         this.ui.renderSidebar();
@@ -435,6 +479,8 @@ class CarbriataApp {
     // Drawing Tool Buttons
     const btnDrawPoly = document.getElementById('btn-draw-polygon');
     const btnDrawBox = document.getElementById('btn-draw-box');
+    const btnShapeCircle = document.getElementById('btn-shape-circle');
+    const btnShapeTriangle = document.getElementById('btn-shape-triangle');
     const btnDrawRoute = document.getElementById('btn-draw-route');
     const btnPlacePoi = document.getElementById('btn-place-poi');
     const guideBanner = document.getElementById('drawing-guide-banner');
@@ -449,6 +495,16 @@ class CarbriataApp {
     if (btnDrawBox) {
       btnDrawBox.addEventListener('click', () => {
         this.drawManager.setMode('box');
+      });
+    }
+    if (btnShapeCircle) {
+      btnShapeCircle.addEventListener('click', () => {
+        this.drawManager.setMode('circle');
+      });
+    }
+    if (btnShapeTriangle) {
+      btnShapeTriangle.addEventListener('click', () => {
+        this.drawManager.setMode('triangle');
       });
     }
     if (btnDrawRoute) {
@@ -467,7 +523,7 @@ class CarbriataApp {
       });
     }
 
-    // Precision Bar Controls (Metric Stand / Marquee Tool)
+    // Precision Bar Controls - Rectangle
     const precPreset = document.getElementById('precision-preset-select');
     const boxWInput = document.getElementById('box-width-input');
     const boxLInput = document.getElementById('box-length-input');
@@ -533,11 +589,170 @@ class CarbriataApp {
       });
     }
 
+    // Precision Bar Controls - Circle
+    const circlePreset = document.getElementById('circle-preset-select');
+    const circleDiaInput = document.getElementById('circle-diameter-input');
+    const circleRadInput = document.getElementById('circle-radius-input');
+
+    const circlePresetValues = {
+      'circle-6': { r: 3, d: 6 },
+      'circle-10': { r: 5, d: 10 },
+      'circle-16': { r: 8, d: 16 },
+      'circle-24': { r: 12, d: 24 },
+      'circle-40': { r: 20, d: 40 }
+    };
+
+    const updateCircleDimensions = () => {
+      const r = parseFloat(circleRadInput.value) || 5;
+      const preset = circlePreset ? circlePreset.value : 'custom';
+      if (areaPillVal) areaPillVal.innerText = `${Math.round(Math.PI * r * r)} m²`;
+      this.drawManager.setCircleDimensions(r, preset);
+    };
+
+    if (circlePreset) {
+      circlePreset.addEventListener('change', () => {
+        const p = circlePreset.value;
+        if (circlePresetValues[p]) {
+          circleDiaInput.value = circlePresetValues[p].d;
+          circleRadInput.value = circlePresetValues[p].r;
+        }
+        updateCircleDimensions();
+      });
+    }
+
+    if (circleDiaInput) {
+      circleDiaInput.addEventListener('input', () => {
+        const d = parseFloat(circleDiaInput.value) || 10;
+        circleRadInput.value = (d / 2).toFixed(1);
+        if (circlePreset) circlePreset.value = 'custom';
+        updateCircleDimensions();
+      });
+    }
+
+    if (circleRadInput) {
+      circleRadInput.addEventListener('input', () => {
+        const r = parseFloat(circleRadInput.value) || 5;
+        circleDiaInput.value = (r * 2).toFixed(1);
+        if (circlePreset) circlePreset.value = 'custom';
+        updateCircleDimensions();
+      });
+    }
+
+    // Precision Bar Controls - Triangle
+    const triPreset = document.getElementById('triangle-preset-select');
+    const triBaseInput = document.getElementById('tri-base-input');
+    const triHeightInput = document.getElementById('tri-height-input');
+    const triRotInput = document.getElementById('tri-rot-input');
+    const btnTriRotSub = document.getElementById('btn-tri-rot-sub');
+    const btnTriRotAdd = document.getElementById('btn-tri-rot-add');
+
+    const triPresetValues = {
+      'tri-6': { b: 6, h: 6 },
+      'tri-10': { b: 10, h: 10 },
+      'tri-15': { b: 15, h: 12 },
+      'tri-24': { b: 24, h: 16 }
+    };
+
+    const updateTriDimensions = () => {
+      const b = parseFloat(triBaseInput.value) || 10;
+      const h = parseFloat(triHeightInput.value) || 10;
+      const rot = parseFloat(triRotInput.value) || 0;
+      const preset = triPreset ? triPreset.value : 'custom';
+      if (areaPillVal) areaPillVal.innerText = `${Math.round((b * h) / 2)} m²`;
+      this.drawManager.setTriangleDimensions(b, h, rot, preset);
+    };
+
+    if (triPreset) {
+      triPreset.addEventListener('change', () => {
+        const p = triPreset.value;
+        if (triPresetValues[p]) {
+          triBaseInput.value = triPresetValues[p].b;
+          triHeightInput.value = triPresetValues[p].h;
+        }
+        updateTriDimensions();
+      });
+    }
+
+    if (triBaseInput && triHeightInput) {
+      [triBaseInput, triHeightInput].forEach(inp => {
+        inp.addEventListener('input', () => {
+          if (triPreset) triPreset.value = 'custom';
+          updateTriDimensions();
+        });
+      });
+    }
+
+    if (triRotInput) {
+      triRotInput.addEventListener('input', updateTriDimensions);
+    }
+
+    if (btnTriRotSub && btnTriRotAdd) {
+      btnTriRotSub.addEventListener('click', () => {
+        let r = (parseFloat(triRotInput.value) || 0) - 15;
+        if (r < 0) r += 360;
+        triRotInput.value = r;
+        updateTriDimensions();
+      });
+      btnTriRotAdd.addEventListener('click', () => {
+        let r = ((parseFloat(triRotInput.value) || 0) + 15) % 360;
+        triRotInput.value = r;
+        updateTriDimensions();
+      });
+    }
+
     if (btnClosePrec) {
       btnClosePrec.addEventListener('click', () => {
         this.drawManager.cancelDraw();
       });
     }
+
+    // Floating Trash Dropzone & Deletion Confirm Handlers
+    const trashZoneEl = document.getElementById('floating-trash-zone');
+    if (trashZoneEl) {
+      trashZoneEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        trashZoneEl.classList.add('trash-hover');
+      });
+
+      trashZoneEl.addEventListener('dragleave', () => {
+        trashZoneEl.classList.remove('trash-hover');
+      });
+
+      trashZoneEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        trashZoneEl.classList.remove('trash-hover');
+        trashZoneEl.classList.remove('trash-active');
+
+        try {
+          const raw = e.dataTransfer.getData('text/plain');
+          if (raw) {
+            const data = JSON.parse(raw);
+            let targetItem = null;
+            if (data.type === 'attraction') {
+              targetItem = this.data.attractions.find(a => a.id === data.id);
+            } else if (data.type === 'zone') {
+              targetItem = this.data.zones.find(z => z.id === data.id);
+            } else if (data.type === 'route') {
+              targetItem = this.data.routes.find(r => r.id === data.id);
+            }
+            if (targetItem) {
+              this.openDeleteConfirmation(data.type, targetItem);
+            }
+          }
+        } catch (err) {
+          console.warn('Error reading dropped item in trash:', err);
+        }
+      });
+    }
+
+    const btnConfirmDel = document.getElementById('btn-confirm-delete');
+    const btnCancelDel = document.getElementById('btn-cancel-delete');
+    const btnCloseDel = document.getElementById('btn-close-delete-modal');
+
+    if (btnConfirmDel) btnConfirmDel.addEventListener('click', () => this.confirmDelete());
+    if (btnCancelDel) btnCancelDel.addEventListener('click', () => this.cancelDelete());
+    if (btnCloseDel) btnCloseDel.addEventListener('click', () => this.cancelDelete());
 
     // 2D / 3D Buttons
     const btn2D = document.getElementById('btn-view-2d');
@@ -956,21 +1171,46 @@ class CarbriataApp {
   _updateDrawToolbarUI(mode) {
     const btnPoly = document.getElementById('btn-draw-polygon');
     const btnBox = document.getElementById('btn-draw-box');
+    const btnCircle = document.getElementById('btn-shape-circle');
+    const btnTriangle = document.getElementById('btn-shape-triangle');
     const btnRoute = document.getElementById('btn-draw-route');
     const btnPoi = document.getElementById('btn-place-poi');
     const precBar = document.getElementById('precision-bar');
+    const precRectFields = document.getElementById('precision-rect-fields');
+    const precCircleFields = document.getElementById('precision-circle-fields');
+    const precTriangleFields = document.getElementById('precision-triangle-fields');
+    const areaPillVal = document.getElementById('box-area-pill-val');
     const banner = document.getElementById('drawing-guide-banner');
     const guideText = document.getElementById('guide-text');
 
     if (btnPoly) btnPoly.classList.toggle('active', mode === 'polygon');
     if (btnBox) btnBox.classList.toggle('active', mode === 'box');
+    if (btnCircle) btnCircle.classList.toggle('active', mode === 'circle');
+    if (btnTriangle) btnTriangle.classList.toggle('active', mode === 'triangle');
     if (btnRoute) btnRoute.classList.toggle('active', mode === 'route');
     if (btnPoi) btnPoi.classList.toggle('active', mode === 'point');
-    if (precBar) precBar.classList.toggle('show', mode === 'box');
+
+    const isGeometricShape = (mode === 'box' || mode === 'circle' || mode === 'triangle');
+    if (precBar) precBar.classList.toggle('show', isGeometricShape);
+
+    if (precRectFields) precRectFields.style.display = (mode === 'box') ? 'flex' : 'none';
+    if (precCircleFields) precCircleFields.style.display = (mode === 'circle') ? 'flex' : 'none';
+    if (precTriangleFields) precTriangleFields.style.display = (mode === 'triangle') ? 'flex' : 'none';
 
     if (mode === 'box') {
+      if (areaPillVal) areaPillVal.innerText = `${Math.round(this.drawManager.boxWidth * this.drawManager.boxLength)} m²`;
       banner.classList.add('show');
-      guideText.innerHTML = `<strong>${this.drawManager.boxWidth}×${this.drawManager.boxLength}m (${Math.round(this.drawManager.boxWidth * this.drawManager.boxLength)} m²)</strong> &bull; Toca para ubicar`;
+      guideText.innerHTML = `<strong>Rectángulo ${this.drawManager.boxWidth}×${this.drawManager.boxLength}m (${Math.round(this.drawManager.boxWidth * this.drawManager.boxLength)} m²)</strong> &bull; Toca para ubicar`;
+    } else if (mode === 'circle') {
+      const area = Math.round(Math.PI * this.drawManager.circleRadius * this.drawManager.circleRadius);
+      if (areaPillVal) areaPillVal.innerText = `${area} m²`;
+      banner.classList.add('show');
+      guideText.innerHTML = `<strong>Círculo Ø ${Math.round(this.drawManager.circleRadius * 2)}m (Radio: ${this.drawManager.circleRadius}m, ${area} m²)</strong> &bull; Toca para ubicar`;
+    } else if (mode === 'triangle') {
+      const area = Math.round((this.drawManager.triangleBase * this.drawManager.triangleHeight) / 2);
+      if (areaPillVal) areaPillVal.innerText = `${area} m²`;
+      banner.classList.add('show');
+      guideText.innerHTML = `<strong>Triángulo ${this.drawManager.triangleBase}×${this.drawManager.triangleHeight}m (${area} m²)</strong> &bull; Giro: ${this.drawManager.triangleRotation}° &bull; Toca para ubicar`;
     } else if (mode === 'polygon') {
       banner.classList.add('show');
       guideText.innerHTML = `Toca para marcar vértices. <strong>Doble clic</strong> para cerrar.`;
@@ -991,11 +1231,149 @@ class CarbriataApp {
 
     if (data.mode === 'box') {
       guideText.innerHTML = `<strong>${data.width}×${data.length}m</strong> &bull; Giro: ${data.rotation}° &bull; Toca para ubicar`;
+    } else if (data.mode === 'circle') {
+      guideText.innerHTML = `<strong>Círculo Ø ${Math.round(data.radius * 2)}m</strong> &bull; Superficie: <strong>${Math.round(Math.PI * data.radius * data.radius).toLocaleString()} m²</strong> &bull; Toca para ubicar`;
+    } else if (data.mode === 'triangle') {
+      guideText.innerHTML = `<strong>Triángulo ${data.base}×${data.height}m</strong> &bull; Giro: ${data.rotation}° &bull; Superficie: <strong>${Math.round((data.base * data.height) / 2).toLocaleString()} m²</strong> &bull; Toca para ubicar`;
     } else if (data.mode === 'polygon') {
       guideText.innerHTML = `Lado: <strong>${Math.round(data.currentSegmentM)}m</strong> &bull; Superficie: <strong>${data.liveAreaM2.toLocaleString()}m²</strong> &bull; <strong>Doble clic</strong> para cerrar`;
     } else if (data.mode === 'route') {
       guideText.innerHTML = `Tramo: <strong>${Math.round(data.currentSegmentM)}m</strong> &bull; Total: <strong>${Math.round(data.totalLengthM)}m</strong> &bull; <strong>Doble clic</strong> para finalizar`;
     }
+  }
+
+  // --- Floating Trash & Deletion Confirmation Flow ---
+  showTrashZone(show) {
+    const trash = document.getElementById('floating-trash-zone');
+    if (!trash) return;
+    if (!this.isOrganizerMode) {
+      trash.style.display = 'none';
+      return;
+    }
+    trash.style.display = 'flex';
+    trash.classList.toggle('trash-active', Boolean(show));
+    if (!show) {
+      trash.classList.remove('trash-hover');
+    }
+  }
+
+  checkMarkerOverTrash(marker) {
+    const trash = document.getElementById('floating-trash-zone');
+    if (!trash || !this.mapEngine || !this.mapEngine.map) return false;
+    const lngLat = marker.getLngLat();
+    const screenPt = this.mapEngine.map.project(lngLat);
+    const canvasRect = this.mapEngine.map.getCanvas().getBoundingClientRect();
+    const clientX = canvasRect.left + screenPt.x;
+    const clientY = canvasRect.top + screenPt.y;
+    return this.checkPointOverTrash(clientX, clientY);
+  }
+
+  checkPointOverTrash(clientX, clientY) {
+    const trash = document.getElementById('floating-trash-zone');
+    if (!trash) return false;
+    const rect = trash.getBoundingClientRect();
+    const margin = 20;
+    const isOver = (
+      clientX >= rect.left - margin &&
+      clientX <= rect.right + margin &&
+      clientY >= rect.top - margin &&
+      clientY <= rect.bottom + margin
+    );
+    trash.classList.toggle('trash-hover', isOver);
+    return isOver;
+  }
+
+  openDeleteConfirmation(type, item, marker = null) {
+    this.pendingDeleteItem = { type, item, marker };
+    const modal = document.getElementById('delete-confirm-modal');
+    const titleEl = document.getElementById('delete-confirm-title');
+    const descEl = document.getElementById('delete-confirm-desc');
+    const previewEl = document.getElementById('delete-item-preview');
+    if (!modal) return;
+
+    if (type === 'attraction') {
+      if (titleEl) titleEl.innerText = `¿Eliminar "${item.title}" del plano?`;
+      if (descEl) descEl.innerText = 'Se removerá el vehículo clásico y su ficha del mapa del evento.';
+      if (previewEl) {
+        const photo = (item.photos && item.photos.length > 0) ? item.photos[0] : 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=200&q=80';
+        previewEl.innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px;text-align:left;">
+            <img src="${photo}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;border:1px solid #d4af37;" onerror="this.src='https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=200&q=80'" />
+            <div>
+              <div style="color:#f3f4f6;font-size:0.95rem;font-weight:700;">${item.title}</div>
+              <div style="font-size:0.75rem;color:#9ca3af;">${item.subtitle || ''} ${item.year ? `(${item.year})` : ''}</div>
+            </div>
+          </div>
+        `;
+      }
+    } else if (type === 'zone') {
+      if (titleEl) titleEl.innerText = `¿Eliminar la zona "${item.name}"?`;
+      if (descEl) descEl.innerText = 'Se removerá la parcela, stand o área delimitada con sus dimensiones.';
+      if (previewEl) {
+        previewEl.innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px;text-align:left;">
+            <div style="width:24px;height:24px;border-radius:4px;background-color:${item.color || '#d4af37'};border:1px solid rgba(255,255,255,0.4);flex-shrink:0;"></div>
+            <div>
+              <div style="color:#f3f4f6;font-size:0.95rem;font-weight:700;">${item.name}</div>
+              <div style="font-size:0.75rem;color:#9ca3af;">Superficie: ${item.area ? item.area.toLocaleString() + ' m²' : 'N/D'}</div>
+            </div>
+          </div>
+        `;
+      }
+    } else if (type === 'route') {
+      if (titleEl) titleEl.innerText = `¿Eliminar el trazado "${item.name}"?`;
+      if (descEl) descEl.innerText = 'Se eliminará la ruta dinámica o recorrido del mapa.';
+      if (previewEl) {
+        previewEl.innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px;text-align:left;">
+            <div style="width:28px;height:8px;border-radius:4px;background-color:${item.color || '#ef4444'};flex-shrink:0;"></div>
+            <div>
+              <div style="color:#f3f4f6;font-size:0.95rem;font-weight:700;">${item.name}</div>
+              <div style="font-size:0.75rem;color:#9ca3af;">Longitud: ${item.lengthMeters ? item.lengthMeters.toLocaleString() + ' m' : 'N/D'}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    modal.classList.add('open');
+  }
+
+  cancelDelete() {
+    const modal = document.getElementById('delete-confirm-modal');
+    if (modal) modal.classList.remove('open');
+    if (this.pendingDeleteItem) {
+      const { type, item, marker } = this.pendingDeleteItem;
+      if (marker) {
+        marker.setLngLat(item.coordinates);
+        this.mapEngine.renderClusteredMarkers();
+      } else if (type === 'zone' || type === 'route') {
+        this.refreshMapData();
+      }
+      this.pendingDeleteItem = null;
+    }
+    this.showTrashZone(false);
+  }
+
+  confirmDelete() {
+    const modal = document.getElementById('delete-confirm-modal');
+    if (modal) modal.classList.remove('open');
+    if (!this.pendingDeleteItem) return;
+
+    const { type, item } = this.pendingDeleteItem;
+    const itemName = item.title || item.name || 'Elemento';
+
+    if (type === 'attraction') {
+      this.deleteAttraction(item.id);
+    } else if (type === 'zone') {
+      this.deleteZone(item.id);
+    } else if (type === 'route') {
+      this.deleteRoute(item.id);
+    }
+
+    this.pendingDeleteItem = null;
+    this.showTrashZone(false);
+    this.ui.showToast(`"${itemName}" ha sido eliminado del plano`);
   }
 
   deleteZone(zoneId) {

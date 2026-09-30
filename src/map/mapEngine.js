@@ -633,17 +633,25 @@ export class MapEngine {
     marker.on('dragstart', () => {
       isDragging = true;
       pinWrapper.classList.add('dragging');
+      if (this.options.onMarkerDragStart) this.options.onMarkerDragStart(item);
+    });
+
+    marker.on('drag', () => {
+      if (this.options.onMarkerDrag) this.options.onMarkerDrag(marker, item);
     });
 
     marker.on('dragend', () => {
-      const lngLat = marker.getLngLat();
-      item.coordinates = [lngLat.lng, lngLat.lat];
       pinWrapper.classList.remove('dragging');
-      if (this.onMarkerDragEnd) this.onMarkerDragEnd(item);
-      setTimeout(() => {
-        isDragging = false;
-        this.renderClusteredMarkers();
-      }, 100);
+      const handled = this.options.onMarkerDragEndCheck && this.options.onMarkerDragEndCheck(marker, item);
+      if (!handled) {
+        const lngLat = marker.getLngLat();
+        item.coordinates = [lngLat.lng, lngLat.lat];
+        if (this.onMarkerDragEnd) this.onMarkerDragEnd(item);
+        setTimeout(() => {
+          isDragging = false;
+          this.renderClusteredMarkers();
+        }, 100);
+      }
     });
 
     pinWrapper.addEventListener('click', (e) => {

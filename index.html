@@ -22,7 +22,7 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="./styles/main.css?v=14" />
+  <link rel="stylesheet" href="./styles/main.css?v=16" />
 </head>
 <body>
   <div id="app-container">
@@ -112,25 +112,41 @@
         </div>
 
         <div class="left-tools-body" id="drawing-toolkit">
-          <div class="left-tools-section-label">Áreas & Stands</div>
+          <div class="left-tools-section-label">Figuras Predeterminadas</div>
 
-          <button id="btn-draw-polygon" class="left-tool-item" title="Delimitar terrenos o polígonos libres">
+          <button id="btn-draw-box" class="left-tool-item" title="Colocar stand o carpa rectangular con medidas métricas exactas">
+            <div class="tool-item-icon"><i class="fa-solid fa-vector-square"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Rectángulo</span>
+              <span class="tool-item-sub">Boxes, carpas métricas</span>
+            </div>
+          </button>
+
+          <button id="btn-shape-circle" class="left-tool-item" title="Colocar área circular, rotonda o gazebo">
+            <div class="tool-item-icon"><i class="fa-regular fa-circle"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Círculo</span>
+              <span class="tool-item-sub">Rotondas, gazebos (radio)</span>
+            </div>
+          </button>
+
+          <button id="btn-shape-triangle" class="left-tool-item" title="Colocar stand o parcela triangular">
+            <div class="tool-item-icon"><i class="fa-solid fa-play" style="transform: rotate(-90deg);"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Triángulo</span>
+              <span class="tool-item-sub">Esquinas, cuñas y vértices</span>
+            </div>
+          </button>
+
+          <div class="left-tools-section-label">Dibujo Libre & Pistas</div>
+
+          <button id="btn-draw-polygon" class="left-tool-item" title="Delimitar terrenos o polígonos libres vértice a vértice">
             <div class="tool-item-icon"><i class="fa-solid fa-draw-polygon"></i></div>
             <div class="tool-item-details">
               <span class="tool-item-title">Delimitar Libre</span>
               <span class="tool-item-sub">Polígono libre en terreno</span>
             </div>
           </button>
-
-          <button id="btn-draw-box" class="left-tool-item" title="Colocar stand o carpa con medidas métricas exactas (ej: 6x3m, 10x5m)">
-            <div class="tool-item-icon"><i class="fa-solid fa-ruler-combined"></i></div>
-            <div class="tool-item-details">
-              <span class="tool-item-title">Stand con Medidas</span>
-              <span class="tool-item-sub">Boxes, carpas métricas</span>
-            </div>
-          </button>
-
-          <div class="left-tools-section-label">Pistas & Trazados</div>
 
           <button id="btn-draw-route" class="left-tool-item" title="Trazar recta de aceleración, desfile o accesos">
             <div class="tool-item-icon"><i class="fa-solid fa-route"></i></div>
@@ -152,7 +168,7 @@
 
           <div class="left-tools-footer-hint">
             <i class="fa-solid fa-circle-info"></i>
-            <span>Selecciona una herramienta y haz clic sobre el mapa para comenzar.</span>
+            <span>Selecciona una forma y haz clic sobre el mapa para ubicarla.</span>
           </div>
         </div>
       </aside>
@@ -161,51 +177,133 @@
       <section class="map-viewport">
         <div id="map"></div>
 
-        <!-- Precise Dimensions Bar for Stands & Marquees -->
+        <!-- Precise Dimensions Bar for Stands & Geometric Shapes -->
         <div id="precision-bar" class="precision-bar">
           <div class="precision-bar-content">
-            <div class="precision-field">
-              <label class="precision-label"><i class="fa-solid fa-shapes"></i> Tipo:</label>
-              <select id="precision-preset-select" class="precision-select">
-                <option value="custom">Personalizado...</option>
-                <option value="car-single" selected>Stand Auto Clásico (6 × 3 m = 18 m²)</option>
-                <option value="box-double">Carpa Box Doble (10 × 5 m = 50 m²)</option>
-                <option value="sponsor">Stand Sponsor / Gazebo (12 × 6 m = 72 m²)</option>
-                <option value="vip-lounge">Hospitality / VIP Lounge (20 × 10 m = 200 m²)</option>
-                <option value="grand-pavilion">Gran Pabellón (40 × 15 m = 600 m²)</option>
-                <option value="gazebo-3x3">Gazebo Cuadrado (3 × 3 m = 9 m²)</option>
-              </select>
-            </div>
+            <!-- Rectangle Fields -->
+            <div id="precision-rect-fields" class="precision-fields-group">
+              <div class="precision-field">
+                <label class="precision-label"><i class="fa-solid fa-vector-square"></i> Tipo:</label>
+                <select id="precision-preset-select" class="precision-select">
+                  <option value="custom">Personalizado...</option>
+                  <option value="car-single" selected>Stand Auto Clásico (6 × 3 m = 18 m²)</option>
+                  <option value="box-double">Carpa Box Doble (10 × 5 m = 50 m²)</option>
+                  <option value="sponsor">Stand Sponsor / Gazebo (12 × 6 m = 72 m²)</option>
+                  <option value="vip-lounge">Hospitality / VIP Lounge (20 × 10 m = 200 m²)</option>
+                  <option value="grand-pavilion">Gran Pabellón (40 × 15 m = 600 m²)</option>
+                  <option value="gazebo-3x3">Gazebo Cuadrado (3 × 3 m = 9 m²)</option>
+                </select>
+              </div>
 
-            <div class="precision-divider"></div>
+              <div class="precision-divider"></div>
 
-            <div class="precision-field">
-              <label class="precision-label">Ancho:</label>
-              <div class="precision-input-wrap">
-                <input type="number" id="box-width-input" class="precision-num-input" value="6" min="1" max="500" step="0.5" />
-                <span class="precision-unit">m</span>
+              <div class="precision-field">
+                <label class="precision-label">Ancho:</label>
+                <div class="precision-input-wrap">
+                  <input type="number" id="box-width-input" class="precision-num-input" value="6" min="1" max="500" step="0.5" />
+                  <span class="precision-unit">m</span>
+                </div>
+              </div>
+
+              <span class="precision-times">×</span>
+
+              <div class="precision-field">
+                <label class="precision-label">Largo:</label>
+                <div class="precision-input-wrap">
+                  <input type="number" id="box-length-input" class="precision-num-input" value="3" min="1" max="500" step="0.5" />
+                  <span class="precision-unit">m</span>
+                </div>
+              </div>
+
+              <div class="precision-divider"></div>
+
+              <div class="precision-field">
+                <label class="precision-label">Giro:</label>
+                <div class="precision-rot-wrap">
+                  <button type="button" id="btn-rot-sub" class="precision-btn-step" title="Girar -15° a la izquierda"><i class="fa-solid fa-rotate-left"></i></button>
+                  <input type="number" id="box-rot-input" class="precision-num-input" value="0" min="0" max="360" step="5" style="width: 44px; text-align: center;" />
+                  <span class="precision-unit">°</span>
+                  <button type="button" id="btn-rot-add" class="precision-btn-step" title="Girar +15° a la derecha"><i class="fa-solid fa-rotate-right"></i></button>
+                </div>
               </div>
             </div>
 
-            <span class="precision-times">×</span>
+            <!-- Circle Fields -->
+            <div id="precision-circle-fields" class="precision-fields-group" style="display: none;">
+              <div class="precision-field">
+                <label class="precision-label"><i class="fa-regular fa-circle"></i> Tipo:</label>
+                <select id="circle-preset-select" class="precision-select">
+                  <option value="custom">Personalizado...</option>
+                  <option value="circle-6">Gazebo Circular (6 m Ø = 28 m²)</option>
+                  <option value="circle-10" selected>Pabellón Redondo (10 m Ø = 79 m²)</option>
+                  <option value="circle-16">Paddock Circular (16 m Ø = 201 m²)</option>
+                  <option value="circle-24">Rotonda Central (24 m Ø = 452 m²)</option>
+                  <option value="circle-40">Gran Plaza Concours (40 m Ø = 1257 m²)</option>
+                </select>
+              </div>
 
-            <div class="precision-field">
-              <label class="precision-label">Largo:</label>
-              <div class="precision-input-wrap">
-                <input type="number" id="box-length-input" class="precision-num-input" value="3" min="1" max="500" step="0.5" />
-                <span class="precision-unit">m</span>
+              <div class="precision-divider"></div>
+
+              <div class="precision-field">
+                <label class="precision-label">Diámetro:</label>
+                <div class="precision-input-wrap">
+                  <input type="number" id="circle-diameter-input" class="precision-num-input" value="10" min="1" max="500" step="1" />
+                  <span class="precision-unit">m</span>
+                </div>
+              </div>
+
+              <div class="precision-field">
+                <label class="precision-label">Radio:</label>
+                <div class="precision-input-wrap">
+                  <input type="number" id="circle-radius-input" class="precision-num-input" value="5" min="0.5" max="250" step="0.5" />
+                  <span class="precision-unit">m</span>
+                </div>
               </div>
             </div>
 
-            <div class="precision-divider"></div>
+            <!-- Triangle Fields -->
+            <div id="precision-triangle-fields" class="precision-fields-group" style="display: none;">
+              <div class="precision-field">
+                <label class="precision-label"><i class="fa-solid fa-play" style="transform: rotate(-90deg);"></i> Tipo:</label>
+                <select id="triangle-preset-select" class="precision-select">
+                  <option value="custom">Personalizado...</option>
+                  <option value="tri-6">Stand Esquina (6 × 6 m = 18 m²)</option>
+                  <option value="tri-10" selected>Parcela Triangular (10 × 10 m = 50 m²)</option>
+                  <option value="tri-15">Stand Vértice (15 × 12 m = 90 m²)</option>
+                  <option value="tri-24">Cuña de Pista (24 × 16 m = 192 m²)</option>
+                </select>
+              </div>
 
-            <div class="precision-field">
-              <label class="precision-label">Giro:</label>
-              <div class="precision-rot-wrap">
-                <button type="button" id="btn-rot-sub" class="precision-btn-step" title="Girar -15° a la izquierda"><i class="fa-solid fa-rotate-left"></i></button>
-                <input type="number" id="box-rot-input" class="precision-num-input" value="0" min="0" max="360" step="5" style="width: 44px; text-align: center;" />
-                <span class="precision-unit">°</span>
-                <button type="button" id="btn-rot-add" class="precision-btn-step" title="Girar +15° a la derecha"><i class="fa-solid fa-rotate-right"></i></button>
+              <div class="precision-divider"></div>
+
+              <div class="precision-field">
+                <label class="precision-label">Base:</label>
+                <div class="precision-input-wrap">
+                  <input type="number" id="tri-base-input" class="precision-num-input" value="10" min="1" max="500" step="0.5" />
+                  <span class="precision-unit">m</span>
+                </div>
+              </div>
+
+              <span class="precision-times">×</span>
+
+              <div class="precision-field">
+                <label class="precision-label">Altura:</label>
+                <div class="precision-input-wrap">
+                  <input type="number" id="tri-height-input" class="precision-num-input" value="10" min="1" max="500" step="0.5" />
+                  <span class="precision-unit">m</span>
+                </div>
+              </div>
+
+              <div class="precision-divider"></div>
+
+              <div class="precision-field">
+                <label class="precision-label">Giro:</label>
+                <div class="precision-rot-wrap">
+                  <button type="button" id="btn-tri-rot-sub" class="precision-btn-step" title="Girar -15° a la izquierda"><i class="fa-solid fa-rotate-left"></i></button>
+                  <input type="number" id="tri-rot-input" class="precision-num-input" value="0" min="0" max="360" step="5" style="width: 44px; text-align: center;" />
+                  <span class="precision-unit">°</span>
+                  <button type="button" id="btn-tri-rot-add" class="precision-btn-step" title="Girar +15° a la derecha"><i class="fa-solid fa-rotate-right"></i></button>
+                </div>
               </div>
             </div>
 
@@ -258,6 +356,17 @@
           <button class="layer-btn" data-layer="streets" title="Plano catastral de calles y rutas">
             <i class="fa-solid fa-road"></i> Callejero
           </button>
+        </div>
+
+        <!-- Floating Trash Dropzone (Bottom Center) -->
+        <div id="floating-trash-zone" class="floating-trash-zone" title="Arrastra un auto, stand o trazado aquí para eliminarlo">
+          <div class="trash-icon-wrap">
+            <i class="fa-solid fa-trash-can trash-icon"></i>
+          </div>
+          <div class="trash-label-wrap">
+            <span class="trash-label-main">Papelera</span>
+            <span class="trash-label-sub">Arrastra aquí para eliminar</span>
+          </div>
         </div>
       </section>
 
@@ -742,9 +851,38 @@
         </div>
       </div>
     </div>
+  <!-- 5. Delete Confirmation Modal -->
+  <div id="delete-confirm-modal" class="modal-overlay">
+    <div class="modal-container modal-confirm-container">
+      <div class="modal-header modal-header-danger">
+        <div class="modal-title-danger">
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Confirmar Eliminación</span>
+        </div>
+        <button class="btn-close-modal" id="btn-close-delete-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body modal-body-confirm">
+        <div class="confirm-icon-circle">
+          <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <h4 id="delete-confirm-title" class="confirm-item-title">¿Eliminar elemento del plano?</h4>
+        <p id="delete-confirm-desc" class="confirm-item-desc">
+          Esta acción removerá el elemento de forma permanente del mapa del evento.
+        </p>
+        <div id="delete-item-preview" class="confirm-item-badge"></div>
+      </div>
+
+      <div class="modal-footer modal-footer-confirm">
+        <button type="button" id="btn-cancel-delete" class="btn-secondary">Cancelar</button>
+        <button type="button" id="btn-confirm-delete" class="btn-danger-solid">
+          <i class="fa-solid fa-trash"></i> Sí, Eliminar
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- App Bootstrap Module -->
-  <script type="module" src="./src/app.js?v=14"></script>
+  <script type="module" src="./src/app.js?v=16"></script>
 </body>
 </html>

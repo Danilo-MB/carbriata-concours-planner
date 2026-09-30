@@ -234,6 +234,25 @@ export class UIManager {
         </div>
       `;
 
+      // Drag-to-trash support
+      if (this.app.isOrganizerMode) {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            type: 'attraction',
+            id: item.id,
+            title: item.title
+          }));
+          e.dataTransfer.effectAllowed = 'move';
+          card.classList.add('dragging');
+          if (this.app.showTrashZone) this.app.showTrashZone(true);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          if (this.app.showTrashZone) this.app.showTrashZone(false);
+        });
+      }
+
       // Event listeners
       card.querySelector('.btn-fly-card').addEventListener('click', (e) => {
         e.stopPropagation();
@@ -266,7 +285,9 @@ export class UIManager {
         if (deleteBtn) {
           deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (confirm(`¿Eliminar la atracción "${item.title}" del plano?`)) {
+            if (this.app.openDeleteConfirmation) {
+              this.app.openDeleteConfirmation('attraction', item);
+            } else if (confirm(`¿Eliminar la atracción "${item.title}" del plano?`)) {
               this.app.deleteAttraction(item.id);
             }
           });
@@ -294,6 +315,25 @@ export class UIManager {
       const card = document.createElement('div');
       card.className = 'zone-card';
       const catConfig = CATEGORIES[zone.category] || CATEGORIES.paddock;
+
+      // Drag-to-trash support
+      if (this.app.isOrganizerMode) {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            type: 'zone',
+            id: zone.id,
+            title: zone.name
+          }));
+          e.dataTransfer.effectAllowed = 'move';
+          card.classList.add('dragging');
+          if (this.app.showTrashZone) this.app.showTrashZone(true);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          if (this.app.showTrashZone) this.app.showTrashZone(false);
+        });
+      }
 
       card.innerHTML = `
         <div class="zone-card-top">
@@ -333,7 +373,9 @@ export class UIManager {
 
         card.querySelector('.btn-zone-delete').addEventListener('click', (e) => {
           e.stopPropagation();
-          if (confirm(`¿Eliminar la zona "${zone.name}"?`)) {
+          if (this.app.openDeleteConfirmation) {
+            this.app.openDeleteConfirmation('zone', zone);
+          } else if (confirm(`¿Eliminar la zona "${zone.name}"?`)) {
             this.app.deleteZone(zone.id);
           }
         });
@@ -353,6 +395,25 @@ export class UIManager {
     routes.forEach(route => {
       const card = document.createElement('div');
       card.className = 'zone-card';
+
+      // Drag-to-trash support
+      if (this.app.isOrganizerMode) {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            type: 'route',
+            id: route.id,
+            title: route.name
+          }));
+          e.dataTransfer.effectAllowed = 'move';
+          card.classList.add('dragging');
+          if (this.app.showTrashZone) this.app.showTrashZone(true);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          if (this.app.showTrashZone) this.app.showTrashZone(false);
+        });
+      }
 
       card.innerHTML = `
         <div class="zone-card-top">
@@ -388,7 +449,9 @@ export class UIManager {
 
         card.querySelector('.btn-route-delete').addEventListener('click', (e) => {
           e.stopPropagation();
-          if (confirm(`¿Eliminar la ruta "${route.name}"?`)) {
+          if (this.app.openDeleteConfirmation) {
+            this.app.openDeleteConfirmation('route', route);
+          } else if (confirm(`¿Eliminar la ruta "${route.name}"?`)) {
             this.app.deleteRoute(route.id);
           }
         });
@@ -695,11 +758,29 @@ export class UIManager {
         if (editRot) editRot.value = 0;
       }
     } else {
-      document.getElementById('zone-modal-title').innerText = meta && meta.isPreciseBox
-        ? 'Nuevo Stand / Carpa con Medidas Exactas'
-        : 'Delimitar Nueva Área o Stand (Polígono)';
-
-      if (meta && meta.isPreciseBox) {
+      if (meta && (meta.shape === 'circle' || meta.isPreciseCircle)) {
+        document.getElementById('zone-modal-title').innerText = 'Nueva Plaza / Stand Circular Exacto';
+        const circlePresets = {
+          'circle-6': 'Gazebo Circular (6 m Ø)',
+          'circle-10': 'Pabellón Redondo (10 m Ø)',
+          'circle-16': 'Paddock Circular (16 m Ø)',
+          'circle-24': 'Rotonda Central (24 m Ø)',
+          'circle-40': 'Gran Plaza Concours (40 m Ø)'
+        };
+        titleInput.value = circlePresets[meta.preset] || `Área Circular (Ø ${meta.diameter || meta.radius * 2} m)`;
+        catSelect.value = 'sponsor';
+      } else if (meta && (meta.shape === 'triangle' || meta.isPreciseTriangle)) {
+        document.getElementById('zone-modal-title').innerText = 'Nuevo Stand / Parcela Triangular';
+        const triPresets = {
+          'tri-6': 'Stand Esquina (6 × 6 m)',
+          'tri-10': 'Parcela Triangular (10 × 10 m)',
+          'tri-15': 'Stand Vértice (15 × 12 m)',
+          'tri-24': 'Cuña de Pista (24 × 16 m)'
+        };
+        titleInput.value = triPresets[meta.preset] || `Stand Triangular ${meta.base} × ${meta.height} m`;
+        catSelect.value = 'paddock';
+      } else if (meta && meta.isPreciseBox) {
+        document.getElementById('zone-modal-title').innerText = 'Nuevo Stand / Carpa con Medidas Exactas';
         const presetNames = {
           'car-single': 'Stand Auto Clásico (6x3m)',
           'box-double': 'Carpa Box Doble (10x5m)',
@@ -711,6 +792,7 @@ export class UIManager {
         titleInput.value = presetNames[meta.preset] || `Stand ${meta.width}x${meta.length}m`;
         catSelect.value = meta.preset === 'vip-lounge' ? 'vip' : (meta.preset === 'box-double' ? 'paddock' : 'cars');
       } else {
+        document.getElementById('zone-modal-title').innerText = 'Delimitar Nueva Área o Stand (Polígono)';
         titleInput.value = 'Nuevo Stand / Parcela';
       }
 
@@ -720,8 +802,8 @@ export class UIManager {
       opacityInput.value = 0.7;
       areaDisplay.innerText = `${areaM2.toLocaleString()} m²`;
 
-      if (editW) editW.value = meta ? meta.width : 10;
-      if (editL) editL.value = meta ? meta.length : 5;
+      if (editW) editW.value = meta ? (meta.width || meta.base || 10) : 10;
+      if (editL) editL.value = meta ? (meta.length || meta.height || 5) : 5;
       if (editRot) editRot.value = meta ? (meta.rotation || 0) : 0;
     }
 
