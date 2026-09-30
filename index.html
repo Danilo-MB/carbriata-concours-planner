@@ -22,14 +22,14 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="./styles/main.css?v=13" />
+  <link rel="stylesheet" href="./styles/main.css?v=14" />
 </head>
 <body>
   <div id="app-container">
     <!-- Brand Header -->
     <header class="app-header">
       <div class="brand-section">
-        <a class="brand-logo-badge" href="https://www.instagram.com/carbriata/" target="_blank" rel="noopener noreferrer" title="Seguir a @carbriata en Instagram">
+        <div class="brand-logo-badge" title="Carbriata Concours">
           <!-- Bespoke Carbriata Concours Vector Emblem -->
           <svg class="brand-emblem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="50" r="46" stroke="url(#goldGradient)" stroke-width="2.5" fill="#071810" />
@@ -56,12 +56,9 @@
 
           <div class="brand-text">
             <span class="brand-title">Carbriata Concours</span>
-            <span class="brand-subtitle">
-              <span>Festival de Autos Clásicos & Velocidad</span>
-              <span class="ig-tag"><i class="fa-brands fa-instagram"></i> @carbriata</span>
-            </span>
+            <span class="brand-subtitle">Festival de Autos Clásicos & Velocidad</span>
           </div>
-        </a>
+        </div>
       </div>
 
       <!-- Center: Multi-Venue / Multi-Year Location Switcher -->
@@ -96,27 +93,73 @@
 
     <!-- Main Viewport Body -->
     <main class="app-body">
+      <!-- Left Side Panel: Tools for Delimitation, Stands, Routes & Cars -->
+      <aside id="left-tools-panel" class="left-tools-panel">
+        <div class="left-tools-header">
+          <div class="left-tools-title">
+            <i class="fa-solid fa-compass-drafting"></i>
+            <span>Herramientas</span>
+          </div>
+          <button id="btn-toggle-left-tools" class="btn-tools-toggle" title="Ocultar / Minimizar barra de herramientas">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        </div>
+
+        <!-- Floating tab to reopen left tools panel when collapsed -->
+        <div id="left-tools-tab-open" class="left-tools-tab-open" title="Mostrar Herramientas">
+          <i class="fa-solid fa-chevron-right"></i>
+          <span class="left-tools-tab-text">Herramientas</span>
+        </div>
+
+        <div class="left-tools-body" id="drawing-toolkit">
+          <div class="left-tools-section-label">Áreas & Stands</div>
+
+          <button id="btn-draw-polygon" class="left-tool-item" title="Delimitar terrenos o polígonos libres">
+            <div class="tool-item-icon"><i class="fa-solid fa-draw-polygon"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Delimitar Libre</span>
+              <span class="tool-item-sub">Polígono libre en terreno</span>
+            </div>
+          </button>
+
+          <button id="btn-draw-box" class="left-tool-item" title="Colocar stand o carpa con medidas métricas exactas (ej: 6x3m, 10x5m)">
+            <div class="tool-item-icon"><i class="fa-solid fa-ruler-combined"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Stand con Medidas</span>
+              <span class="tool-item-sub">Boxes, carpas métricas</span>
+            </div>
+          </button>
+
+          <div class="left-tools-section-label">Pistas & Trazados</div>
+
+          <button id="btn-draw-route" class="left-tool-item" title="Trazar recta de aceleración, desfile o accesos">
+            <div class="tool-item-icon"><i class="fa-solid fa-route"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Trazar Ruta</span>
+              <span class="tool-item-sub">Recta, pista o desfile</span>
+            </div>
+          </button>
+
+          <div class="left-tools-section-label">Vehículos & Puntos</div>
+
+          <button id="btn-place-poi" class="left-tool-item" title="Colocar auto clásico o punto de atracción">
+            <div class="tool-item-icon"><i class="fa-solid fa-car-side"></i></div>
+            <div class="tool-item-details">
+              <span class="tool-item-title">Añadir Auto</span>
+              <span class="tool-item-sub">Ubicar auto en el plano</span>
+            </div>
+          </button>
+
+          <div class="left-tools-footer-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Selecciona una herramienta y haz clic sobre el mapa para comenzar.</span>
+          </div>
+        </div>
+      </aside>
+
       <!-- Map Area -->
       <section class="map-viewport">
         <div id="map"></div>
-
-        <!-- Floating Drawing Toolbar (Top Left) -->
-        <div class="map-floating-bar">
-          <div id="drawing-toolkit" class="drawing-toolkit">
-            <button id="btn-draw-polygon" class="draw-btn" title="Delimitar terrenos o polígonos libres">
-              <i class="fa-solid fa-draw-polygon"></i> Delimitar Libre
-            </button>
-            <button id="btn-draw-box" class="draw-btn" title="Colocar stand o carpa con medidas métricas exactas (ej: 6x3m, 10x5m)">
-              <i class="fa-solid fa-ruler-combined"></i> Stand con Medidas
-            </button>
-            <button id="btn-draw-route" class="draw-btn" title="Trazar recta de aceleración, desfile o accesos">
-              <i class="fa-solid fa-route"></i> Trazar Ruta
-            </button>
-            <button id="btn-place-poi" class="draw-btn" title="Colocar auto clásico o punto de atracción">
-              <i class="fa-solid fa-car-side"></i> Añadir Auto / Stand
-            </button>
-          </div>
-        </div>
 
         <!-- Precise Dimensions Bar for Stands & Marquees -->
         <div id="precision-bar" class="precision-bar">
@@ -220,8 +263,21 @@
 
       <!-- Sidebar Panel (Right) -->
       <aside id="sidebar" class="sidebar-panel">
-        <div id="sidebar-toggle" class="sidebar-toggle-tab" title="Mostrar/Ocultar panel">
+        <div id="sidebar-toggle" class="sidebar-toggle-tab" title="Mostrar / Ocultar panel lateral">
           <i class="fa-solid fa-chevron-right"></i>
+          <span class="sidebar-toggle-label">Panel</span>
+        </div>
+
+        <!-- Sidebar Header Bar with prominent Hide button -->
+        <div class="sidebar-header-bar">
+          <div class="sidebar-header-title">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Explorador del Evento</span>
+          </div>
+          <button id="btn-hide-sidebar" class="btn-hide-sidebar" title="Ocultar este panel para ver el mapa completo">
+            <i class="fa-solid fa-chevron-right"></i>
+            <span>Ocultar Panel</span>
+          </button>
         </div>
 
         <!-- Navigation Tabs -->
@@ -689,6 +745,6 @@
   </div>
 
   <!-- App Bootstrap Module -->
-  <script type="module" src="./src/app.js?v=13"></script>
+  <script type="module" src="./src/app.js?v=14"></script>
 </body>
 </html>

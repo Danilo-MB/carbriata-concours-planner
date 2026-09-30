@@ -407,26 +407,28 @@ class CarbriataApp {
     // Mode Switch (Organizador / Visitante)
     const btnModeOrg = document.getElementById('btn-mode-organizer');
     const btnModeVis = document.getElementById('btn-mode-visitor');
-    const drawToolkit = document.getElementById('drawing-toolkit');
+    const leftToolsPanel = document.getElementById('left-tools-panel');
 
     if (btnModeOrg && btnModeVis) {
       btnModeOrg.addEventListener('click', () => {
         this.isOrganizerMode = true;
         btnModeOrg.classList.add('active');
         btnModeVis.classList.remove('active');
-        if (drawToolkit) drawToolkit.style.display = 'flex';
+        if (leftToolsPanel) leftToolsPanel.classList.remove('hidden-mode');
         this.refreshMapData();
         this.ui.renderSidebar();
+        if (this.mapEngine && this.mapEngine.map) this.mapEngine.map.resize();
       });
 
       btnModeVis.addEventListener('click', () => {
         this.isOrganizerMode = false;
         btnModeVis.classList.add('active');
         btnModeOrg.classList.remove('active');
-        if (drawToolkit) drawToolkit.style.display = 'none';
+        if (leftToolsPanel) leftToolsPanel.classList.add('hidden-mode');
         if (this.drawManager) this.drawManager.cancelDraw();
         this.refreshMapData();
         this.ui.renderSidebar();
+        if (this.mapEngine && this.mapEngine.map) this.mapEngine.map.resize();
       });
     }
 
@@ -589,19 +591,82 @@ class CarbriataApp {
       });
     });
 
-    // Sidebar Toggle Tab
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.getElementById('sidebar');
-    if (sidebarToggle && sidebar) {
-      sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        const icon = sidebarToggle.querySelector('i');
-        if (sidebar.classList.contains('collapsed')) {
-          icon.className = 'fa-solid fa-chevron-left';
-        } else {
-          icon.className = 'fa-solid fa-chevron-right';
+    // Left Tools Panel Toggle (Collapsing & Reopening)
+    const leftToolsPanelEl = document.getElementById('left-tools-panel');
+    const btnToggleLeft = document.getElementById('btn-toggle-left-tools');
+    const leftTabOpen = document.getElementById('left-tools-tab-open');
+
+    const toggleLeftTools = (forceCollapse = null) => {
+      if (!leftToolsPanelEl) return;
+      const isCurrentlyCollapsed = leftToolsPanelEl.classList.contains('collapsed');
+      const shouldCollapse = forceCollapse !== null ? forceCollapse : !isCurrentlyCollapsed;
+      leftToolsPanelEl.classList.toggle('collapsed', shouldCollapse);
+
+      let frames = 0;
+      const animateResize = () => {
+        if (this.mapEngine && this.mapEngine.map) {
+          this.mapEngine.map.resize();
         }
-      });
+        if (frames++ < 12) {
+          requestAnimationFrame(animateResize);
+        }
+      };
+      animateResize();
+      setTimeout(() => {
+        if (this.mapEngine && this.mapEngine.map) {
+          this.mapEngine.map.resize();
+        }
+      }, 350);
+    };
+
+    if (btnToggleLeft) {
+      btnToggleLeft.addEventListener('click', () => toggleLeftTools(true));
+    }
+    if (leftTabOpen) {
+      leftTabOpen.addEventListener('click', () => toggleLeftTools(false));
+    }
+
+    // Sidebar Toggle Tab & Hide Button
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const btnHideSidebar = document.getElementById('btn-hide-sidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    const toggleSidebar = (forceCollapse = null) => {
+      if (!sidebar) return;
+      const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+      const shouldCollapse = forceCollapse !== null ? forceCollapse : !isCurrentlyCollapsed;
+      sidebar.classList.toggle('collapsed', shouldCollapse);
+
+      if (sidebarToggle) {
+        const icon = sidebarToggle.querySelector('i');
+        if (icon) {
+          icon.className = shouldCollapse ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right';
+        }
+        sidebarToggle.setAttribute('title', shouldCollapse ? 'Mostrar panel lateral' : 'Ocultar panel lateral');
+      }
+
+      let frames = 0;
+      const animateResize = () => {
+        if (this.mapEngine && this.mapEngine.map) {
+          this.mapEngine.map.resize();
+        }
+        if (frames++ < 12) {
+          requestAnimationFrame(animateResize);
+        }
+      };
+      animateResize();
+      setTimeout(() => {
+        if (this.mapEngine && this.mapEngine.map) {
+          this.mapEngine.map.resize();
+        }
+      }, 350);
+    };
+
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', () => toggleSidebar());
+    }
+    if (btnHideSidebar) {
+      btnHideSidebar.addEventListener('click', () => toggleSidebar(true));
     }
 
     // --- Photo Upload Handling in Attraction Modal ---

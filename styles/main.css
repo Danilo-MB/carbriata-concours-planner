@@ -312,61 +312,238 @@ html, body {
   height: 100%;
 }
 
-/* Top Floating Map Toolbar */
-.map-floating-bar {
+/* Left Side Panel - Organizer Drawing & Delimitation Tools */
+.left-tools-panel {
+  width: 220px;
+  height: 100%;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-gold);
+  backdrop-filter: var(--glass-blur);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 25;
+  transition: margin-left 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.left-tools-panel.collapsed {
+  margin-left: -220px;
+}
+
+.left-tools-panel.hidden-mode {
+  display: none !important;
+}
+
+.left-tools-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  flex-shrink: 0;
+}
+
+.left-tools-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold-300);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.left-tools-title i {
+  color: var(--gold-400);
+}
+
+.btn-tools-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: var(--text-muted);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+}
+
+.btn-tools-toggle:hover {
+  background: rgba(212, 175, 55, 0.2);
+  color: #fff;
+  border-color: var(--gold-400);
+}
+
+/* Floating tab to open left tools panel when collapsed */
+.left-tools-tab-open {
   position: absolute;
-  top: 16px;
-  left: 20px;
+  top: 18px;
+  right: -34px;
+  width: 34px;
+  padding: 12px 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--gold-400);
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+  z-index: 26;
+}
+
+.left-tools-panel.collapsed .left-tools-tab-open {
+  display: flex;
+}
+
+.left-tools-tab-open:hover {
+  background: rgba(16, 40, 28, 0.95);
+  color: #fff;
+  box-shadow: 6px 0 20px rgba(212, 175, 55, 0.35);
+}
+
+.left-tools-tab-text {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+}
+
+.left-tools-body {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.left-tools-section-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold-400);
+  margin-top: 6px;
+  margin-bottom: 2px;
+  padding-left: 4px;
+}
+
+.left-tools-section-label:first-child {
+  margin-top: 0;
+}
+
+.left-tool-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  z-index: 20;
-}
-
-/* Drawing Toolbar */
-.drawing-toolkit {
-  display: flex;
-  align-items: center;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-gold);
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  padding: 4px;
-  box-shadow: var(--shadow-elevated);
-  backdrop-filter: var(--glass-blur);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  width: 100%;
 }
 
-.draw-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  padding: 8px 13px;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
+.left-tool-item:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.35);
+  transform: translateX(2px);
+  color: #fff;
+}
+
+.left-tool-item.active {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08));
+  border-color: var(--gold-400);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.25), inset 0 0 10px rgba(212, 175, 55, 0.1);
+}
+
+.tool-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.25);
   display: flex;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
+  color: var(--gold-400);
+  font-size: 0.9rem;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
-.draw-btn:hover {
-  background: rgba(212, 175, 55, 0.12);
+.left-tool-item:hover .tool-item-icon {
+  background: rgba(212, 175, 55, 0.2);
+  color: #fff;
+  border-color: var(--gold-400);
+}
+
+.left-tool-item.active .tool-item-icon {
+  background: var(--gold-400);
+  color: #071810;
+  border-color: var(--gold-300);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+}
+
+.tool-item-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tool-item-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.tool-item-sub {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.left-tool-item.active .tool-item-title {
   color: var(--gold-300);
 }
 
-.draw-btn.active {
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-  color: #05140d;
-  font-weight: 700;
-  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.35);
+.left-tools-footer-hint {
+  margin-top: auto;
+  padding: 10px 8px;
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px dashed rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  line-height: 1.35;
 }
 
-.draw-divider {
-  width: 1px;
-  height: 22px;
-  background: var(--border-subtle);
-  margin: 0 3px;
+.left-tools-footer-hint i {
+  color: var(--gold-400);
+  margin-top: 1px;
 }
 
 /* 2D / 3D & Camera Tools */
@@ -806,31 +983,101 @@ html, body {
   display: flex;
   flex-direction: column;
   z-index: 30;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  transition: margin-right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: -4px 0 30px rgba(0, 0, 0, 0.5);
+  position: relative;
 }
 
 .sidebar-panel.collapsed {
-  transform: translateX(var(--sidebar-width));
+  margin-right: calc(-1 * var(--sidebar-width));
+}
+
+/* Sidebar Header Bar & Hide Button */
+.sidebar-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  flex-shrink: 0;
+}
+
+.sidebar-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold-300);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sidebar-header-title i {
+  color: var(--gold-400);
+}
+
+.btn-hide-sidebar {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--gold-300);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-hide-sidebar:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fff;
+  border-color: var(--gold-400);
+  transform: translateX(2px);
 }
 
 .sidebar-toggle-tab {
   position: absolute;
   top: 50%;
-  left: -28px;
+  left: -32px;
   transform: translateY(-50%);
-  width: 28px;
-  height: 60px;
+  width: 32px;
+  min-height: 76px;
   background: var(--bg-panel);
   border: 1px solid var(--border-gold);
   border-right: none;
   border-radius: 8px 0 0 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   cursor: pointer;
   color: var(--gold-400);
-  box-shadow: -4px 0 12px rgba(0,0,0,0.3);
+  box-shadow: -4px 0 14px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+  z-index: 35;
+}
+
+.sidebar-toggle-tab:hover {
+  background: rgba(16, 40, 28, 0.95);
+  color: #fff;
+  border-color: var(--gold-300);
+  box-shadow: -6px 0 20px rgba(212, 175, 55, 0.35);
+}
+
+.sidebar-toggle-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
 
 /* Sidebar Tabs */
@@ -2214,24 +2461,19 @@ html, body {
     display: none;
   }
 
-  /* Map Toolbars on Mobile */
-  .map-floating-bar {
-    top: 10px;
-    left: 10px;
-    max-width: calc(100vw - 20px);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  /* Left Tools Drawer on Mobile */
+  .left-tools-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 220px;
+    box-shadow: 6px 0 25px rgba(0, 0, 0, 0.7);
   }
 
-  .drawing-toolkit {
-    flex-shrink: 0;
-    padding: 3px;
-  }
-
-  .draw-btn {
-    padding: 6px 9px;
-    font-size: 0.74rem;
-    white-space: nowrap;
+  .left-tools-panel.collapsed {
+    margin-left: -220px;
   }
 
   .camera-controls-bar {
