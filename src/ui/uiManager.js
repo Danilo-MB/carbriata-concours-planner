@@ -5,6 +5,7 @@
 
 import { engineAudio } from '../utils/audio.js';
 import { CATEGORIES } from '../data/defaultData.js';
+import { PROJECT_TYPES } from '../data/projectManager.js?v=16';
 
 export const OFFICIAL_ZONE_COLORS = [
   { hex: '#D4AF37', label: 'Oro Carbriata (General & Paddock)' },
@@ -48,10 +49,13 @@ export class UIManager {
     this.currentTab = 'cars'; // 'cars' | 'zones' | 'routes' | 'locations'
     this.currentCategoryFilter = 'all';
     this.searchQuery = '';
+    this.currentHubFilter = 'all';
+    this.hubSearchQuery = '';
     this.tempUploadedPhotos = [];
     this.editingFeature = null; // { type: 'attraction'|'zone'|'route', data: ... }
 
     this._bindElements();
+    this._initProjectHub();
     this._setupTabListeners();
     this._setupSearchListeners();
     this._setupColorPaletteControls('zone');
@@ -70,6 +74,7 @@ export class UIManager {
     this.routeModal = document.getElementById('route-modal');
     this.spotlightModal = document.getElementById('spotlight-modal');
     this.importExportModal = document.getElementById('import-export-modal');
+    this.newProjectModal = document.getElementById('new-project-modal');
   }
 
   _setupTabListeners() {
@@ -1124,5 +1129,388 @@ export class UIManager {
       }
     });
     return duplicates;
+  }
+
+  // --- Project Hub Controller & Launcher ---
+  _initProjectHub() {
+    // 1. New Project Trigger
+    const btnNew = document.getElementById('btn-hub-new-project');
+    if (btnNew) {
+      btnNew.addEventListener('click', () => this.openNewProjectModal());
+    }
+
+    // Modal Close Triggers
+    const btnCloseNew = document.getElementById('btn-close-new-project-modal');
+    const btnCancelNew = document.getElementById('btn-cancel-new-project');
+    if (btnCloseNew) btnCloseNew.addEventListener('click', () => this.closeNewProjectModal());
+    if (btnCancelNew) btnCancelNew.addEventListener('click', () => this.closeNewProjectModal());
+
+    // 2. Back to Hub Nav Button (in Studio Header)
+    const btnBackHub = document.getElementById('btn-back-to-hub');
+    if (btnBackHub) {
+      btnBackHub.addEventListener('click', () => this.app.returnToHub());
+    }
+
+    // 3. Search Bar in Hub
+    const hubSearch = document.getElementById('hub-search-input');
+    if (hubSearch) {
+      hubSearch.addEventListener('input', (e) => {
+        this.hubSearchQuery = e.target.value.toLowerCase().trim();
+        this.renderProjectHub();
+      });
+    }
+
+    // 4. Industry Filter Chips in Hub
+    document.querySelectorAll('.hub-chip-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.hub-chip-btn').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        this.currentHubFilter = chip.getAttribute('data-filter') || 'all';
+        this.renderProjectHub();
+      });
+    });
+
+    // 5. Project Type Selector in New Project Modal
+    document.querySelectorAll('#new-project-type-grid .type-option-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('#new-project-type-grid .type-option-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        const selectedType = card.getAttribute('data-type') || 'custom';
+        const hiddenType = document.getElementById('new-project-type');
+        if (hiddenType) hiddenType.value = selectedType;
+
+        const typeConfig = PROJECT_TYPES[selectedType] || PROJECT_TYPES.custom;
+        const nameInput = document.getElementById('new-project-name');
+        const descInput = document.getElementById('new-project-desc');
+        if (nameInput) {
+          nameInput.placeholder = `ej: ${typeConfig.placeholderTitle}`;
+        }
+        if (descInput) {
+          descInput.placeholder = typeConfig.defaultDesc;
+        }
+      });
+    });
+
+    // 6. Quick Locations in New Project Modal
+    document.querySelectorAll('.btn-quick-loc').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const coordsStr = btn.getAttribute('data-coords');
+        const locName = btn.getAttribute('data-name');
+        if (coordsStr) {
+          const [lng, lat] = coordsStr.split(',').map(Number);
+          const lngInp = document.getElementById('new-project-lng');
+          const latInp = document.getElementById('new-project-lat');
+          const searchInp = document.getElementById('new-project-loc-search');
+          if (lngInp) lngInp.value = lng;
+          if (latInp) latInp.value = lat;
+          if (searchInp) searchInp.value = locName;
+        }
+      });
+    });
+
+    // 7. Nominatim Search in New Project Modal
+    const btnSearchGeo = document.getElementById('btn-search-geoloc');
+    const locSearchInp = document.getElementById('new-project-loc-search');
+    const searchDropdown = document.getElementById('new-project-search-results');
+
+    const handleSearchGeoloc = async () => {
+      const q = locSearchInp ? locSearchInp.value.trim() : '';
+      if (!q) return;
+      if (btnSearchGeo) btnSearchGeo.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5`);
+        const results = await res.json();
+        if (btnSearchGeo) btnSearchGeo.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Buscar';
+        if (!searchDropdown) return;
+        searchDropdown.innerHTML = '';
+        if (results && results.length > 0) {
+          searchDropdown.style.display = 'block';
+          results.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'search-result-item';
+            row.innerText = item.display_name;
+            row.addEventListener('click', () => {
+              const lngInp = document.getElementById('new-project-lng');
+              const latInp = document.getElementById('new-project-lat');
+              if (lngInp) lngInp.value = parseFloat(item.lon).toFixed(5);
+              if (latInp) latInp.value = parseFloat(item.lat).toFixed(5);
+              if (locSearchInp) locSearchInp.value = item.display_name.split(',').slice(0, 2).join(',');
+              searchDropdown.style.display = 'none';
+            });
+            searchDropdown.appendChild(row);
+          });
+        } else {
+          searchDropdown.style.display = 'block';
+          searchDropdown.innerHTML = '<div class="search-result-item" style="color: var(--text-muted); cursor: default;">No se encontraron resultados geográficos.</div>';
+          setTimeout(() => { searchDropdown.style.display = 'none'; }, 2800);
+        }
+      } catch (err) {
+        if (btnSearchGeo) btnSearchGeo.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Buscar';
+        console.warn('Geocoding search failed:', err);
+      }
+    };
+
+    if (btnSearchGeo) btnSearchGeo.addEventListener('click', handleSearchGeoloc);
+    if (locSearchInp) {
+      locSearchInp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSearchGeoloc();
+        }
+      });
+    }
+
+    // 8. Form Submit: Create New Project
+    const formNew = document.getElementById('new-project-form');
+    if (formNew) {
+      formNew.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const type = document.getElementById('new-project-type')?.value || 'custom';
+        const name = document.getElementById('new-project-name')?.value.trim() || 'Nuevo Proyecto';
+        const subtitle = document.getElementById('new-project-subtitle')?.value.trim() || '';
+        const desc = document.getElementById('new-project-desc')?.value.trim() || '';
+        const locSearch = document.getElementById('new-project-loc-search')?.value.trim() || '';
+        const lng = parseFloat(document.getElementById('new-project-lng')?.value) || -58.9150;
+        const lat = parseFloat(document.getElementById('new-project-lat')?.value) || -34.4550;
+        const zoom = parseFloat(document.getElementById('new-project-zoom')?.value) || 16.5;
+
+        this.closeNewProjectModal();
+        await this.app.createProject({
+          name,
+          type,
+          description: desc || subtitle,
+          locationName: locSearch || 'Predio Privado',
+          city: locSearch || 'Coordenadas Satelitales',
+          coordinates: [lng, lat],
+          zoom,
+          pitch: 50,
+          bearing: -15
+        });
+      });
+    }
+  }
+
+  openNewProjectModal() {
+    if (!this.newProjectModal) return;
+    const form = document.getElementById('new-project-form');
+    if (form) form.reset();
+
+    // Default to real_estate
+    document.querySelectorAll('#new-project-type-grid .type-option-card').forEach(c => c.classList.remove('selected'));
+    const defaultCard = document.querySelector('#new-project-type-grid .type-option-card[data-type="real_estate"]');
+    if (defaultCard) defaultCard.classList.add('selected');
+    const hiddenType = document.getElementById('new-project-type');
+    if (hiddenType) hiddenType.value = 'real_estate';
+
+    const lngInp = document.getElementById('new-project-lng');
+    const latInp = document.getElementById('new-project-lat');
+    const zoomInp = document.getElementById('new-project-zoom');
+    if (lngInp) lngInp.value = '-58.9150';
+    if (latInp) latInp.value = '-34.4550';
+    if (zoomInp) zoomInp.value = '16.5';
+
+    const searchDropdown = document.getElementById('new-project-search-results');
+    if (searchDropdown) searchDropdown.style.display = 'none';
+
+    this.newProjectModal.classList.add('open');
+  }
+
+  closeNewProjectModal() {
+    if (this.newProjectModal) {
+      this.newProjectModal.classList.remove('open');
+    }
+  }
+
+  renderProjectHub() {
+    const grid = document.getElementById('hub-projects-grid');
+    if (!grid || !this.app.projectManager) return;
+
+    const projects = this.app.projectManager.getAllProjects();
+
+    // Compute Hub Global Stats
+    const totalProjects = projects.length;
+    let totalZones = 0;
+    let totalAreaM2 = 0;
+
+    projects.forEach(p => {
+      if (p.data && p.data.zones) {
+        totalZones += p.data.zones.length;
+        totalAreaM2 += p.data.zones.reduce((sum, z) => sum + (z.area || 0), 0);
+      }
+    });
+
+    const totalHa = (totalAreaM2 / 10000).toFixed(1);
+    const statTotalProjects = document.getElementById('hub-total-projects');
+    const statTotalZones = document.getElementById('hub-total-zones');
+    const statTotalArea = document.getElementById('hub-total-area');
+
+    if (statTotalProjects) statTotalProjects.innerText = totalProjects;
+    if (statTotalZones) statTotalZones.innerText = totalZones;
+    if (statTotalArea) statTotalArea.innerText = `${totalHa} ha`;
+
+    // Filter projects
+    let filtered = projects;
+    if (this.currentHubFilter && this.currentHubFilter !== 'all') {
+      filtered = filtered.filter(p => p.type === this.currentHubFilter);
+    }
+    if (this.hubSearchQuery) {
+      const q = this.hubSearchQuery;
+      filtered = filtered.filter(p => 
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.tagline && p.tagline.toLowerCase().includes(q)) ||
+        (p.locationName && p.locationName.toLowerCase().includes(q)) ||
+        (p.city && p.city.toLowerCase().includes(q))
+      );
+    }
+
+    grid.innerHTML = '';
+
+    // 1. Add "Create New Project" Card
+    const newCard = document.createElement('div');
+    newCard.className = 'project-card-new';
+    newCard.innerHTML = `
+      <div class="project-new-icon"><i class="fa-solid fa-plus"></i></div>
+      <div class="project-new-title">Crear Nuevo Terreno / Proyecto</div>
+      <div class="project-new-desc">
+        Delimita un loteo residencial, puerto, dársena o predio privado sin cobertura cartográfica de Google Maps.
+      </div>
+    `;
+    newCard.addEventListener('click', () => this.openNewProjectModal());
+    grid.appendChild(newCard);
+
+    // 2. Render Project Cards
+    filtered.forEach(p => {
+      const typeConfig = PROJECT_TYPES[p.type] || PROJECT_TYPES.custom;
+      const card = document.createElement('div');
+      card.className = 'project-card';
+
+      const zonesCount = p.data?.zones?.length || 0;
+      const itemsCount = p.data?.attractions?.length || 0;
+      const projAreaM2 = p.data?.zones ? p.data.zones.reduce((s, z) => s + (z.area || 0), 0) : 0;
+      const projAreaText = projAreaM2 >= 10000 
+        ? `${(projAreaM2 / 10000).toFixed(1)} ha` 
+        : `${Math.round(projAreaM2).toLocaleString()} m²`;
+
+      const updatedDate = new Date(p.updatedAt || p.createdAt || Date.now());
+      const formattedDate = updatedDate.toLocaleDateString('es-AR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      card.innerHTML = `
+        <div class="project-card-top">
+          <span class="project-type-badge" style="background: ${typeConfig.color}25; color: ${typeConfig.color}; border: 1px solid ${typeConfig.color}50;">
+            <i class="fa-solid ${typeConfig.icon}"></i> ${typeConfig.shortLabel}
+          </span>
+          <div class="project-card-actions">
+            <button class="btn-card-icon btn-card-dup" title="Duplicar Proyecto"><i class="fa-regular fa-copy"></i></button>
+            ${projects.length > 1 ? `<button class="btn-card-icon btn-card-del" title="Eliminar Proyecto" style="color: #f87171;"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+          </div>
+        </div>
+
+        <div class="project-card-body">
+          <h3 class="project-name">${p.name}</h3>
+          <div class="project-location">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>${p.city || p.locationName || 'Coordenadas Satelitales'}</span>
+          </div>
+          <p class="project-desc">${p.tagline || typeConfig.defaultDesc}</p>
+
+          <div class="project-metrics-chips">
+            <span class="metric-chip"><strong>${zonesCount}</strong> ${typeConfig.zonesTerm}</span>
+            <span class="metric-chip"><strong>${projAreaText}</strong> Delimitados</span>
+            <span class="metric-chip"><strong>${itemsCount}</strong> ${typeConfig.itemsTerm}</span>
+          </div>
+        </div>
+
+        <div class="project-card-footer">
+          <span class="project-time"><i class="fa-regular fa-clock"></i> ${formattedDate}</span>
+          <button class="btn-open-project" type="button">
+            <span>Abrir en Studio</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      `;
+
+      const openBtn = card.querySelector('.btn-open-project');
+      const cardBody = card.querySelector('.project-card-body');
+      const handleOpen = () => this.app.openProject(p.id);
+
+      if (openBtn) openBtn.addEventListener('click', handleOpen);
+      if (cardBody) {
+        cardBody.style.cursor = 'pointer';
+        cardBody.addEventListener('click', handleOpen);
+      }
+
+      const btnDup = card.querySelector('.btn-card-dup');
+      if (btnDup) {
+        btnDup.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.app.duplicateProject(p.id);
+        });
+      }
+
+      const btnDel = card.querySelector('.btn-card-del');
+      if (btnDel) {
+        btnDel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm(`¿Estás seguro de que deseas eliminar el proyecto "${p.name}"? Esta acción no se puede deshacer.`)) {
+            this.app.deleteProject(p.id);
+          }
+        });
+      }
+
+      grid.appendChild(card);
+    });
+  }
+
+  updateStudioHeaderForProject(project) {
+    if (!project) return;
+    const typeConfig = PROJECT_TYPES[project.type] || PROJECT_TYPES.custom;
+
+    // 1. Header Active Project Pill
+    const activeBadge = document.getElementById('active-project-type-badge');
+    const activeTitle = document.getElementById('active-project-name');
+    if (activeBadge) {
+      activeBadge.innerText = typeConfig.shortLabel;
+      activeBadge.style.background = typeConfig.color;
+      activeBadge.style.color = '#071810';
+    }
+    if (activeTitle) {
+      activeTitle.innerText = project.name;
+      activeTitle.title = project.name;
+    }
+
+    // 2. Adapt Sidebar Tabs Text & Icons to Industry Domain
+    const tabCars = document.querySelector('.tab-btn[data-tab="cars"]');
+    const tabZones = document.querySelector('.tab-btn[data-tab="zones"]');
+    const tabRoutes = document.querySelector('.tab-btn[data-tab="routes"]');
+
+    if (tabCars) {
+      tabCars.innerHTML = `<i class="fa-solid ${typeConfig.icon}"></i> ${typeConfig.itemTerm || 'Puntos'}`;
+    }
+    if (tabZones) {
+      tabZones.innerHTML = `<i class="fa-solid fa-draw-polygon"></i> ${typeConfig.zoneTerm || 'Zonas'}`;
+    }
+    if (tabRoutes) {
+      tabRoutes.innerHTML = `<i class="fa-solid fa-road"></i> ${typeConfig.routeTerm || 'Rutas'}`;
+    }
+
+    // 3. Adapt Sidebar Footer Stats Labels
+    const statCarsWrap = document.getElementById('stat-cars')?.closest('.stat-item')?.querySelector('span');
+    const statZonesWrap = document.getElementById('stat-zones')?.closest('.stat-item')?.querySelector('span');
+    if (statCarsWrap) statCarsWrap.innerText = `${typeConfig.itemsTerm} Registrados`;
+    if (statZonesWrap) statZonesWrap.innerText = `${typeConfig.zonesTerm} Delimitadas`;
+
+    // 4. Adapt Venue Select / Multi-venue Container
+    const venueContainer = document.querySelector('.venue-selector-container');
+    if (venueContainer) {
+      if (project.id === 'project-carbriata-dolores') {
+        venueContainer.style.display = 'flex';
+      } else {
+        venueContainer.style.display = 'none';
+      }
+    }
   }
 }

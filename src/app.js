@@ -7,27 +7,109 @@ import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v
 import { MapEngine } from './map/mapEngine.js?v=16';
 import { DrawManager } from './map/drawManager.js?v=16';
 import { UIManager } from './ui/uiManager.js?v=16';
+import { ProjectManager, PROJECT_TYPES } from './data/projectManager.js?v=16';
 
 class CarbriataApp {
   constructor() {
-    this.storageKey = 'carbriata_concours_state_v1';
+    this.projectManager = new ProjectManager();
+    this.activeProject = this.projectManager.getActiveProject();
     this.locations = [...INITIAL_LOCATIONS];
-    this.currentLocationId = 'dolores-2026';
-    this.data = this._loadState();
+    this.currentLocationId = this.activeProject ? this.activeProject.id : 'dolores-2026';
+    this.data = this.activeProject ? this.activeProject.data : DOLORES_INITIAL_DATA;
     this.isOrganizerMode = true;
 
     this.mapEngine = null;
     this.drawManager = null;
     this.ui = null;
     this.pendingDeleteItem = null;
+    this.mapEngineInitialized = false;
   }
 
   async init() {
     // 1. Initialize UI Manager
     this.ui = new UIManager(this);
 
-    // 2. Initialize MapLibre GL Map Engine
-    const currentLoc = this.locations.find(l => l.id === this.currentLocationId) || this.locations[0];
+    // 2. Render Project Selection & Creation Hub (First Screen)
+    this.ui.renderProjectHub();
+
+    console.log('🏁 MAPAMETRIC Multi-Industry Land Studio & Hub initialized.');
+  }
+
+  async openProject(projectId) {
+    const proj = this.projectManager.getProject(projectId);
+    if (!proj) return;
+
+    this.projectManager.setActiveProjectId(projectId);
+    this.activeProject = proj;
+    this.data = proj.data;
+    this.currentLocationId = proj.id;
+
+    // 1. Switch View: Hide Hub, Show Studio
+    document.getElementById('project-hub-view')?.classList.remove('active');
+    const studioView = document.getElementById('studio-view');
+    studioView?.classList.add('active');
+
+    // 2. Initialize Map Studio if not done yet
+    if (!this.mapEngineInitialized) {
+      await this.initMapStudio(proj);
+    } else {
+      this.mapEngine.map.resize();
+      this.mapEngine.flyTo(
+        proj.coordinates || [-57.6972, -36.3265],
+        proj.zoom || 16.5,
+        proj.pitch !== undefined ? proj.pitch : 50,
+        proj.bearing !== undefined ? proj.bearing : -20
+      );
+      this.refreshMapData();
+    }
+
+    // 3. Update Data & UI for the active domain/project
+    this.ui.updateStudioHeaderForProject(proj);
+    this.ui.renderSidebar();
+
+    // 4. Force map resize after DOM reflow
+    setTimeout(() => {
+      if (this.mapEngine && this.mapEngine.map) {
+        this.mapEngine.map.resize();
+      }
+    }, 150);
+  }
+
+  returnToHub() {
+    this.saveState();
+    document.getElementById('studio-view')?.classList.remove('active');
+    document.getElementById('project-hub-view')?.classList.add('active');
+    this.ui.renderProjectHub();
+  }
+
+  async createProject(params) {
+    const newProj = this.projectManager.createProject(params);
+    this.ui.renderProjectHub();
+    await this.openProject(newProj.id);
+    this.ui.showToast(`Proyecto creado: ${newProj.name}`);
+  }
+
+  duplicateProject(id) {
+    const cloned = this.projectManager.duplicateProject(id);
+    if (cloned) {
+      this.ui.renderProjectHub();
+      this.ui.showToast(`Proyecto duplicado: ${cloned.name}`);
+    }
+  }
+
+  deleteProject(id) {
+    try {
+      this.projectManager.deleteProject(id);
+      this.ui.renderProjectHub();
+      this.ui.showToast('Proyecto eliminado');
+    } catch (err) {
+      this.ui.showToast(err.message || 'Error al eliminar');
+    }
+  }
+
+  async initMapStudio(proj) {
+    const center = proj.coordinates || [-57.6972, -36.3265];
+    const zoom = proj.zoom || 16.5;
     this.dragState = null;
     this.justDragged = false;
     this.justHandledClick = false;
@@ -88,7 +170,7 @@ class CarbriataApp {
       }
     });
 
-    await this.mapEngine.init(currentLoc.coordinates, currentLoc.zoom);
+    await this.mapEngine.init(center, zoom);
 
     // Mousedown on map: Initiate drag for zones or routes
     this.mapEngine.map.on('mousedown', (e) => {
@@ -269,25 +351,13 @@ class CarbriataApp {
 
     // 6. Initial UI Render
     this.ui.renderSidebar();
-    console.log('🏁 Carbriata Concours App initialized successfully.');
-  }
-
-  _loadState() {
-    try {
-      const saved = localStorage.getItem(this.storageKey);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.warn('Could not load saved state from localStorage:', e);
-    }
-    // Return deep copy of default Dolores 2026 data
-    return JSON.parse(JSON.stringify(DOLORES_INITIAL_DATA));
+    this.mapEngineInitialized = true;
+    console.log('🏁 3D Map Studio initialized successfully.');
   }
 
   saveState() {
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+      this.projectManager.saveActiveProjectData(this.data);
     } catch (e) {
       console.error('Error saving state to localStorage:', e);
     }
@@ -1084,7 +1154,7 @@ class CarbriataApp {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `carbriata-concours-${this.currentLocationId}-plan.json`;
+        a.download = `mapametric-${this.activeProject?.id || this.currentLocationId}-plan.json`;
         a.click();
         URL.revokeObjectURL(url);
       });
@@ -1119,7 +1189,7 @@ class CarbriataApp {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `carbriata-concours-${this.currentLocationId}.geojson`;
+        a.download = `mapametric-${this.activeProject?.id || this.currentLocationId}.geojson`;
         a.click();
         URL.revokeObjectURL(url);
       });
@@ -1138,15 +1208,16 @@ class CarbriataApp {
             const parsed = JSON.parse(event.target.result);
             if (parsed.zones && parsed.attractions) {
               this.data = parsed;
+              this.saveState();
               this.refreshMapData();
               this.ui.renderSidebar();
               this.ui.closeAllModals();
-              alert('¡Plano de evento importado exitosamente!');
+              this.ui.showToast('¡Plano importado exitosamente!');
             } else {
-              alert('El archivo no posee el formato de plano Carbriata válido.');
+              this.ui.showToast('El archivo no posee un formato de plano válido.');
             }
           } catch (err) {
-            alert('Error al leer el archivo JSON: ' + err.message);
+            this.ui.showToast('Error al leer el archivo JSON: ' + err.message);
           }
         };
         reader.readAsText(file);

@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Carbriata Concours — Master Event Planner & 3D Interactive Map</title>
+  <title>MAPAMETRIC — Studio de Mapeo & Delimitación de Terrenos 3D</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 
   <!-- Google Fonts: Playfair Display, Outfit, JetBrains Mono -->
@@ -22,16 +22,108 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="./styles/main.css?v=16" />
+  <link rel="stylesheet" href="./styles/main.css?v=17" />
 </head>
 <body>
   <div id="app-container">
-    <!-- Brand Header -->
-    <header class="app-header">
-      <div class="brand-section">
-        <div class="brand-logo-badge" title="Carbriata Concours">
-          <!-- Bespoke Carbriata Concours Vector Emblem -->
-          <svg class="brand-emblem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- VIEW 1: PROJECT SELECTION & CREATION HUB -->
+    <div id="project-hub-view" class="app-view active hub-view">
+      <header class="hub-topbar">
+        <div class="hub-brand">
+          <div class="hub-brand-logo">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div class="hub-brand-text">
+            <span class="hub-brand-name">MAPAMETRIC</span>
+            <span class="hub-brand-sub">Spatial Studio & 3D Land Delimitation</span>
+          </div>
+        </div>
+
+        <div class="hub-topbar-actions">
+          <button id="btn-hub-new-project" class="hub-btn-new">
+            <i class="fa-solid fa-plus"></i>
+            <span>Nuevo Proyecto</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="hub-container">
+        <!-- Hero Section -->
+        <section class="hub-hero">
+          <h1 class="hub-hero-title">Gestión de Proyectos & Terrenos</h1>
+          <p class="hub-hero-desc">
+            Plataforma de mapeo paramétrico y delimitación 3D sobre imágenes satelitales. Diseñada para desarrollo inmobiliario, logística portuaria, obras privadas y eventos al aire libre.
+          </p>
+
+          <div class="hub-stats-row">
+            <div class="hub-stat-card">
+              <div class="hub-stat-icon"><i class="fa-solid fa-folder-tree"></i></div>
+              <div>
+                <div class="hub-stat-num" id="hub-total-projects">0</div>
+                <div class="hub-stat-label">Proyectos Activos</div>
+              </div>
+            </div>
+
+            <div class="hub-stat-card">
+              <div class="hub-stat-icon"><i class="fa-solid fa-vector-square"></i></div>
+              <div>
+                <div class="hub-stat-num" id="hub-total-zones">0</div>
+                <div class="hub-stat-label">Zonas & Parcelas 3D</div>
+              </div>
+            </div>
+
+            <div class="hub-stat-card">
+              <div class="hub-stat-icon"><i class="fa-solid fa-chart-area"></i></div>
+              <div>
+                <div class="hub-stat-num" id="hub-total-area">0 ha</div>
+                <div class="hub-stat-label">Superficie Total Mapeada</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Filter & Search Controls -->
+        <div class="hub-filter-bar">
+          <div class="hub-search-wrapper">
+            <i class="fa-solid fa-magnifying-glass hub-search-icon"></i>
+            <input type="text" id="hub-search-input" class="hub-search-input" placeholder="Buscar por nombre, localidad o cliente..." />
+          </div>
+
+          <div class="hub-filter-chips">
+            <button class="hub-chip-btn active" data-filter="all">Todos</button>
+            <button class="hub-chip-btn" data-filter="real_estate"><i class="fa-solid fa-house-chimney-window"></i> Inmobiliario</button>
+            <button class="hub-chip-btn" data-filter="logistics"><i class="fa-solid fa-dolly"></i> Logística & Docks</button>
+            <button class="hub-chip-btn" data-filter="construction"><i class="fa-solid fa-helmet-safety"></i> Obras & Construcción</button>
+            <button class="hub-chip-btn" data-filter="events"><i class="fa-solid fa-flag-checkered"></i> Eventos & Expos</button>
+            <button class="hub-chip-btn" data-filter="custom"><i class="fa-solid fa-map-location-dot"></i> Terreno Libre</button>
+          </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div id="hub-projects-grid" class="hub-projects-grid">
+          <!-- Rendered dynamically by UIManager -->
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: MAP STUDIO -->
+    <div id="studio-view" class="app-view">
+      <!-- Studio Header -->
+      <header class="app-header">
+        <div class="brand-section">
+          <!-- Back to Hub Button -->
+          <button id="btn-back-to-hub" class="btn-hub-nav" title="Volver a la selección de proyectos">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Mis Proyectos</span>
+          </button>
+
+          <!-- Active Project Info Pill -->
+          <div class="header-active-project" id="header-active-project" title="Proyecto actualmente en edición">
+            <span id="active-project-type-badge" class="project-mini-badge" style="background: var(--gold-500); color: #071810;">EVENTO</span>
+            <span id="active-project-name" class="project-mini-title">Carbriata Concours Dolores 2026</span>
+          </div>
+
+          <svg class="brand-logo" viewBox="0 0 100 100" width="46" height="46" aria-label="Logo Carbriata Concours">
             <circle cx="50" cy="50" r="46" stroke="url(#goldGradient)" stroke-width="2.5" fill="#071810" />
             <circle cx="50" cy="50" r="41" stroke="#d4af37" stroke-width="0.75" stroke-dasharray="3 2" />
             <!-- Laurel Wreath Leaves Left & Right -->
@@ -59,7 +151,6 @@
             <span class="brand-subtitle">Festival de Autos Clásicos & Velocidad</span>
           </div>
         </div>
-      </div>
 
       <!-- Center: Multi-Venue / Multi-Year Location Switcher -->
       <div class="venue-selector-container">
@@ -448,7 +539,8 @@
         </footer>
       </aside>
     </main>
-  </div>
+  </div> <!-- /#studio-view -->
+</div> <!-- /#app-container -->
 
   <!-- ==================== MODALS ==================== -->
 
@@ -882,7 +974,113 @@
     </div>
   </div>
 
+  <!-- 6. New Project / Land Creation Modal -->
+  <div id="new-project-modal" class="modal-overlay">
+    <div class="modal-container modal-new-project-container">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fa-solid fa-plus-circle" style="color: var(--gold-400);"></i> Nuevo Proyecto / Delimitación de Terreno
+        </h3>
+        <button class="btn-close-modal" id="btn-close-new-project-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="new-project-form">
+        <div class="modal-body">
+          <!-- Step 1: Industry / Project Type -->
+          <div class="form-group">
+            <label class="form-label">Tipo de Industria / Uso del Terreno *</label>
+            <div class="project-type-selector-grid" id="new-project-type-grid">
+              <div class="type-option-card" data-type="real_estate">
+                <i class="fa-solid fa-house-chimney-window type-option-icon" style="color: #10b981;"></i>
+                <span class="type-option-label">Inmobiliario & Loteos</span>
+              </div>
+              <div class="type-option-card" data-type="logistics">
+                <i class="fa-solid fa-dolly type-option-icon" style="color: #0284c7;"></i>
+                <span class="type-option-label">Logística & Docks</span>
+              </div>
+              <div class="type-option-card" data-type="construction">
+                <i class="fa-solid fa-helmet-safety type-option-icon" style="color: #f59e0b;"></i>
+                <span class="type-option-label">Obras & Predios</span>
+              </div>
+              <div class="type-option-card selected" data-type="events">
+                <i class="fa-solid fa-flag-checkered type-option-icon" style="color: #d4af37;"></i>
+                <span class="type-option-label">Eventos & Circuitos</span>
+              </div>
+              <div class="type-option-card" data-type="custom">
+                <i class="fa-solid fa-map-location-dot type-option-icon" style="color: #8b5cf6;"></i>
+                <span class="type-option-label">Terreno Libre</span>
+              </div>
+            </div>
+            <input type="hidden" id="new-project-type" value="events" />
+          </div>
+
+          <!-- Step 2: Name & Subtitle -->
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label class="form-label">Nombre del Proyecto o Predio *</label>
+              <input type="text" id="new-project-name" class="form-input" placeholder="ej: Barrio Cerrado Los Robles - Etapa 1" required />
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Subtítulo / Referencia</label>
+              <input type="text" id="new-project-subtitle" class="form-input" placeholder="ej: Masterplan 2026" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descripción u Objetivo del Relevamiento</label>
+            <input type="text" id="new-project-desc" class="form-input" placeholder="Delimitación de parcelas, zonificación y calles internas sobre terreno privado." />
+          </div>
+
+          <!-- Step 3: Location / Coordinates -->
+          <div class="form-group">
+            <label class="form-label">Ubicación del Terreno (Búsqueda o Coordenadas Satelitales)</label>
+            <div class="search-location-row">
+              <input type="text" id="new-project-loc-search" class="form-input" placeholder="Buscar localidad, ciudad o paraje (ej: Pilar, Zárate, Añelo, Dolores...)" />
+              <button type="button" id="btn-search-geoloc" class="btn-secondary" style="flex-shrink: 0;">
+                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+              </button>
+            </div>
+            <div id="new-project-search-results" class="search-results-dropdown" style="display: none;"></div>
+
+            <!-- Quick Presets -->
+            <div class="quick-locations-wrap">
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Sugerencias rápidas:</span>
+              <button type="button" class="btn-quick-loc" data-name="Pilar, Buenos Aires" data-coords="-58.9150,-34.4550">Pilar (Loteos)</button>
+              <button type="button" class="btn-quick-loc" data-name="Dock Sud / Avellaneda" data-coords="-58.3450,-34.6480">Puerto Dock Sud (Logística)</button>
+              <button type="button" class="btn-quick-loc" data-name="Añelo, Neuquén (Vaca Muerta)" data-coords="-68.7833,-38.3500">Vaca Muerta (Obras / Yacimiento)</button>
+              <button type="button" class="btn-quick-loc" data-name="Dolores, Buenos Aires" data-coords="-57.6972,-36.3265">Autódromo Dolores</button>
+              <button type="button" class="btn-quick-loc" data-name="Campana, Buenos Aires" data-coords="-58.9591,-34.1687">Parque Industrial Campana</button>
+            </div>
+          </div>
+
+          <!-- Coordinates Inputs (Auto-filled or manual) -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Longitud Satelital (Lng)</label>
+              <input type="number" step="any" id="new-project-lng" class="form-input" value="-58.9150" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Latitud Satelital (Lat)</label>
+              <input type="number" step="any" id="new-project-lat" class="form-input" value="-34.4550" required />
+            </div>
+            <div class="form-group" style="max-width: 100px;">
+              <label class="form-label">Zoom Inicial</label>
+              <input type="number" step="0.5" id="new-project-zoom" class="form-input" value="16.5" min="10" max="20" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-new-project" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-map-location-dot"></i> Crear Terreno y Abrir en Studio 3D
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- App Bootstrap Module -->
-  <script type="module" src="./src/app.js?v=16"></script>
+  <script type="module" src="./src/app.js?v=17"></script>
 </body>
 </html>
