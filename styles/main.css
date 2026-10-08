@@ -1487,9 +1487,10 @@ html, body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  z-index: 100;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 100000 !important;
   display: none;
   align-items: center;
   justify-content: center;
@@ -1497,7 +1498,10 @@ html, body {
 }
 
 .modal-overlay.open {
-  display: flex;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
   animation: fadeIn 0.2s ease-out;
 }
 
@@ -1505,13 +1509,16 @@ html, body {
   background: var(--bg-card-solid);
   border: 1px solid var(--border-gold);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-elevated), var(--shadow-gold);
+  box-shadow: var(--shadow-elevated), var(--shadow-gold), 0 25px 60px rgba(0, 0, 0, 0.8);
   width: 100%;
   max-width: 620px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 100001 !important;
+  pointer-events: auto !important;
   animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -3165,7 +3172,8 @@ html, body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.2);
 }
 
-.new-card-icon-wrap {
+.new-card-icon-wrap,
+.project-new-icon {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -3179,19 +3187,22 @@ html, body {
   transition: all 0.3s ease;
 }
 
-.project-card-new:hover .new-card-icon-wrap {
+.project-card-new:hover .new-card-icon-wrap,
+.project-card-new:hover .project-new-icon {
   background: var(--gold-500);
   color: #071810;
   transform: scale(1.1) rotate(90deg);
 }
 
-.new-card-title {
+.new-card-title,
+.project-new-title {
   font-size: 1.15rem;
   font-weight: 700;
   color: #fff;
 }
 
-.new-card-sub {
+.new-card-sub,
+.project-new-desc {
   font-size: 0.82rem;
   color: var(--text-muted);
   max-width: 250px;

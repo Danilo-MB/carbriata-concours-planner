@@ -3,11 +3,11 @@
  * Coordinates MapEngine, DrawManager, UIManager, and LocalStorage State
  */
 
-import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=16';
-import { MapEngine } from './map/mapEngine.js?v=16';
-import { DrawManager } from './map/drawManager.js?v=16';
-import { UIManager } from './ui/uiManager.js?v=16';
-import { ProjectManager, PROJECT_TYPES } from './data/projectManager.js?v=16';
+import { INITIAL_LOCATIONS, DOLORES_INITIAL_DATA } from './data/defaultData.js?v=18';
+import { MapEngine } from './map/mapEngine.js?v=18';
+import { DrawManager } from './map/drawManager.js?v=18';
+import { UIManager } from './ui/uiManager.js?v=18';
+import { ProjectManager, PROJECT_TYPES } from './data/projectManager.js?v=18';
 
 class CarbriataApp {
   constructor() {
@@ -41,7 +41,7 @@ class CarbriataApp {
 
     this.projectManager.setActiveProjectId(projectId);
     this.activeProject = proj;
-    this.data = proj.data;
+    this.data = proj.data || { zones: [], routes: [], attractions: [] };
     this.currentLocationId = proj.id;
 
     // 1. Switch View: Hide Hub, Show Studio
@@ -53,13 +53,15 @@ class CarbriataApp {
     if (!this.mapEngineInitialized) {
       await this.initMapStudio(proj);
     } else {
-      this.mapEngine.map.resize();
-      this.mapEngine.flyTo(
-        proj.coordinates || [-57.6972, -36.3265],
-        proj.zoom || 16.5,
-        proj.pitch !== undefined ? proj.pitch : 50,
-        proj.bearing !== undefined ? proj.bearing : -20
-      );
+      if (this.mapEngine && this.mapEngine.map) {
+        this.mapEngine.map.resize();
+        this.mapEngine.flyTo(
+          proj.coordinates || [-57.6972, -36.3265],
+          proj.zoom || 16.5,
+          proj.pitch !== undefined ? proj.pitch : 50,
+          proj.bearing !== undefined ? proj.bearing : -20
+        );
+      }
       this.refreshMapData();
     }
 
@@ -73,6 +75,11 @@ class CarbriataApp {
         this.mapEngine.map.resize();
       }
     }, 150);
+    setTimeout(() => {
+      if (this.mapEngine && this.mapEngine.map) {
+        this.mapEngine.map.resize();
+      }
+    }, 450);
   }
 
   returnToHub() {
@@ -83,10 +90,15 @@ class CarbriataApp {
   }
 
   async createProject(params) {
-    const newProj = this.projectManager.createProject(params);
-    this.ui.renderProjectHub();
-    await this.openProject(newProj.id);
-    this.ui.showToast(`Proyecto creado: ${newProj.name}`);
+    try {
+      const newProj = this.projectManager.createProject(params);
+      this.ui.renderProjectHub();
+      await this.openProject(newProj.id);
+      this.ui.showToast(`Proyecto creado: ${newProj.name}`);
+    } catch (err) {
+      console.error('Error in createProject:', err);
+      this.ui.showToast('Error al crear proyecto: ' + (err.message || 'Error'));
+    }
   }
 
   duplicateProject(id) {

@@ -1136,14 +1136,43 @@ export class UIManager {
     // 1. New Project Trigger
     const btnNew = document.getElementById('btn-hub-new-project');
     if (btnNew) {
-      btnNew.addEventListener('click', () => this.openNewProjectModal());
+      btnNew.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openNewProjectModal();
+      });
     }
 
     // Modal Close Triggers
     const btnCloseNew = document.getElementById('btn-close-new-project-modal');
     const btnCancelNew = document.getElementById('btn-cancel-new-project');
-    if (btnCloseNew) btnCloseNew.addEventListener('click', () => this.closeNewProjectModal());
-    if (btnCancelNew) btnCancelNew.addEventListener('click', () => this.closeNewProjectModal());
+    if (btnCloseNew) btnCloseNew.addEventListener('click', (e) => { e.preventDefault(); this.closeNewProjectModal(); });
+    if (btnCancelNew) btnCancelNew.addEventListener('click', (e) => { e.preventDefault(); this.closeNewProjectModal(); });
+
+    // Backdrop click on modal overlay to close
+    const modalNew = document.getElementById('new-project-modal');
+    if (modalNew) {
+      modalNew.addEventListener('click', (e) => {
+        if (e.target === modalNew) {
+          this.closeNewProjectModal();
+        }
+      });
+    }
+
+    // Global delegation for opening new project modal: catches clicks anywhere on top button or card
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('#btn-hub-new-project') || e.target.closest('.project-card-new');
+      if (trigger) {
+        e.preventDefault();
+        this.openNewProjectModal();
+      }
+    });
+
+    // Escape key closes modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeNewProjectModal();
+      }
+    });
 
     // 2. Back to Hub Nav Button (in Studio Header)
     const btnBackHub = document.getElementById('btn-back-to-hub');
@@ -1265,33 +1294,57 @@ export class UIManager {
     if (formNew) {
       formNew.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const type = document.getElementById('new-project-type')?.value || 'custom';
-        const name = document.getElementById('new-project-name')?.value.trim() || 'Nuevo Proyecto';
-        const subtitle = document.getElementById('new-project-subtitle')?.value.trim() || '';
-        const desc = document.getElementById('new-project-desc')?.value.trim() || '';
-        const locSearch = document.getElementById('new-project-loc-search')?.value.trim() || '';
-        const lng = parseFloat(document.getElementById('new-project-lng')?.value) || -58.9150;
-        const lat = parseFloat(document.getElementById('new-project-lat')?.value) || -34.4550;
-        const zoom = parseFloat(document.getElementById('new-project-zoom')?.value) || 16.5;
+        const submitBtn = formNew.querySelector('button[type="submit"]');
+        const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creando Terreno...';
+        }
 
-        this.closeNewProjectModal();
-        await this.app.createProject({
-          name,
-          type,
-          description: desc || subtitle,
-          locationName: locSearch || 'Predio Privado',
-          city: locSearch || 'Coordenadas Satelitales',
-          coordinates: [lng, lat],
-          zoom,
-          pitch: 50,
-          bearing: -15
-        });
+        try {
+          const type = document.getElementById('new-project-type')?.value || 'real_estate';
+          const name = document.getElementById('new-project-name')?.value.trim() || 'Nuevo Predio';
+          const subtitle = document.getElementById('new-project-subtitle')?.value.trim() || '';
+          const desc = document.getElementById('new-project-desc')?.value.trim() || '';
+          const locSearch = document.getElementById('new-project-loc-search')?.value.trim() || '';
+          const lng = parseFloat(document.getElementById('new-project-lng')?.value) || -58.9150;
+          const lat = parseFloat(document.getElementById('new-project-lat')?.value) || -34.4550;
+          const zoom = parseFloat(document.getElementById('new-project-zoom')?.value) || 16.5;
+
+          this.closeNewProjectModal();
+
+          await this.app.createProject({
+            name,
+            type,
+            description: desc || subtitle,
+            locationName: locSearch || 'Predio Privado',
+            city: locSearch || 'Coordenadas Satelitales',
+            coordinates: [lng, lat],
+            zoom,
+            pitch: 50,
+            bearing: -15
+          });
+        } catch (err) {
+          console.error('Error creating new project:', err);
+          this.showToast('Error al crear proyecto: ' + (err.message || 'Intente nuevamente'));
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnHtml;
+          }
+        }
       });
     }
   }
 
   openNewProjectModal() {
-    if (!this.newProjectModal) return;
+    const modal = this.newProjectModal || document.getElementById('new-project-modal');
+    if (!modal) {
+      console.error('Modal element #new-project-modal not found');
+      return;
+    }
+    this.newProjectModal = modal;
+
     const form = document.getElementById('new-project-form');
     if (form) form.reset();
 
@@ -1312,12 +1365,21 @@ export class UIManager {
     const searchDropdown = document.getElementById('new-project-search-results');
     if (searchDropdown) searchDropdown.style.display = 'none';
 
-    this.newProjectModal.classList.add('open');
+    modal.classList.add('open');
+    modal.style.display = 'flex';
+
+    // Focus on project name input after opening
+    setTimeout(() => {
+      const nameInput = document.getElementById('new-project-name');
+      if (nameInput) nameInput.focus();
+    }, 100);
   }
 
   closeNewProjectModal() {
-    if (this.newProjectModal) {
-      this.newProjectModal.classList.remove('open');
+    const modal = this.newProjectModal || document.getElementById('new-project-modal');
+    if (modal) {
+      modal.classList.remove('open');
+      modal.style.display = 'none';
     }
   }
 
@@ -1369,13 +1431,16 @@ export class UIManager {
     const newCard = document.createElement('div');
     newCard.className = 'project-card-new';
     newCard.innerHTML = `
-      <div class="project-new-icon"><i class="fa-solid fa-plus"></i></div>
-      <div class="project-new-title">Crear Nuevo Terreno / Proyecto</div>
-      <div class="project-new-desc">
+      <div class="new-card-icon-wrap project-new-icon"><i class="fa-solid fa-plus"></i></div>
+      <div class="new-card-title project-new-title">Crear Nuevo Terreno / Proyecto</div>
+      <div class="new-card-sub project-new-desc">
         Delimita un loteo residencial, puerto, dársena o predio privado sin cobertura cartográfica de Google Maps.
       </div>
     `;
-    newCard.addEventListener('click', () => this.openNewProjectModal());
+    newCard.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openNewProjectModal();
+    });
     grid.appendChild(newCard);
 
     // 2. Render Project Cards

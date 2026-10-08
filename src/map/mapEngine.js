@@ -123,15 +123,33 @@ export class MapEngine {
         'bottom-right'
       );
 
-      this.map.on('load', () => {
-        this._setupGeoJsonLayers();
-        this._setupEventListeners();
+      let isResolved = false;
+      const finishInit = () => {
+        if (isResolved) return;
+        isResolved = true;
+        try {
+          this._setupGeoJsonLayers();
+          this._setupEventListeners();
+        } catch (err) {
+          console.warn('Map initialization layer setup warning:', err);
+        }
         resolve(this);
-      });
+      };
+
+      if (this.map.loaded()) {
+        finishInit();
+      } else {
+        this.map.on('load', finishInit);
+        // Fallback safeguard: Resolve after 1800ms if MapLibre style/tile loading is slow
+        setTimeout(finishInit, 1800);
+      }
     });
   }
 
   _setupGeoJsonLayers() {
+    if (this.map.getSource('carbriata-zones-source')) {
+      return; // Already setup
+    }
     // 1. Zones Data Source (Polygons)
     this.map.addSource('carbriata-zones-source', {
       type: 'geojson',
@@ -266,6 +284,8 @@ export class MapEngine {
   }
 
   _setupEventListeners() {
+    if (this._eventsConfigured) return;
+    this._eventsConfigured = true;
     const zoneLayers = ['carbriata-zones-extrusion-3d', 'carbriata-zones-fill-2d', 'carbriata-zones-border'];
     const routeLayers = ['carbriata-routes-main', 'carbriata-routes-glow'];
 

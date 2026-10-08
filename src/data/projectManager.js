@@ -3,7 +3,7 @@
  * Manages projects for Real Estate, Logistics & Docks, Construction, Events, and Custom Land.
  */
 
-import { DOLORES_INITIAL_DATA, INITIAL_LOCATIONS } from './defaultData.js?v=16';
+import { DOLORES_INITIAL_DATA, INITIAL_LOCATIONS } from './defaultData.js?v=18';
 
 export const PROJECT_TYPES = {
   real_estate: {
