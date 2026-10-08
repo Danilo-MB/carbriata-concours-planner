@@ -6,7 +6,7 @@ export type Tool = 'select' | 'area' | 'rectangle' | 'line' | 'point';
 
 export type Basemap = 'satellite' | 'streets';
 
-export type TemplateId = 'event' | 'realEstate' | 'blank';
+export type TemplateId = 'event' | 'realEstate' | 'logistics' | 'industrial' | 'blank';
 
 export type PanelView = 'elements' | 'plan';
 

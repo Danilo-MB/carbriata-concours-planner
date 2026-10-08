@@ -79,6 +79,9 @@ callbacks: MutableRefObject<MapCallbacks>)
         }
       } else if (selected) {
         layer.bringToFront();
+        layer.closeTooltip();
+      } else {
+        layer.openTooltip();
       }
     }
 

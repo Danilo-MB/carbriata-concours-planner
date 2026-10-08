@@ -33,7 +33,6 @@ callbacks: MutableRefObject<MapCallbacks>)
     const vertices: L.Marker[] = [];
     const mids: L.Marker[] = [];
     const edgeMarkers: L.Marker[] = [];
-    let areaMarker: L.Marker | null = null;
 
     const apply = () => {
       const layer = getLayer(featureId);
@@ -43,7 +42,7 @@ callbacks: MutableRefObject<MapCallbacks>)
     const setVisible = (markers: L.Marker[], visible: boolean) => markers.forEach((m) => m.setOpacity(visible ? 1 : 0));
 
     const updateDimensions = () => {
-      // 1. Edges / sides
+      // Edges / sides
       const edges = computeEdgeMetrics(work, closed);
       while (edgeMarkers.length > edges.length) {
         const m = edgeMarkers.pop();
@@ -63,27 +62,6 @@ callbacks: MutableRefObject<MapCallbacks>)
           edgeMarkers[idx].setIcon(edgeDimensionIcon(edge.length));
         }
       });
-
-      // 2. Central Area (for closed figures)
-      if (closed && work.length >= 3) {
-        const area = polygonArea(work);
-        const perim = pathLength(work, true);
-        const center = centroid(work);
-        if (!areaMarker) {
-          areaMarker = L.marker(center, {
-            icon: areaDimensionIcon(area, perim),
-            interactive: false,
-            keyboard: false,
-            zIndexOffset: 860
-          }).addTo(group);
-        } else {
-          areaMarker.setLatLng(center);
-          areaMarker.setIcon(areaDimensionIcon(area, perim));
-        }
-      } else if (areaMarker) {
-        areaMarker.remove();
-        areaMarker = null;
-      }
     };
 
     const moveHandle = L.marker(centroid(work), {
@@ -98,7 +76,6 @@ callbacks: MutableRefObject<MapCallbacks>)
       setVisible(vertices, true);
       setVisible(mids, true);
       setVisible(edgeMarkers, true);
-      if (areaMarker) areaMarker.setOpacity(1);
       moveHandle.setOpacity(1);
       moveHandle.setLatLng(centroid(work));
       // Sync mids

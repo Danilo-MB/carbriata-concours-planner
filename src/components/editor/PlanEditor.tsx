@@ -7,13 +7,14 @@ import { useEditor } from '../../hooks/useEditor';
 import { downloadTextFile, geojsonFileName, toGeoJSON } from '../../utils/geojson';
 import { formatArea, formatLength, pathLength, polygonArea } from '../../utils/geo';
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
-import { pickCategory } from '../../utils/plan';
+import { fallbackCategory, pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
 import { DrawingBar } from './DrawingBar';
 import { EditorHeader } from './EditorHeader';
 import { EditorToolbar } from './EditorToolbar';
 import { MapCanvas } from './MapCanvas';
 import { MapControls } from './MapControls';
+import { SelectedDimensionBar } from './SelectedDimensionBar';
 import { SidePanel } from './SidePanel';
 import type { FeatureKind, PlaceResult, PlanFeature, Project } from '../../types/plan';
 
@@ -115,6 +116,19 @@ export function PlanEditor({ project }: {project: Project;}) {
                 onUndo={editor.undoDraftPoint}
                 onCancel={editor.cancelDraft}
                 onFinish={editor.finishDraft}
+              />
+            )}
+
+            {editor.selected && (editor.selected.kind === 'area' || editor.selected.kind === 'line') && (
+              <SelectedDimensionBar
+                key={`selected-dim-${editor.selected.id}`}
+                feature={editor.selected}
+                category={
+                  project.categories.find((c) => c.id === editor.selected?.categoryId) ||
+                  fallbackCategory
+                }
+                onDeselect={() => editor.select(null)}
+                onZoomTo={() => handleZoomTo(editor.selected!)}
               />
             )}
           </AnimatePresence>

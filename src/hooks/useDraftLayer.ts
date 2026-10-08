@@ -63,20 +63,6 @@ export function useDraftLayer(
             edgeMarkers[idx].setIcon(edgeDimensionIcon(edge.length));
           }
         });
-
-        const area = polygonArea(corners);
-        const perim = pathLength(corners, true);
-        const center = centroid(corners);
-        if (!areaMarker) {
-          areaMarker = L.marker(center, {
-            icon: areaDimensionIcon(area, perim),
-            interactive: false,
-            zIndexOffset: 860
-          }).addTo(dimGroup);
-        } else {
-          areaMarker.setLatLng(center);
-          areaMarker.setIcon(areaDimensionIcon(area, perim));
-        }
       };
     } else {
       const closing = tool === 'area';
@@ -138,21 +124,6 @@ export function useDraftLayer(
           if (rubberEdgeMarker2) {
             rubberEdgeMarker2.setLatLng(mid2);
             rubberEdgeMarker2.setIcon(edgeDimensionIcon(d2));
-          }
-
-          const candidatePolygon: LatLng[] = [...draft, [cursor.lat, cursor.lng]];
-          const area = polygonArea(candidatePolygon);
-          const perim = pathLength(candidatePolygon, true);
-          const center = centroid(candidatePolygon);
-          if (!draftAreaMarker) {
-            draftAreaMarker = L.marker(center, {
-              icon: areaDimensionIcon(area, perim),
-              interactive: false,
-              zIndexOffset: 860
-            }).addTo(dimGroup);
-          } else {
-            draftAreaMarker.setLatLng(center);
-            draftAreaMarker.setIcon(areaDimensionIcon(area, perim));
           }
         }
       };

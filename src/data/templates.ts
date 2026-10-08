@@ -30,6 +30,32 @@ export const planTemplates: PlanTemplate[] = [
 
 },
 {
+  id: 'logistics',
+  name: 'Logistics & Warehousing',
+  description: 'Docks, storage bays, truck maneuvering yards, aisles, and dispatch offices.',
+  categories: [
+    { id: 'docks', name: 'Muelles / Docks', color: '#E8590C', icon: 'door', kindHint: 'area' },
+    { id: 'storage', name: 'Almacén & Racks', color: '#1C7ED6', icon: 'warehouse', kindHint: 'area' },
+    { id: 'yard', name: 'Playa de camiones', color: '#F59F00', icon: 'parking', kindHint: 'area' },
+    { id: 'aisles', name: 'Pasillos de autoelevador', color: '#0CA678', icon: 'route', kindHint: 'line' },
+    { id: 'office', name: 'Control & Oficinas', color: '#AE3EC9', icon: 'building' },
+    { id: 'safety', name: 'Extintores & Seguridad', color: '#E03131', icon: 'shield', kindHint: 'point' }
+  ]
+},
+{
+  id: 'industrial',
+  name: 'Industrial Plant & Manufacturing',
+  description: 'Production halls, assembly lines, raw material yards, supplier docks, and safety posts.',
+  categories: [
+    { id: 'production', name: 'Naves de producción', color: '#1C7ED6', icon: 'building', kindHint: 'area' },
+    { id: 'assembly', name: 'Línea de montaje', color: '#E03131', icon: 'route', kindHint: 'line' },
+    { id: 'materials', name: 'Patio de materiales', color: '#F59F00', icon: 'warehouse', kindHint: 'area' },
+    { id: 'shipping', name: 'Expedición & Docks', color: '#E8590C', icon: 'door', kindHint: 'area' },
+    { id: 'services', name: 'Subestación & Servicios', color: '#AE3EC9', icon: 'power' },
+    { id: 'medical', name: 'Enfermería & Seguridad', color: '#0CA678', icon: 'ambulance', kindHint: 'point' }
+  ]
+},
+{
   id: 'blank',
   name: 'Blank plan',
   description: 'Three basic layers to start with. Rename them or add your own.',
