@@ -86,6 +86,11 @@ export function ElementList({ project, readOnly = false, onSelect, onToggleLayer
                         onClick={() => onSelect(f.id)}
                         className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-2 py-2 text-left">
                         
+                        <span
+                          className="h-2 w-2 rounded-full shrink-0 shadow-2xs"
+                          style={{ backgroundColor: f.color || category.color }}
+                          title={`Color: ${f.color || category.color}`}
+                        />
                         <KindIcon className="h-4 w-4 shrink-0 text-muted" aria-label={featureKinds[f.kind].label} />
                         <span className="min-w-0 flex-1 truncate text-sm text-ink">{f.name || 'Untitled'}</span>
                         {f.images && f.images.length > 0 && (

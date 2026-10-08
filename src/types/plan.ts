@@ -56,6 +56,9 @@ export interface PlanFeature {
   coords: LatLng[];
   createdAt: number;
   images?: string[];
+  color?: string;
+  opacity?: number;
+  strokeWidth?: number;
 }
 
 export interface MapView {

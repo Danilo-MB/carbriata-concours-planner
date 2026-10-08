@@ -37,7 +37,10 @@ callbacks: MutableRefObject<MapCallbacks>)
       const category = byId.get(feature.categoryId) ?? fallbackCategory;
       const selected = feature.id === selectedId;
       const geomSig = JSON.stringify(feature.coords);
-      const styleSig = `${category.color}|${category.icon}|${selected}`;
+      const effectiveColor = feature.color || category.color;
+      const effectiveOpacity = feature.opacity;
+      const effectiveStrokeWidth = feature.strokeWidth;
+      const styleSig = `${effectiveColor}|${effectiveOpacity ?? 'def'}|${effectiveStrokeWidth ?? 'def'}|${category.icon}|${selected}`;
       const hasImages = feature.images && feature.images.length > 0;
       const labelText = escapeHtml(feature.name.trim() || 'Untitled');
       const label = hasImages ? `${labelText} 📷` : labelText;
@@ -61,7 +64,7 @@ callbacks: MutableRefObject<MapCallbacks>)
           entry.geomSig = geomSig;
         }
         if (entry.styleSig !== styleSig) {
-          applyStyle(entry.layer, feature.kind, category, selected);
+          applyStyle(entry.layer, feature, category, selected);
           entry.styleSig = styleSig;
         }
         if (entry.label !== label) {
@@ -104,36 +107,45 @@ callbacks: MutableRefObject<MapCallbacks>)
   return useCallback((id: string): FeatureLayer | undefined => entries.current.get(id)?.layer, []);
 }
 
-function areaStyle(color: string, selected: boolean): L.PathOptions {
+function areaStyle(color: string, selected: boolean, opacity?: number, strokeWidth?: number): L.PathOptions {
   return {
     color,
-    weight: selected ? 3 : 2,
+    weight: strokeWidth ?? (selected ? 3 : 2),
     fillColor: color,
-    fillOpacity: selected ? 0.42 : 0.26,
+    fillOpacity: opacity ?? (selected ? 0.45 : 0.28),
     dashArray: selected ? '6 4' : ''
   };
 }
 
-function lineStyle(color: string, selected: boolean): L.PolylineOptions {
-  return { color, weight: selected ? 7 : 5, opacity: 0.95, lineCap: 'round', lineJoin: 'round' };
+function lineStyle(color: string, selected: boolean, opacity?: number, strokeWidth?: number): L.PolylineOptions {
+  return {
+    color,
+    weight: strokeWidth ?? (selected ? 7 : 5),
+    opacity: opacity ?? 0.95,
+    lineCap: 'round',
+    lineJoin: 'round'
+  };
 }
 
 function createLayer(feature: PlanFeature, category: Category, selected: boolean, label: string): FeatureLayer {
+  const color = feature.color || category.color;
   if (feature.kind === 'point') {
-    return L.marker(feature.coords[0], {
-      icon: pinIcon(category.color, category.icon, selected),
+    const marker = L.marker(feature.coords[0], {
+      icon: pinIcon(color, category.icon, selected),
       keyboard: false,
-      riseOnHover: true
+      riseOnHover: true,
+      opacity: feature.opacity ?? 1
     }).bindTooltip(label, { permanent: true, direction: 'bottom', className: 'plan-label', offset: [0, 2] });
+    return marker;
   }
   if (feature.kind === 'area') {
-    return L.polygon(feature.coords, areaStyle(category.color, selected)).bindTooltip(label, {
+    return L.polygon(feature.coords, areaStyle(color, selected, feature.opacity, feature.strokeWidth)).bindTooltip(label, {
       permanent: true,
       direction: 'center',
       className: 'plan-label'
     });
   }
-  return L.polyline(feature.coords, lineStyle(category.color, selected)).bindTooltip(label, {
+  return L.polyline(feature.coords, lineStyle(color, selected, feature.opacity, feature.strokeWidth)).bindTooltip(label, {
     permanent: true,
     direction: 'center',
     className: 'plan-label'
@@ -164,10 +176,18 @@ function setGeometry(layer: FeatureLayer, feature: PlanFeature): void {
   layer.setLatLngs(feature.coords);
 }
 
-function applyStyle(layer: FeatureLayer, kind: FeatureKind, category: Category, selected: boolean): void {
+function applyStyle(layer: FeatureLayer, feature: PlanFeature, category: Category, selected: boolean): void {
+  const color = feature.color || category.color;
   if (layer instanceof L.Marker) {
-    layer.setIcon(pinIcon(category.color, category.icon, selected));
+    layer.setIcon(pinIcon(color, category.icon, selected));
+    if (feature.opacity !== undefined) {
+      layer.setOpacity(feature.opacity);
+    }
     return;
   }
-  layer.setStyle(kind === 'area' ? areaStyle(category.color, selected) : lineStyle(category.color, selected));
+  layer.setStyle(
+    feature.kind === 'area'
+      ? areaStyle(color, selected, feature.opacity, feature.strokeWidth)
+      : lineStyle(color, selected, feature.opacity, feature.strokeWidth)
+  );
 }

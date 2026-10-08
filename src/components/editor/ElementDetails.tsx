@@ -3,8 +3,10 @@ import { ArrowLeftIcon, CopyIcon, RulerIcon, ScanIcon, Trash2Icon } from 'lucide
 import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
 import { computeEdgeMetrics } from '../../utils/dimensions';
+import { fallbackCategory } from '../../utils/plan';
 import { LayerSwatch } from './LayerSwatch';
 import { ImageGallery } from './ImageGallery';
+import { ElementStyleControls } from './ElementStyleControls';
 import type { Category, PlanFeature } from '../../types/plan';
 
 interface ElementDetailsProps {
@@ -33,6 +35,7 @@ export function ElementDetails({
   const nameRef = useRef<HTMLInputElement>(null);
   const kind = featureKinds[feature.kind];
   const KindIcon = kind.icon;
+  const currentCategory = categories.find((c) => c.id === feature.categoryId) ?? fallbackCategory;
   const measure = measureFeature(feature);
   const edges =
     feature.kind === 'area' || feature.kind === 'line'
@@ -128,6 +131,12 @@ export function ElementDetails({
           })}
         </div>
       </fieldset>
+
+      <ElementStyleControls
+        feature={feature}
+        category={currentCategory}
+        onChange={onChange}
+      />
 
       <div className="mt-6">
         <label htmlFor="element-notes" className="text-sm font-medium text-ink">

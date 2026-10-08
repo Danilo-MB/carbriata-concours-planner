@@ -42,7 +42,7 @@ export function SelectedDimensionBar({
         
         {/* Category & Title */}
         <div className="flex items-center gap-2 border-r border-white/15 pr-2.5">
-          <LayerSwatch category={category} size="sm" />
+          <LayerSwatch category={category} colorOverride={feature.color} size="sm" />
           <div className="flex items-center gap-1.5">
             <KindIcon className="h-3.5 w-3.5 text-white/70" aria-hidden="true" />
             <span className="max-w-[140px] truncate text-xs font-bold text-white sm:max-w-[200px]">

@@ -148,8 +148,8 @@ export function VisitorElementDetails({
       <div className="mt-4 flex items-center gap-2">
         <span
           className="inline-flex items-center gap-1.5 rounded-full border border-line bg-subtle px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs"
-          style={{ borderColor: `${category.color}40` }}>
-          <LayerSwatch category={category} size="sm" />
+          style={{ borderColor: `${feature.color || category.color}40` }}>
+          <LayerSwatch category={category} colorOverride={feature.color} size="sm" />
           {category.name}
         </span>
         <span className="inline-flex items-center gap-1 text-xs text-muted">

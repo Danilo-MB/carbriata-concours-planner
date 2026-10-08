@@ -98,11 +98,13 @@ callbacks: MutableRefObject<MapCallbacks>): void {
   const hasImages = feature.images && feature.images.length > 0;
   const labelText = escapeHtml(feature.name.trim() || 'Untitled');
   const label = hasImages ? `${labelText} 📷` : labelText;
+  const color = feature.color || category.color;
 
   const marker = L.marker(feature.coords[0], {
-    icon: pinIcon(category.color, category.icon, selected),
+    icon: pinIcon(color, category.icon, selected),
     keyboard: false,
     riseOnHover: true,
+    opacity: feature.opacity ?? 1,
     zIndexOffset: selected ? 800 : 0
   }).bindTooltip(label, {
     permanent: true,
@@ -139,7 +141,7 @@ latlng: L.LatLng,
 byId: Map<string, Category>,
 onExpand: () => void)
 : void {
-  const colors = [...new Set(items.map((item) => categoryOf(item, byId).color))].slice(0, 3);
+  const colors = [...new Set(items.map((item) => item.color || categoryOf(item, byId).color))].slice(0, 3);
   const names = items.map((item) => item.name.trim() || 'Untitled');
   const summary = names.slice(0, 3).join(', ') + (names.length > 3 ? `, and ${names.length - 3} more` : '');
   const marker = L.marker(latlng, {
@@ -175,12 +177,13 @@ onCollapse: () => void)
   const nodes = items.map((item, index) => {
     const angle = index * 2 * Math.PI / items.length - Math.PI / 2;
     const category = categoryOf(item, byId);
+    const color = item.color || category.color;
     const name = item.name.trim() || 'Untitled';
     return {
       dx: Math.round(radius * Math.cos(angle)),
       dy: Math.round(radius * Math.sin(angle)),
       html: `<button type="button" class="plan-spider-node" data-feature-id="${escapeHtml(item.id)}" style="--dx:${Math.round(radius * Math.cos(angle))}px; --dy:${Math.round(radius * Math.sin(angle))}px" aria-label="${escapeHtml(name)}">
-        ${pinHtml(category.color, category.icon, false)}
+        ${pinHtml(color, category.icon, false)}
         <span class="plan-spider-name">${escapeHtml(name)}</span>
       </button>`
     };
