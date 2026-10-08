@@ -107,10 +107,10 @@ callbacks: MutableRefObject<MapCallbacks>): void {
     opacity: feature.opacity ?? 1,
     zIndexOffset: selected ? 800 : 0
   }).bindTooltip(label, {
-    permanent: true,
-    direction: 'bottom',
+    permanent: false,
+    direction: 'top',
     className: 'plan-label',
-    offset: [0, 2]
+    offset: [0, -18]
   });
 
   marker.on('click', (event: L.LeafletMouseEvent) => {

@@ -82,9 +82,6 @@ callbacks: MutableRefObject<MapCallbacks>)
         }
       } else if (selected) {
         layer.bringToFront();
-        layer.closeTooltip();
-      } else {
-        layer.openTooltip();
       }
     }
 
@@ -135,20 +132,29 @@ function createLayer(feature: PlanFeature, category: Category, selected: boolean
       keyboard: false,
       riseOnHover: true,
       opacity: feature.opacity ?? 1
-    }).bindTooltip(label, { permanent: true, direction: 'bottom', className: 'plan-label', offset: [0, 2] });
+    }).bindTooltip(label, {
+      permanent: false,
+      direction: 'top',
+      className: 'plan-label',
+      offset: [0, -14]
+    });
     return marker;
   }
   if (feature.kind === 'area') {
     return L.polygon(feature.coords, areaStyle(color, selected, feature.opacity, feature.strokeWidth)).bindTooltip(label, {
-      permanent: true,
-      direction: 'center',
-      className: 'plan-label'
+      permanent: false,
+      sticky: true,
+      direction: 'top',
+      className: 'plan-label',
+      offset: [0, -10]
     });
   }
   return L.polyline(feature.coords, lineStyle(color, selected, feature.opacity, feature.strokeWidth)).bindTooltip(label, {
-    permanent: true,
-    direction: 'center',
-    className: 'plan-label'
+    permanent: false,
+    sticky: true,
+    direction: 'top',
+    className: 'plan-label',
+    offset: [0, -10]
   });
 }
 

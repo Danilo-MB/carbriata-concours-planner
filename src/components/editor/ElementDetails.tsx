@@ -65,6 +65,19 @@ export function ElementDetails({
         Todos los elementos
       </button>
 
+      {/* Action buttons row directly below Todos los elementos */}
+      <div className="mt-2.5 flex items-center gap-2 border-b border-line pb-3">
+        <ActionButton onClick={onZoomTo} icon={<ScanIcon className="h-4 w-4" aria-hidden />} label="Zoom to" />
+        <ActionButton onClick={onDuplicate} icon={<CopyIcon className="h-4 w-4" aria-hidden />} label="Duplicate" />
+        <button
+          type="button"
+          onClick={onDelete}
+          className="ml-auto inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium text-danger transition-colors duration-150 hover:bg-danger/10">
+          <Trash2Icon className="h-4 w-4" aria-hidden />
+          Delete
+        </button>
+      </div>
+
       <div className="mt-3">
         <label htmlFor="element-name" className="flex items-center gap-1.5 text-xs font-medium text-muted">
           <KindIcon className="h-3.5 w-3.5" aria-hidden />
@@ -159,19 +172,6 @@ export function ElementDetails({
       />
 
       <p className="mt-4 rounded-lg bg-subtle px-3 py-2.5 text-xs leading-relaxed text-muted">{hint}</p>
-
-      <div className="mt-5 flex gap-2 border-t border-line pt-4">
-        <ActionButton onClick={onZoomTo} icon={<ScanIcon className="h-4 w-4" aria-hidden />} label="Zoom to" />
-        <ActionButton onClick={onDuplicate} icon={<CopyIcon className="h-4 w-4" aria-hidden />} label="Duplicate" />
-        <button
-          type="button"
-          onClick={onDelete}
-          className="ml-auto inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium text-danger transition-colors duration-150 hover:bg-danger/10">
-          
-          <Trash2Icon className="h-4 w-4" aria-hidden />
-          Delete
-        </button>
-      </div>
     </div>);
 
 }
