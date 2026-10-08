@@ -7,6 +7,7 @@ import { useEditor } from '../../hooks/useEditor';
 import { downloadTextFile, geojsonFileName, toGeoJSON } from '../../utils/geojson';
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
 import { pickCategory } from '../../utils/plan';
+import { ClearAllModal } from './ClearAllModal';
 import { DrawingBar } from './DrawingBar';
 import { EditorHeader } from './EditorHeader';
 import { EditorToolbar } from './EditorToolbar';
@@ -21,6 +22,7 @@ export function PlanEditor({ project }: {project: Project;}) {
   const editor = useEditor(project, update);
   const mapRef = useRef<L.Map | null>(null);
   const [tilted, setTilted] = useState(false);
+  const [showClearAllModal, setShowClearAllModal] = useState(false);
 
   const draftKind: FeatureKind = editor.tool === 'line' ? 'line' : editor.tool === 'point' ? 'point' : 'area';
   const draftColor = pickCategory(project.categories, draftKind).color;
@@ -110,7 +112,12 @@ export function PlanEditor({ project }: {project: Project;}) {
             onToggleTilt={() => setTilted((value) => !value)}
             onDelete={() => editor.selected && editor.deleteFeature(editor.selected.id)} />
           
-          <EditorToolbar tool={editor.tool} onChange={editor.setTool} />
+          <EditorToolbar
+            tool={editor.tool}
+            onChange={editor.setTool}
+            onClearAll={() => setShowClearAllModal(true)}
+            hasFeatures={project.features.length > 0}
+          />
         </main>
         <SidePanel
           project={project}
@@ -120,9 +127,16 @@ export function PlanEditor({ project }: {project: Project;}) {
           onSaveCenter={handleSaveCenter}
           onGoToCenter={handleGoToCenter}
           onExport={handleExport}
-          onRename={handleRename} />
-        
+          onRename={handleRename}
+        />
       </div>
-    </div>);
 
+      <ClearAllModal
+        isOpen={showClearAllModal}
+        elementCount={project.features.length}
+        onConfirm={editor.deleteAllFeatures}
+        onClose={() => setShowClearAllModal(false)}
+      />
+    </div>
+  );
 }

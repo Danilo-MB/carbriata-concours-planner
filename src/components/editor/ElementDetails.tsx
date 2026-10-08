@@ -3,6 +3,7 @@ import { ArrowLeftIcon, CopyIcon, ScanIcon, Trash2Icon } from 'lucide-react';
 import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
 import { LayerSwatch } from './LayerSwatch';
+import { ImageGallery } from './ImageGallery';
 import type { Category, PlanFeature } from '../../types/plan';
 
 interface ElementDetailsProps {
@@ -113,6 +114,12 @@ export function ElementDetails({
           className="mt-1.5 w-full resize-y rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none" />
         
       </div>
+
+      <ImageGallery
+        images={feature.images || []}
+        onChange={(images) => onChange({ images })}
+        elementName={feature.name || 'Elemento'}
+      />
 
       <p className="mt-4 rounded-lg bg-subtle px-3 py-2.5 text-xs leading-relaxed text-muted">{hint}</p>
 

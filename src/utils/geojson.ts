@@ -22,7 +22,8 @@ export function toGeoJSON(project: Project) {
           name: f.name,
           layer: category?.name ?? '',
           color: category?.color ?? '',
-          notes: f.notes
+          notes: f.notes,
+          images: f.images ?? []
         }
       };
     })

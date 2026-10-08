@@ -37,8 +37,9 @@ callbacks: MutableRefObject<MapCallbacks>)
       const category = byId.get(feature.categoryId) ?? fallbackCategory;
       const selected = feature.id === selectedId;
       const geomSig = JSON.stringify(feature.coords);
-      const styleSig = `${category.color}|${category.icon}|${selected}`;
-      const label = escapeHtml(feature.name.trim() || 'Untitled');
+      const hasImages = feature.images && feature.images.length > 0;
+      const labelText = escapeHtml(feature.name.trim() || 'Untitled');
+      const label = hasImages ? `${labelText} 📷` : labelText;
 
       let entry = entries.current.get(feature.id);
       if (entry && entry.kind !== feature.kind) {

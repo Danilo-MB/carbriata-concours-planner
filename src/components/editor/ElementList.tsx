@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EyeIcon, EyeOffIcon, MapPinIcon, PentagonIcon, SplineIcon, Trash2Icon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, ImageIcon, MapPinIcon, PentagonIcon, SplineIcon, Trash2Icon } from 'lucide-react';
 import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
 import { LayerSwatch } from './LayerSwatch';
@@ -87,6 +87,14 @@ export function ElementList({ project, onSelect, onToggleLayer, onDelete }: Elem
                         
                         <KindIcon className="h-4 w-4 shrink-0 text-muted" aria-label={featureKinds[f.kind].label} />
                         <span className="min-w-0 flex-1 truncate text-sm text-ink">{f.name || 'Untitled'}</span>
+                        {f.images && f.images.length > 0 && (
+                          <span
+                            title={`${f.images.length} ${f.images.length === 1 ? 'foto adjunta' : 'fotos adjuntas'}`}
+                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-ink/5 px-1.5 py-0.5 text-[11px] font-medium text-muted">
+                            <ImageIcon className="h-3 w-3" aria-hidden="true" />
+                            <span>{f.images.length}</span>
+                          </span>
+                        )}
                         {f.kind !== 'point' &&
                         <span className="shrink-0 text-xs tabular-nums text-muted">{measureFeature(f).primary}</span>
                         }

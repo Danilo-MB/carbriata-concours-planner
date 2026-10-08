@@ -53,6 +53,7 @@ export interface PlanFeature {
   notes: string;
   coords: LatLng[];
   createdAt: number;
+  images?: string[];
 }
 
 export interface MapView {

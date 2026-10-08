@@ -46,6 +46,7 @@ export function useEditor(project: Project, update: ProjectUpdater) {
       name: nextFeatureName(project.features, kind),
       categoryId: category.id,
       notes: '',
+      images: [],
       createdAt: Date.now()
     };
     update((p) => ({
@@ -88,6 +89,7 @@ export function useEditor(project: Project, update: ProjectUpdater) {
       id: createId(),
       name: `${source.name} (copy)`,
       coords: translate(source.coords, -0.00012, 0.00015),
+      images: source.images ? [...source.images] : [],
       createdAt: Date.now()
     };
     update((p) => ({ ...p, features: [...p.features, copy] }));
@@ -110,6 +112,22 @@ export function useEditor(project: Project, update: ProjectUpdater) {
           features.splice(Math.min(index, features.length), 0, feature);
           return { ...p, features };
         })
+      }
+    });
+  };
+
+  const deleteAllFeatures = () => {
+    if (project.features.length === 0) {
+      toast('No hay elementos para borrar');
+      return;
+    }
+    const previous = [...project.features];
+    update((p) => ({ ...p, features: [] }));
+    setSelectedId(null);
+    toast(`Se borraron todos los elementos (${previous.length})`, {
+      action: {
+        label: 'Deshacer',
+        onClick: () => update((p) => ({ ...p, features: previous }))
       }
     });
   };
@@ -219,6 +237,7 @@ export function useEditor(project: Project, update: ProjectUpdater) {
     setGeometry,
     duplicateFeature,
     deleteFeature,
+    deleteAllFeatures,
     toggleLayer,
     addLayer,
     updateLayer,

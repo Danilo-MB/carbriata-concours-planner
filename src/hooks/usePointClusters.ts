@@ -94,14 +94,17 @@ group: L.LayerGroup,
 feature: PlanFeature,
 category: Category,
 selected: boolean,
-callbacks: MutableRefObject<MapCallbacks>)
-: void {
+callbacks: MutableRefObject<MapCallbacks>): void {
+  const hasImages = feature.images && feature.images.length > 0;
+  const labelText = escapeHtml(feature.name.trim() || 'Untitled');
+  const label = hasImages ? `${labelText} 📷` : labelText;
+
   const marker = L.marker(feature.coords[0], {
     icon: pinIcon(category.color, category.icon, selected),
     keyboard: false,
     riseOnHover: true,
     zIndexOffset: selected ? 800 : 0
-  }).bindTooltip(escapeHtml(feature.name.trim() || 'Untitled'), {
+  }).bindTooltip(label, {
     permanent: true,
     direction: 'bottom',
     className: 'plan-label',
