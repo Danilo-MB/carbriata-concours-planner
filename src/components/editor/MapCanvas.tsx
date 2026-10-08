@@ -9,7 +9,7 @@ import { useFeatureLayers } from '../../hooks/useFeatureLayers';
 import { usePointClusters } from '../../hooks/usePointClusters';
 import { useLatestRef } from '../../hooks/useLatestRef';
 import type { MapCallbacks } from '../../types/map';
-import type { Basemap, Category, LatLng, MapView, PlanFeature, Tool } from '../../types/plan';
+import type { Basemap, Category, LatLng, MapView, PlanFeature, Tool, ViewMode } from '../../types/plan';
 
 interface MapCanvasProps {
   mapRef: MutableRefObject<L.Map | null>;
@@ -19,6 +19,7 @@ interface MapCanvasProps {
   categories: Category[];
   selectedId: string | null;
   tool: Tool;
+  mode?: ViewMode;
   tilted: boolean;
   draft: LatLng[];
   draftColor: string;
@@ -37,6 +38,7 @@ export function MapCanvas({
   categories,
   selectedId,
   tool,
+  mode = 'editor',
   tilted,
   draft,
   draftColor,
@@ -49,7 +51,15 @@ export function MapCanvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const initialViewRef = useRef(initialView);
   const [map, setMap] = useState<L.Map | null>(null);
-  const callbacks = useLatestRef<MapCallbacks>({ tool, onSelect, onMapClick, onFinishDraft, onGeometryChange, onDelete });
+  const callbacks = useLatestRef<MapCallbacks>({
+    tool,
+    isVisitor: mode === 'visitor',
+    onSelect,
+    onMapClick,
+    onFinishDraft,
+    onGeometryChange,
+    onDelete
+  });
 
   useEffect(() => {
     const el = containerRef.current;
@@ -104,7 +114,7 @@ export function MapCanvas({
   const getLayer = useFeatureLayers(map, features, categories, selectedId, tool, callbacks);
   usePointClusters(map, features, categories, selectedId, tool, callbacks);
   const selectedFeature = features.find((f) => f.id === selectedId) ?? null;
-  useEditHandles(map, selectedFeature, tool === 'select', getLayer, callbacks);
+  useEditHandles(map, selectedFeature, mode !== 'visitor' && tool === 'select', getLayer, callbacks);
   useDraftLayer(map, tool, draft, draftColor, callbacks);
 
   return <div ref={containerRef} className="isolate h-full w-full" role="application" aria-label="Plan map" />;

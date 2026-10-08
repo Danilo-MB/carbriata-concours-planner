@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import type { MutableRefObject } from 'react';
 import L from 'leaflet';
-import { centroid, translate } from '../utils/geo';
+import { centroid, pathLength, polygonArea, translate } from '../utils/geo';
+import { areaDimensionIcon, computeEdgeMetrics, edgeDimensionIcon } from '../utils/dimensions';
 import { midIcon, moveIcon, vertexIcon } from '../utils/mapIcons';
 import { isTrashHot } from '../utils/trashTarget';
 import type { MapCallbacks } from '../types/map';
@@ -31,6 +32,8 @@ callbacks: MutableRefObject<MapCallbacks>)
     const group = L.layerGroup().addTo(map);
     const vertices: L.Marker[] = [];
     const mids: L.Marker[] = [];
+    const edgeMarkers: L.Marker[] = [];
+    let areaMarker: L.Marker | null = null;
 
     const apply = () => {
       const layer = getLayer(featureId);
@@ -39,18 +42,73 @@ callbacks: MutableRefObject<MapCallbacks>)
     const commit = () => callbacks.current.onGeometryChange(featureId, work.map(([a, b]) => [a, b] as LatLng));
     const setVisible = (markers: L.Marker[], visible: boolean) => markers.forEach((m) => m.setOpacity(visible ? 1 : 0));
 
+    const updateDimensions = () => {
+      // 1. Edges / sides
+      const edges = computeEdgeMetrics(work, closed);
+      while (edgeMarkers.length > edges.length) {
+        const m = edgeMarkers.pop();
+        m?.remove();
+      }
+      edges.forEach((edge, idx) => {
+        if (!edgeMarkers[idx]) {
+          const marker = L.marker(edge.mid, {
+            icon: edgeDimensionIcon(edge.length),
+            interactive: false,
+            keyboard: false,
+            zIndexOffset: 850
+          }).addTo(group);
+          edgeMarkers[idx] = marker;
+        } else {
+          edgeMarkers[idx].setLatLng(edge.mid);
+          edgeMarkers[idx].setIcon(edgeDimensionIcon(edge.length));
+        }
+      });
+
+      // 2. Central Area (for closed figures)
+      if (closed && work.length >= 3) {
+        const area = polygonArea(work);
+        const perim = pathLength(work, true);
+        const center = centroid(work);
+        if (!areaMarker) {
+          areaMarker = L.marker(center, {
+            icon: areaDimensionIcon(area, perim),
+            interactive: false,
+            keyboard: false,
+            zIndexOffset: 860
+          }).addTo(group);
+        } else {
+          areaMarker.setLatLng(center);
+          areaMarker.setIcon(areaDimensionIcon(area, perim));
+        }
+      } else if (areaMarker) {
+        areaMarker.remove();
+        areaMarker = null;
+      }
+    };
+
     const moveHandle = L.marker(centroid(work), {
       icon: moveIcon,
       draggable: true,
       keyboard: false,
       zIndexOffset: 1200,
-      title: 'Drag to move'
+      title: 'Arrastra para mover toda la figura'
     });
 
     const restore = () => {
       setVisible(vertices, true);
       setVisible(mids, true);
+      setVisible(edgeMarkers, true);
+      if (areaMarker) areaMarker.setOpacity(1);
       moveHandle.setOpacity(1);
+      moveHandle.setLatLng(centroid(work));
+      // Sync mids
+      const segs = closed ? work.length : work.length - 1;
+      for (let s = 0; s < segs && s < mids.length; s++) {
+        const a = work[s];
+        const b = work[(s + 1) % work.length];
+        mids[s].setLatLng([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+      }
+      updateDimensions();
     };
 
     work.forEach((point, index) => {
@@ -63,6 +121,7 @@ callbacks: MutableRefObject<MapCallbacks>)
         const ll = marker.getLatLng();
         work[index] = [ll.lat, ll.lng];
         apply();
+        updateDimensions();
       });
       marker.on('dragend', () => {
         restore();
@@ -76,6 +135,7 @@ callbacks: MutableRefObject<MapCallbacks>)
         if (work.length <= minPoints) return;
         work = work.filter((_, i) => i !== index);
         apply();
+        updateDimensions();
         commit();
       };
       marker.on('dblclick', removePoint);
@@ -93,7 +153,7 @@ callbacks: MutableRefObject<MapCallbacks>)
         draggable: true,
         keyboard: false,
         zIndexOffset: 900,
-        title: 'Drag to add a point'
+        title: 'Arrastra para añadir un vértice'
       });
       let base: LatLng[] = [];
       mid.on('dragstart', () => {
@@ -106,6 +166,7 @@ callbacks: MutableRefObject<MapCallbacks>)
         const ll = mid.getLatLng();
         work = [...base.slice(0, i + 1), [ll.lat, ll.lng], ...base.slice(i + 1)];
         apply();
+        updateDimensions();
       });
       mid.on('dragend', () => {
         restore();
@@ -129,6 +190,7 @@ callbacks: MutableRefObject<MapCallbacks>)
       const ll = moveHandle.getLatLng();
       work = translate(base, ll.lat - start.lat, ll.lng - start.lng);
       apply();
+      updateDimensions();
     });
     moveHandle.on('dragend', () => {
       restore();
@@ -136,6 +198,9 @@ callbacks: MutableRefObject<MapCallbacks>)
       commit();
     });
     moveHandle.addTo(group);
+
+    // Initial dimension display
+    updateDimensions();
 
     return () => {
       group.remove();

@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import type L from 'leaflet';
 import { useProjects } from '../../contexts/ProjectsContext';
 import { useEditor } from '../../hooks/useEditor';
 import { downloadTextFile, geojsonFileName, toGeoJSON } from '../../utils/geojson';
+import { formatArea, formatLength, pathLength, polygonArea } from '../../utils/geo';
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
 import { pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
@@ -26,6 +27,16 @@ export function PlanEditor({ project }: {project: Project;}) {
 
   const draftKind: FeatureKind = editor.tool === 'line' ? 'line' : editor.tool === 'point' ? 'point' : 'area';
   const draftColor = pickCategory(project.categories, draftKind).color;
+
+  const draftMetrics = useMemo(() => {
+    if (editor.tool === 'area' && editor.draft.length >= 3) {
+      return `${formatArea(polygonArea(editor.draft))} · Perím: ${formatLength(pathLength(editor.draft, true))}`;
+    }
+    if (editor.tool === 'line' && editor.draft.length >= 2) {
+      return `Longitud: ${formatLength(pathLength(editor.draft))}`;
+    }
+    return undefined;
+  }, [editor.tool, editor.draft]);
 
   const withMap = (fn: (map: L.Map) => void) => {
     if (mapRef.current) fn(mapRef.current);
@@ -66,7 +77,12 @@ export function PlanEditor({ project }: {project: Project;}) {
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-canvas">
-      <EditorHeader project={project} onPickPlace={handlePickPlace} />
+      <EditorHeader
+        project={project}
+        mode={editor.mode}
+        onModeChange={editor.setMode}
+        onPickPlace={handlePickPlace}
+      />
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <main className="relative min-h-0 flex-1 overflow-hidden">
           <MapCanvas
@@ -76,32 +92,36 @@ export function PlanEditor({ project }: {project: Project;}) {
             features={editor.visibleFeatures}
             categories={project.categories}
             selectedId={editor.selectedId}
-            tool={editor.tool}
+            tool={editor.mode === 'visitor' ? 'select' : editor.tool}
+            mode={editor.mode}
             tilted={tilted}
-            draft={editor.draft}
+            draft={editor.mode === 'visitor' ? [] : editor.draft}
             draftColor={draftColor}
             onSelect={editor.select}
             onMapClick={editor.handleMapClick}
             onFinishDraft={editor.finishDraft}
             onGeometryChange={editor.setGeometry}
-            onDelete={editor.deleteFeature} />
-          
-          <AnimatePresence>
-            {editor.tool !== 'select' &&
-            <DrawingBar
-              key="drawing-bar"
-              tool={editor.tool}
-              pointCount={editor.draft.length}
-              canFinish={editor.canFinish}
-              onUndo={editor.undoDraftPoint}
-              onCancel={editor.cancelDraft}
-              onFinish={editor.finishDraft} />
+            onDelete={editor.deleteFeature}
+          />
 
-            }
+          <AnimatePresence>
+            {editor.mode === 'editor' && editor.tool !== 'select' && (
+              <DrawingBar
+                key="drawing-bar"
+                tool={editor.tool}
+                pointCount={editor.draft.length}
+                draftMetrics={draftMetrics}
+                canFinish={editor.canFinish}
+                onUndo={editor.undoDraftPoint}
+                onCancel={editor.cancelDraft}
+                onFinish={editor.finishDraft}
+              />
+            )}
           </AnimatePresence>
+
           <MapControls
             basemap={project.basemap}
-            canDelete={editor.tool === 'select' && !!editor.selected}
+            canDelete={editor.mode === 'editor' && editor.tool === 'select' && !!editor.selected}
             onZoomIn={() => withMap((m) => m.zoomIn())}
             onZoomOut={() => withMap((m) => m.zoomOut())}
             onGoToCenter={handleGoToCenter}
@@ -110,14 +130,17 @@ export function PlanEditor({ project }: {project: Project;}) {
             onBasemap={editor.setBasemap}
             tilted={tilted}
             onToggleTilt={() => setTilted((value) => !value)}
-            onDelete={() => editor.selected && editor.deleteFeature(editor.selected.id)} />
-          
-          <EditorToolbar
-            tool={editor.tool}
-            onChange={editor.setTool}
-            onClearAll={() => setShowClearAllModal(true)}
-            hasFeatures={project.features.length > 0}
+            onDelete={() => editor.mode === 'editor' && editor.selected && editor.deleteFeature(editor.selected.id)}
           />
+
+          {editor.mode === 'editor' && (
+            <EditorToolbar
+              tool={editor.tool}
+              onChange={editor.setTool}
+              onClearAll={() => setShowClearAllModal(true)}
+              hasFeatures={project.features.length > 0}
+            />
+          )}
         </main>
         <SidePanel
           project={project}

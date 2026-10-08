@@ -74,7 +74,7 @@ callbacks: MutableRefObject<MapCallbacks>)
       if (layer instanceof L.Marker) {
         layer.setZIndexOffset(selected ? 800 : 0);
         if (layer.dragging) {
-          if (selected && tool === 'select') layer.dragging.enable();else
+          if (!callbacks.current.isVisitor && selected && tool === 'select') layer.dragging.enable();else
           layer.dragging.disable();
         }
       } else if (selected) {

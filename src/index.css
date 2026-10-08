@@ -253,3 +253,72 @@ body {
     transition: none;
   }
 }
+
+/* Metric Dimension & Area Badges on Edges & Centroid */
+.plan-dim-edge-wrap,
+.plan-dim-area-wrap {
+  background: transparent !important;
+  border: 0 !important;
+  pointer-events: none !important;
+}
+
+.plan-dim-edge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 9999px;
+  padding: 1.5px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 1050;
+  user-select: none;
+}
+
+.plan-dim-area {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.94);
+  color: #fff;
+  border: 1.5px solid rgba(245, 158, 11, 0.8);
+  border-radius: 10px;
+  padding: 4px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 1100;
+  user-select: none;
+  text-align: center;
+}
+
+.plan-dim-area-val {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 0.02em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.plan-dim-area-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 1px;
+}
+

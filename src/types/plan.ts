@@ -10,6 +10,8 @@ export type TemplateId = 'event' | 'realEstate' | 'blank';
 
 export type PanelView = 'elements' | 'plan';
 
+export type ViewMode = 'editor' | 'visitor';
+
 export type CategoryIconKey =
 'car' |
 'flag' |

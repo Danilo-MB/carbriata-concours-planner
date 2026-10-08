@@ -5,13 +5,21 @@ import { createId } from '../utils/id';
 import { rectFromCorners, translate } from '../utils/geo';
 import { nextFeatureName, pickCategory } from '../utils/plan';
 import { useLatestRef } from './useLatestRef';
-import type { Basemap, Category, FeatureKind, LatLng, MapView, PanelView, PlanFeature, Project, Tool } from '../types/plan';
+import type { Basemap, Category, FeatureKind, LatLng, MapView, PanelView, PlanFeature, Project, Tool, ViewMode } from '../types/plan';
 
 type ProjectUpdater = (fn: (p: Project) => Project) => void;
 
 const toolShortcuts: Record<string, Tool> = { v: 'select', a: 'area', r: 'rectangle', l: 'line', m: 'point' };
 
 export function useEditor(project: Project, update: ProjectUpdater) {
+  const [mode, setModeState] = useState<ViewMode>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('mode') === 'visitor' ? 'visitor' : 'editor';
+    } catch {
+      return 'editor';
+    }
+  });
   const [tool, setToolState] = useState<Tool>('select');
   const [draft, setDraft] = useState<LatLng[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -26,7 +34,16 @@ export function useEditor(project: Project, update: ProjectUpdater) {
   );
   const canFinish = tool === 'area' ? draft.length >= 3 : tool === 'line' ? draft.length >= 2 : false;
 
+  const setMode = (nextMode: ViewMode) => {
+    setModeState(nextMode);
+    if (nextMode === 'visitor') {
+      setToolState('select');
+      setDraft([]);
+    }
+  };
+
   const setTool = (next: Tool) => {
+    if (mode === 'visitor') return;
     setToolState(next);
     setDraft([]);
     if (next !== 'select') {
@@ -35,7 +52,10 @@ export function useEditor(project: Project, update: ProjectUpdater) {
     }
   };
 
-  const select = (id: string | null) => setSelectedId(id);
+  const select = (id: string | null) => {
+    setSelectedId(id);
+    if (id) setSheetOpen(true);
+  };
 
   const createFeature = (kind: FeatureKind, coords: LatLng[]) => {
     const category = pickCategory(project.categories, kind);
@@ -205,6 +225,10 @@ export function useEditor(project: Project, update: ProjectUpdater) {
         if (k.selectedId) setSelectedId(null);
         return;
       }
+      if (mode === 'visitor') {
+        if (e.key === 'Escape') setSelectedId(null);
+        return;
+      }
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === 'Enter') {
         k.finishDraft();
@@ -218,9 +242,11 @@ export function useEditor(project: Project, update: ProjectUpdater) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [keyboard]);
+  }, [keyboard, mode]);
 
   return {
+    mode,
+    setMode,
     tool,
     setTool,
     draft,

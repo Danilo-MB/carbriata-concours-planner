@@ -129,7 +129,7 @@ callbacks: MutableRefObject<MapCallbacks>): void {
     callbacks.current.onGeometryChange(feature.id, [[ll.lat, ll.lng]]);
   });
   marker.addTo(group);
-  if (selected && marker.dragging) marker.dragging.enable();
+  if (!callbacks.current.isVisitor && selected && marker.dragging) marker.dragging.enable();
 }
 
 function addClusterMarker(

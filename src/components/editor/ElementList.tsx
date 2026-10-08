@@ -7,12 +7,13 @@ import type { Project } from '../../types/plan';
 
 interface ElementListProps {
   project: Project;
+  readOnly?: boolean;
   onSelect: (id: string) => void;
   onToggleLayer: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
-export function ElementList({ project, onSelect, onToggleLayer, onDelete }: ElementListProps) {
+export function ElementList({ project, readOnly = false, onSelect, onToggleLayer, onDelete }: ElementListProps) {
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
 
@@ -99,14 +100,15 @@ export function ElementList({ project, onSelect, onToggleLayer, onDelete }: Elem
                         <span className="shrink-0 text-xs tabular-nums text-muted">{measureFeature(f).primary}</span>
                         }
                       </button>
-                      <button
-                        type="button"
-                        aria-label={`Delete ${f.name || 'Untitled'}`}
-                        onClick={() => onDelete(f.id)}
-                        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger">
-                        
-                        <Trash2Icon className="h-4 w-4" aria-hidden />
-                      </button>
+                      {!readOnly && onDelete && (
+                        <button
+                          type="button"
+                          aria-label={`Eliminar ${f.name || 'elemento'}`}
+                          onClick={() => onDelete(f.id)}
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger">
+                          <Trash2Icon className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      )}
                     </li>);
 
                 })}

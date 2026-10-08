@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { ArrowLeftIcon, CopyIcon, ScanIcon, Trash2Icon } from 'lucide-react';
+import { ArrowLeftIcon, CopyIcon, RulerIcon, ScanIcon, Trash2Icon } from 'lucide-react';
 import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
+import { computeEdgeMetrics } from '../../utils/dimensions';
 import { LayerSwatch } from './LayerSwatch';
 import { ImageGallery } from './ImageGallery';
 import type { Category, PlanFeature } from '../../types/plan';
@@ -33,6 +34,10 @@ export function ElementDetails({
   const kind = featureKinds[feature.kind];
   const KindIcon = kind.icon;
   const measure = measureFeature(feature);
+  const edges =
+    feature.kind === 'area' || feature.kind === 'line'
+      ? computeEdgeMetrics(feature.coords, feature.kind === 'area')
+      : [];
 
   useEffect(() => {
     if (!autoFocus) return;
@@ -44,8 +49,8 @@ export function ElementDetails({
 
   const hint =
   feature.kind === 'point' ?
-  'Drag the marker on the map to move it.' :
-  'Drag the white points to reshape, the small dots to add a point, and the dark handle to move it. Double-click or long-press a point to remove it.';
+  'Arrastra el marcador en el mapa para moverlo.' :
+  'Arrastra los puntos blancos para deformar, los puntos intermedios para añadir vértices, y el tirador central para mover toda la figura. Haz doble clic en un vértice para eliminarlo.';
 
   return (
     <div className="px-4 pb-8 pt-3">
@@ -53,28 +58,51 @@ export function ElementDetails({
         type="button"
         onClick={onBack}
         className="-ml-2 inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm text-muted transition-colors duration-150 hover:bg-subtle hover:text-ink">
-        
         <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-        All elements
+        Todos los elementos
       </button>
 
       <div className="mt-3">
         <label htmlFor="element-name" className="flex items-center gap-1.5 text-xs font-medium text-muted">
           <KindIcon className="h-3.5 w-3.5" aria-hidden />
-          {kind.label} name
+          Nombre del {kind.label.toLowerCase()}
         </label>
         <input
           ref={nameRef}
           id="element-name"
           value={feature.name}
           onChange={(e) => onChange({ name: e.target.value })}
-          placeholder="Name this element"
+          placeholder="Nombre de este elemento"
           className="mt-1.5 h-11 w-full rounded-lg border border-line bg-surface px-3 text-lg font-semibold text-ink placeholder:font-normal placeholder:text-muted focus:border-ink focus:outline-none" />
         
         <p className="mt-2 text-sm tabular-nums text-muted">
-          <span className="font-medium text-ink">{measure.primary}</span>
+          <span className="font-semibold text-ink">{measure.primary}</span>
           {measure.secondary && <span> · {measure.secondary}</span>}
         </p>
+
+        {edges.length > 0 && (
+          <div className="mt-3 rounded-xl border border-line bg-subtle/50 p-2.5">
+            <div className="flex items-center justify-between text-xs font-semibold text-ink">
+              <span className="flex items-center gap-1.5">
+                <RulerIcon className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+                {feature.kind === 'area' ? 'Medidas de cada lado' : 'Tramos del recorrido'}
+              </span>
+              <span className="text-[11px] font-normal text-muted">
+                {edges.length} {edges.length === 1 ? 'lado' : 'lados'}
+              </span>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs">
+              {edges.map((edge, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between rounded-lg border border-line/60 bg-surface px-2.5 py-1.5 shadow-2xs">
+                  <span className="text-[11px] text-muted">Lado {idx + 1}</span>
+                  <span className="font-mono text-xs font-semibold text-ink">{edge.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <fieldset className="mt-6">
