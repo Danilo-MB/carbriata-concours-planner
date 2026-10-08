@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, EyeIcon, PencilIcon, SearchIcon, XIcon } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { PlaceSearch } from '../PlaceSearch';
+import { UserMenu } from '../auth/UserMenu';
 import type { PlaceResult, Project, ViewMode } from '../../types/plan';
 
 interface EditorHeaderProps {
@@ -59,6 +60,7 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
       </div>
 
       <ThemeToggle className="h-10 w-10 shrink-0" />
+      <UserMenu />
       <div className="hidden w-80 md:block">
         <PlaceSearch onPick={onPickPlace} />
       </div>

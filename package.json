@@ -10,15 +10,27 @@
     "preview": "npx vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@nestjs/common": "^12.1.2",
+    "@nestjs/core": "^12.1.2",
+    "@nestjs/jwt": "^12.0.2",
+    "@nestjs/platform-express": "^12.1.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.6",
+    "bcryptjs": "^3.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "date-fns": "^4.0.0",
+    "express": "^5.2.1",
+    "framer-motion": "^11.5.4",
+    "leaflet": "^1.9.4",
+    "lucide-react": "0.522.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@emotion/react": "^11.13.3",
     "react-router-dom": "^6.26.2",
-    "framer-motion": "^11.5.4",
-    "sonner": "^2.0.1",
-    "lucide-react": "0.522.0",
-    "leaflet": "^1.9.4",
-    "date-fns": "^4.0.0"
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "sonner": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",
@@ -27,13 +39,13 @@
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "latest",
     "eslint": "^8.50.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
-    "typescript": "^5.5.4",
-    "vite": "^5.2.0",
+    "postcss": "latest",
     "tailwindcss": "3.4.17",
-    "autoprefixer": "latest",
-    "postcss": "latest"
+    "typescript": "^5.5.4",
+    "vite": "^5.2.0"
   }
 }

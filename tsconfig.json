@@ -14,12 +14,16 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Decorators for NestJS */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "server", "api"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

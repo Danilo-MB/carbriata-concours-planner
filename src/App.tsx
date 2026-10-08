@@ -7,23 +7,28 @@ import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { EditorPage } from './pages/EditorPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 
+import { AuthProvider } from './contexts/AuthContext';
+import { AuthModal } from './components/auth/AuthModal';
+
 export function App() {
   return (
     <ThemeProvider>
-      <MotionConfig reducedMotion="user">
-        <ProjectsProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<ProjectsPage />} />
-              <Route path="/plan/:projectId" element={<EditorPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-          <ThemedToaster />
-        </ProjectsProvider>
-      </MotionConfig>
+      <AuthProvider>
+        <MotionConfig reducedMotion="user">
+          <ProjectsProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<ProjectsPage />} />
+                <Route path="/plan/:projectId" element={<EditorPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+            <AuthModal />
+            <ThemedToaster />
+          </ProjectsProvider>
+        </MotionConfig>
+      </AuthProvider>
     </ThemeProvider>);
-
 }
 
 function ThemedToaster() {

@@ -8,6 +8,7 @@ import { FeaturedPlan } from '../components/projects/FeaturedPlan';
 import { NewPlanDialog } from '../components/projects/NewPlanDialog';
 import { ProjectCard } from '../components/projects/ProjectCard';
 import { TemplateIcon } from '../components/projects/TemplateIcon';
+import { UserMenu } from '../components/auth/UserMenu';
 import { useProjects } from '../contexts/ProjectsContext';
 import { planTemplates } from '../data/templates';
 import { currentUser } from '../data/user';
@@ -46,13 +47,7 @@ export function ProjectsPage() {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle className="h-9 w-9" />
-            <span className="hidden text-right sm:block">
-              <span className="block text-sm font-medium text-ink">{currentUser.name}</span>
-              <span className="block text-xs text-muted">{currentUser.organization}</span>
-            </span>
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-accent text-sm font-semibold text-white" aria-label={currentUser.name}>
-              {currentUser.initials}
-            </span>
+            <UserMenu />
           </div>
         </div>
       </header>
