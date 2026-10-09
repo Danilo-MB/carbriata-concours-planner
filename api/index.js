@@ -1,2 +1,2 @@
-const entry = require('./bundle.cjs');
+const entry = require('./bundle.js');
 module.exports = entry.default || entry;
