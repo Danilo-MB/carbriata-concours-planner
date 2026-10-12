@@ -248,7 +248,7 @@ export function VisitorElementDetails({
       {/* Fullscreen Lightbox Modal */}
       <AnimatePresence>
         {lightboxOpen && images[activeImageIdx] && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

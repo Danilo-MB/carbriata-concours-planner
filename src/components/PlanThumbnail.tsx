@@ -127,15 +127,15 @@ export function PlanThumbnail({ project, className = '' }: PlanThumbnailProps) {
   ]);
 
   return (
-    <div className={`relative overflow-hidden bg-[#181c20] ${className}`}>
+    <div className={`plan-thumbnail-wrapper relative isolate z-0 overflow-hidden bg-[#181c20] ${className}`}>
       {/* Real basemap + features container */}
-      <div ref={containerRef} className="pointer-events-none absolute inset-0 h-full w-full" />
+      <div ref={containerRef} className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
 
       {/* Subtle vignette for contrast */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/25" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/60 via-transparent to-black/25" />
 
       {/* Live status badge */}
-      <div className="pointer-events-none absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-md bg-black/70 px-2 py-1 text-[11px] font-medium text-white/95 backdrop-blur-md shadow-sm">
+      <div className="pointer-events-none absolute bottom-2.5 left-2.5 z-[2] flex items-center gap-1.5 rounded-md bg-black/70 px-2 py-1 text-[11px] font-medium text-white/95 backdrop-blur-md shadow-sm">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
         <span>{project.basemap === 'streets' ? 'Callejero' : 'Satelital'}</span>
         <span className="text-white/40">·</span>

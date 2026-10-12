@@ -13,7 +13,7 @@ interface FeaturedPlanProps {
 
 export function FeaturedPlan({ project, onDelete }: FeaturedPlanProps) {
   return (
-    <article className="grid overflow-hidden rounded-2xl border border-line bg-surface lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+    <article className="relative isolate z-0 grid overflow-hidden rounded-2xl border border-line bg-surface lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
       <Link to={`/plan/${project.id}`} aria-label={`Open ${project.name}`} className="block">
         <PlanThumbnail project={project} className="aspect-[16/10] h-full w-full lg:aspect-auto lg:min-h-[340px]" />
       </Link>

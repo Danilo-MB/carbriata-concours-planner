@@ -17,7 +17,7 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
-    <header className="relative z-20 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface px-2 sm:px-4">
+    <header className="relative z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface px-2 sm:px-4">
       <Link
         to="/"
         aria-label="Volver a los planos"

@@ -13,7 +13,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[border-color,box-shadow] duration-200 hover:border-ink/25 hover:shadow-float">
+    <article className="group relative isolate z-0 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[border-color,box-shadow] duration-200 hover:border-ink/25 hover:shadow-float">
       <PlanThumbnail project={project} className="aspect-[16/10] w-full" />
       <div className="flex flex-1 flex-col p-4">
         <h3 className="truncate text-base font-semibold text-ink">

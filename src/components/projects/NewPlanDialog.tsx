@@ -34,9 +34,9 @@ export function NewPlanDialog({ initialTemplate, onClose, onCreate }: NewPlanDia
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center sm:p-6">
       <motion.div
-        className="absolute inset-0 bg-black/40"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -53,7 +53,7 @@ export function NewPlanDialog({ initialTemplate, onClose, onCreate }: NewPlanDia
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 12 }}
         transition={{ duration: 0.22, ease }}
-        className="relative flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-surface sm:rounded-2xl">
+        className="relative z-10 flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-surface sm:rounded-2xl">
         
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <h2 id="new-plan-title" className="text-lg font-semibold text-ink">

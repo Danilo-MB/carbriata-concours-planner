@@ -325,3 +325,17 @@ body {
   margin-top: 1px;
 }
 
+/* Ensure Leaflet preview thumbnails cannot escape their container stacking context */
+.plan-thumbnail-wrapper {
+  isolation: isolate;
+  contain: paint;
+}
+
+.plan-thumbnail-wrapper .leaflet-pane,
+.plan-thumbnail-wrapper .leaflet-top,
+.plan-thumbnail-wrapper .leaflet-bottom,
+.plan-thumbnail-wrapper .leaflet-control {
+  z-index: 1 !important;
+}
+
+

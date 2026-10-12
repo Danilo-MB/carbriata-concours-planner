@@ -37,7 +37,7 @@ export function ProjectsPage() {
 
   return (
     <div className="min-h-[100dvh] w-full bg-canvas">
-      <header className="border-b border-line bg-surface">
+      <header className="relative z-30 border-b border-line bg-surface">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink text-on-ink">
