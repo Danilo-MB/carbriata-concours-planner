@@ -30,7 +30,7 @@ export function SelectedDimensionBar({
   const edges = isArea || isLine ? computeEdgeMetrics(feature.coords, isArea) : [];
 
   return (
-    <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex justify-center px-2">
+    <div className="pointer-events-none absolute left-3 right-14 top-3 z-10 flex justify-start sm:right-3 sm:justify-center">
       <motion.div
         role="region"
         aria-label="Dimensiones del elemento seleccionado"
@@ -38,14 +38,14 @@ export function SelectedDimensionBar({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.98 }}
         transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-        className="pointer-events-auto flex max-w-full flex-wrap items-center gap-2.5 rounded-2xl border border-white/15 bg-ink/95 px-3.5 py-2 text-white shadow-float backdrop-blur-md">
+        className="pointer-events-auto flex max-w-full items-center gap-2 rounded-2xl border border-white/15 bg-ink/95 px-3 py-1.5 text-white shadow-float backdrop-blur-md sm:gap-2.5 sm:px-3.5 sm:py-2">
         
         {/* Category & Title */}
-        <div className="flex items-center gap-2 border-r border-white/15 pr-2.5">
+        <div className="flex min-w-0 items-center gap-1.5 border-r border-white/15 pr-2 sm:gap-2 sm:pr-2.5">
           <LayerSwatch category={category} colorOverride={feature.color} size="sm" />
-          <div className="flex items-center gap-1.5">
-            <KindIcon className="h-3.5 w-3.5 text-white/70" aria-hidden="true" />
-            <span className="max-w-[140px] truncate text-xs font-bold text-white sm:max-w-[200px]">
+          <div className="flex min-w-0 items-center gap-1">
+            <KindIcon className="h-3.5 w-3.5 shrink-0 text-white/70" aria-hidden="true" />
+            <span className="max-w-[85px] truncate text-xs font-bold text-white sm:max-w-[180px]">
               {feature.name || 'Sin título'}
             </span>
           </div>
@@ -53,20 +53,20 @@ export function SelectedDimensionBar({
 
         {/* Primary Metric: Area or Length */}
         {isArea && (
-          <div className="flex items-center gap-1.5">
-            <Maximize2Icon className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
-            <span className="text-[11px] font-medium text-white/70">Superficie:</span>
-            <span className="font-mono text-sm font-extrabold text-amber-400">
+          <div className="flex shrink-0 items-center gap-1">
+            <Maximize2Icon className="h-3 w-3 text-amber-400 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
+            <span className="hidden text-[11px] font-medium text-white/70 sm:inline">Superficie:</span>
+            <span className="font-mono text-xs font-extrabold text-amber-400 sm:text-sm">
               {formatArea(area)}
             </span>
           </div>
         )}
 
         {isLine && (
-          <div className="flex items-center gap-1.5">
-            <RulerIcon className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
-            <span className="text-[11px] font-medium text-white/70">Longitud:</span>
-            <span className="font-mono text-sm font-extrabold text-amber-400">
+          <div className="flex shrink-0 items-center gap-1">
+            <RulerIcon className="h-3 w-3 text-amber-400 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
+            <span className="hidden text-[11px] font-medium text-white/70 sm:inline">Longitud:</span>
+            <span className="font-mono text-xs font-extrabold text-amber-400 sm:text-sm">
               {formatLength(perimeter)}
             </span>
           </div>
@@ -94,7 +94,7 @@ export function SelectedDimensionBar({
         )}
 
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-1 pl-1">
+        <div className="ml-auto flex shrink-0 items-center gap-0.5 pl-1 sm:gap-1">
           <button
             type="button"
             onClick={onZoomTo}

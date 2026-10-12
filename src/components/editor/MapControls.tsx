@@ -32,7 +32,7 @@ export function MapControls({
 }: MapControlsProps) {
   return (
     <>
-      <div className="absolute right-3 top-3 z-10 flex flex-col gap-2">
+      <div className="absolute right-3 top-3 z-10 flex flex-col gap-1.5 sm:gap-2">
         <div className="flex flex-col overflow-hidden rounded-xl bg-surface shadow-float">
           <ControlButton icon={PlusIcon} label="Zoom in" onClick={onZoomIn} />
           <div className="h-px bg-line" />
@@ -43,8 +43,10 @@ export function MapControls({
         </div>
         <div className="flex flex-col overflow-hidden rounded-xl bg-surface shadow-float">
           <ControlButton icon={HouseIcon} label="Go to saved center" onClick={onGoToCenter} />
-          <div className="h-px bg-line" />
-          <ControlButton icon={CrosshairIcon} label="Save this view as center" onClick={onSaveCenter} />
+          <div className="hidden sm:block">
+            <div className="h-px bg-line" />
+            <ControlButton icon={CrosshairIcon} label="Save this view as center" onClick={onSaveCenter} />
+          </div>
           <div className="h-px bg-line" />
           <ControlButton icon={LocateFixedIcon} label="Show my location" onClick={onLocate} />
         </div>
@@ -79,7 +81,7 @@ function TrashDrop({ onDelete }: {onDelete: () => void;}) {
       type="button"
       data-plan-trash=""
       onClick={onDelete}
-      className={`absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-float transition-colors duration-150 ${
+      className={`absolute bottom-24 left-1/2 z-10 hidden sm:flex -translate-x-1/2 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-float transition-colors duration-150 ${
       hot ? 'border-danger bg-danger text-white' : 'border-line bg-surface text-danger hover:bg-danger/10'}`
       }>
       
@@ -101,11 +103,11 @@ function ControlButton({
       onClick={onClick}
       aria-label={label}
       aria-pressed={pressed}
-      className={`group relative grid h-10 w-10 place-items-center transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent ${
+      className={`group relative grid h-8 w-8 place-items-center transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent sm:h-10 sm:w-10 ${
       pressed ? 'bg-ink text-on-ink' : 'text-ink hover:bg-subtle'}`
       }>
       
-      <Icon className="h-[18px] w-[18px]" aria-hidden />
+      <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
       <span className="pointer-events-none absolute right-full top-1/2 mr-2 hidden -translate-y-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-xs font-medium text-on-ink opacity-0 transition-opacity duration-150 group-hover:opacity-100 lg:block">
         {label}
       </span>

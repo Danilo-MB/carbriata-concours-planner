@@ -127,7 +127,10 @@ export function PlanEditor({ project }: {project: Project;}) {
                   project.categories.find((c) => c.id === editor.selected?.categoryId) ||
                   fallbackCategory
                 }
-                onDeselect={() => editor.select(null)}
+                onDeselect={() => {
+                  editor.select(null);
+                  editor.setSheetOpen(false);
+                }}
                 onZoomTo={() => handleZoomTo(editor.selected!)}
               />
             )}
@@ -148,12 +151,14 @@ export function PlanEditor({ project }: {project: Project;}) {
           />
 
           {editor.mode === 'editor' && (
-            <EditorToolbar
-              tool={editor.tool}
-              onChange={editor.setTool}
-              onClearAll={() => setShowClearAllModal(true)}
-              hasFeatures={project.features.length > 0}
-            />
+            <div className={editor.sheetOpen ? 'hidden lg:block' : 'block'}>
+              <EditorToolbar
+                tool={editor.tool}
+                onChange={editor.setTool}
+                onClearAll={() => setShowClearAllModal(true)}
+                hasFeatures={project.features.length > 0}
+              />
+            </div>
           )}
         </main>
         <SidePanel
