@@ -91267,7 +91267,7 @@ var AppController = class {
   getStatus() {
     return {
       status: "ok",
-      service: "Carbriata Concours & Planning API",
+      service: "Event Planner API",
       version: "1.0.0",
       timestamp: Date.now()
     };

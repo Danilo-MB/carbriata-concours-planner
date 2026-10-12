@@ -1,6 +1,7 @@
 {
-  "name": "magic-patterns-vite-template",
-  "version": "0.0.1",
+  "name": "event-planner",
+  "version": "1.0.0",
+  "description": "Event & Venue Layout Planner over satellite maps",
   "private": true,
   "type": "module",
   "scripts": {
