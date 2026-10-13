@@ -165,7 +165,12 @@ export const translations = {
     whatPlanning: '¿Qué vas a planificar?',
     createPlan: 'Crear plano',
     planName: 'Nombre del plano',
-    planNamePlaceholder: 'ej. Carbriata Concours — Edición Córdoba'
+    planNamePlaceholder: 'ej. Carbriata Concours — Edición Córdoba',
+    planLocation: 'Ubicación en el mapa',
+    planLocationSubtitle: 'Busca el recinto o terreno. Podrás ajustar el centro exacto en el mapa después.',
+    planLocationPlaceholder: 'Recinto, dirección o ciudad',
+    changeLocation: 'Cambiar',
+    optional: 'opcional'
   },
   en: {
     // Brand & Marketing
@@ -331,7 +336,12 @@ export const translations = {
     whatPlanning: 'What are you planning?',
     createPlan: 'Create plan',
     planName: 'Plan name',
-    planNamePlaceholder: 'e.g. Carbriata Concours — Classic Car Edition'
+    planNamePlaceholder: 'e.g. Carbriata Concours — Classic Car Edition',
+    planLocation: 'Map location',
+    planLocationSubtitle: 'Search for the venue or terrain. You can adjust the exact center on the map later.',
+    planLocationPlaceholder: 'Venue, address, or city',
+    changeLocation: 'Change',
+    optional: 'optional'
   }
 } as const;
 

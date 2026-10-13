@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, CompassIcon, LayersIcon, MapPinIcon, PlusIcon, SparklesIcon } from 'lucide-react';
+import { ArrowRightIcon, CompassIcon, LayersIcon, MapPinIcon, PlusIcon } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LandingHeroProps {
@@ -18,14 +18,8 @@ export function LandingHero({ onCreateClick, demoProjectId = 'carbriata-2027' }:
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col items-center text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3.5 py-1.5 text-xs font-semibold text-ink shadow-2xs backdrop-blur-md">
-            <SparklesIcon className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
-            <span>{t('heroBadge')}</span>
-          </div>
-
           {/* Headline */}
-          <h1 className="mt-6 max-w-4xl text-3xl font-extrabold tracking-tight text-ink sm:text-5xl lg:text-6xl sm:leading-[1.15]">
+          <h1 className="max-w-4xl text-3xl font-extrabold tracking-tight text-ink sm:text-5xl lg:text-6xl sm:leading-[1.15]">
             {t('heroTitlePart1')}{' '}
             <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-500 bg-clip-text text-transparent">
               {t('heroTitlePart2')}

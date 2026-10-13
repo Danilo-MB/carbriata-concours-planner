@@ -94,8 +94,37 @@ export function NewPlanDialog({ initialTemplate, onClose, onCreate }: NewPlanDia
           </div>
 
           <div>
+            <label className="text-sm font-medium text-ink">{t('planLocation')}</label>
+            <p className="mt-0.5 text-xs text-muted">{t('planLocationSubtitle')}</p>
+            <div className="mt-2">
+              {place ? (
+                <div className="flex items-center gap-3 rounded-lg border border-line bg-subtle px-3 py-2.5">
+                  <MapPinIcon className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-ink">{place.label}</span>
+                    <span className="block truncate text-xs text-muted">{place.secondary}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPlace(null)}
+                    className="text-sm font-medium text-ink underline-offset-2 hover:underline">
+                    {t('changeLocation')}
+                  </button>
+                </div>
+              ) : (
+                <PlaceSearch
+                  inline
+                  onPick={setPlace}
+                  placeholder={t('planLocationPlaceholder')}
+                  label={t('planLocation')}
+                />
+              )}
+            </div>
+          </div>
+
+          <div>
             <label htmlFor="new-plan-website" className="text-sm font-medium text-ink">
-              {t('eventWebsiteLabel')} <span className="text-xs text-muted font-normal">(opcional)</span>
+              {t('eventWebsiteLabel')} <span className="text-xs text-muted font-normal">({t('optional')})</span>
             </label>
             <div className="relative mt-1.5">
               <input
@@ -138,27 +167,6 @@ export function NewPlanDialog({ initialTemplate, onClose, onCreate }: NewPlanDia
               })}
             </div>
           </fieldset>
-
-          <div>
-            <p className="text-sm font-medium text-ink">¿Dónde se ubica?</p>
-            <p className="mt-0.5 text-xs text-muted">Busca el recinto o terreno. Podrás ajustar el centro exacto en el mapa después.</p>
-            <div className="mt-2">
-              {place ? (
-                <div className="flex items-center gap-3 rounded-lg border border-line bg-subtle px-3 py-2.5">
-                  <MapPinIcon className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-ink">{place.label}</span>
-                    <span className="block truncate text-xs text-muted">{place.secondary}</span>
-                  </span>
-                  <button type="button" onClick={() => setPlace(null)} className="text-sm font-medium text-ink underline-offset-2 hover:underline">
-                    Cambiar
-                  </button>
-                </div>
-              ) : (
-                <PlaceSearch inline onPick={setPlace} placeholder="Recinto, dirección o ciudad" label="Buscar ubicación" />
-              )}
-            </div>
-          </div>
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t border-line px-5 py-4">
