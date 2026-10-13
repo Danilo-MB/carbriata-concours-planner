@@ -434,6 +434,20 @@ export function AiWizardModal({ onClose, onCreate }: AiWizardModalProps) {
                       </p>
                     </div>
 
+                    {result.satelliteImageUrl && (
+                      <div className="relative overflow-hidden rounded-xl border border-line bg-surface shadow-xs">
+                        <img
+                          src={result.satelliteImageUrl}
+                          alt="Foto satelital analizada"
+                          className="h-28 w-full object-cover"
+                        />
+                        <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-md bg-ink/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-xs">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>Telemetría satelital analizada por visión</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Detected Terrain Callout */}
                     <div className="rounded-xl border border-line bg-subtle p-3.5">
                       <div className="flex items-center gap-2 text-xs font-semibold text-ink">
