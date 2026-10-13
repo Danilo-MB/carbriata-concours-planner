@@ -2,6 +2,41 @@ export type Language = 'es' | 'en';
 
 export const translations = {
   es: {
+    // Brand & Marketing
+    brandName: 'TuMapa',
+    brandTagline: 'Dibuja tus propios mapas interactivos para lo que necesites',
+    heroBadge: '✨ Nuevo: Modo Visitante e Inserción con iFrame',
+    heroTitlePart1: 'No te conformes con un plano estático.',
+    heroTitlePart2: 'Crea mapas interactivos sobre satélite',
+    heroTitlePart3: 'para lo que necesites.',
+    heroDesc: 'Delimita sectores, recorridos y accesos sobre imágenes satelitales en alta resolución. Añade fotos, calcula superficies y distancias reales, y cuélgalo en tu sitio web con un simple iFrame para que tus visitantes lo exploren desde su celular.',
+    heroCtaPrimary: 'Crear mi primer mapa',
+    heroCtaSecondary: 'Ver demo interactiva',
+    heroBadgeSatellite: 'Satélite en tiempo real',
+    heroBadgeMetrics: 'Medición automática (ha / km / m²)',
+    heroBadgeMobile: 'Listo para celulares e iFrame',
+
+    // Features
+    featuresTitle: 'Todo lo que necesitas para planificar y compartir',
+    featuresSubtitle: 'Diseñado tanto para organizadores de eventos como para desarrollos inmobiliarios, predios logísticos y festivales.',
+    feature1Title: 'Traza sobre satélite real',
+    feature1Desc: 'Dibuja áreas, caminos y puntos con cálculo automático de hectáreas, metros y perímetros exactos.',
+    feature2Title: 'Fichas interactivas con fotos',
+    feature2Desc: 'Añade fotos en alta definición, horarios, accesos y notas organizativas a cada sector o punto.',
+    feature3Title: 'Inserta en tu web con 1 clic',
+    feature3Desc: 'Copia un código iFrame limpio para integrar tu mapa interactivo en WordPress, Wix o cualquier página web.',
+    feature4Title: '100% Adaptado a celulares',
+    feature4Desc: 'Tus asistentes exploran el mapa desde sus teléfonos con fluidez, geolocalización y fichas deslizables.',
+
+    // Embed Showcase
+    embedShowcaseBadge: 'Experiencia para visitantes',
+    embedShowcaseTitle: 'Tu evento interactivo en cualquier pantalla',
+    embedShowcaseSubtitle: 'Olvídate de subir PDFs pesados o imágenes estáticas borrosas. Tus visitantes pueden explorar el mapa en vivo dentro del sitio oficial de tu evento o en pantalla completa desde su móvil.',
+    embedFeature1: 'Integración fluida en WordPress, Wix, Webflow o código propio',
+    embedFeature2: 'Fichas informativas con fotos, detalles y superficie de cada zona',
+    embedFeature3: 'Vista limpia sin herramientas de edición para el público general',
+    embedCtaDemo: 'Probar vista de visitante',
+
     // Common / General
     backToPlans: 'Volver a los planos',
     visitWebsite: 'Sitio web',
@@ -133,6 +168,41 @@ export const translations = {
     planNamePlaceholder: 'ej. Carbriata Concours — Edición Córdoba'
   },
   en: {
+    // Brand & Marketing
+    brandName: 'TuMapa',
+    brandTagline: 'Draw your own interactive maps for whatever you need',
+    heroBadge: '✨ New: Dedicated Visitor Mode & iFrame Embeds',
+    heroTitlePart1: 'Don’t settle for a static plan.',
+    heroTitlePart2: 'Create interactive satellite maps',
+    heroTitlePart3: 'for whatever you need.',
+    heroDesc: 'Outline areas, routes, and key spots over high-resolution satellite imagery. Add photos, calculate real areas and distances, and embed it on your website with a simple iFrame so visitors can explore from their phones.',
+    heroCtaPrimary: 'Create my first map',
+    heroCtaSecondary: 'Explore live demo',
+    heroBadgeSatellite: 'Real-time satellite imagery',
+    heroBadgeMetrics: 'Instant measurements (ha / km / m²)',
+    heroBadgeMobile: 'Mobile & iFrame ready',
+
+    // Features
+    featuresTitle: 'Everything you need to plan and share',
+    featuresSubtitle: 'Built for event organizers, festival directors, real estate developers, and industrial site managers.',
+    feature1Title: 'Draw on real satellite imagery',
+    feature1Desc: 'Draft areas, paths, and pins with instant automatic calculations for hectares, meters, and precise perimeters.',
+    feature2Title: 'Interactive cards with photos',
+    feature2Desc: 'Add high-res photos, schedules, access directions, and notes to every zone or landmark.',
+    feature3Title: 'Embed on your site in 1 click',
+    feature3Desc: 'Copy a clean iFrame code snippet to integrate your interactive map into WordPress, Wix, or any website.',
+    feature4Title: '100% Mobile optimized',
+    feature4Desc: 'Attendees explore the map effortlessly on their phones with smooth gestures, drawer cards, and GPS.',
+
+    // Embed Showcase
+    embedShowcaseBadge: 'Attendee experience',
+    embedShowcaseTitle: 'Your interactive event on any screen',
+    embedShowcaseSubtitle: 'Leave heavy PDFs and blurry images behind. Attendees can explore the live interactive map right inside your event website or in full screen on their phones.',
+    embedFeature1: 'Seamlessly embeds in WordPress, Wix, Webflow, or custom code',
+    embedFeature2: 'Rich cards with photos, descriptions, and exact surface areas',
+    embedFeature3: 'Clean attendee view with zero clutter or editing tools',
+    embedCtaDemo: 'Test visitor view',
+
     // Common / General
     backToPlans: 'Back to plans',
     visitWebsite: 'Website',
