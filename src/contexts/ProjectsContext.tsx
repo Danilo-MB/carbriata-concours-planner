@@ -53,14 +53,14 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     const project: Project = {
       id: createId(),
       name: input.name.trim(),
-      description: '',
+      description: input.description || '',
       location: place ? [place.label, place.secondary.split(',')[0]].filter(Boolean).join(', ') : 'Buenos Aires, Argentina',
       websiteUrl: input.websiteUrl,
       template: template.id,
       center: place ? { lat: place.lat, lng: place.lng, zoom: 17 } : defaultMapView,
       basemap: 'satellite',
       categories: template.categories.map((c) => ({ ...c })),
-      features: [],
+      features: input.features ? [...input.features] : [],
       hiddenCategoryIds: [],
       createdAt: now,
       updatedAt: now

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { GlobeIcon, MapPinIcon, XIcon } from 'lucide-react';
+import { GlobeIcon, MapPinIcon, SparklesIcon, XIcon } from 'lucide-react';
 import { planTemplates } from '../../data/templates';
 import { PlaceSearch } from '../PlaceSearch';
 import { TemplateIcon } from './TemplateIcon';
@@ -11,6 +11,7 @@ interface NewPlanDialogProps {
   initialTemplate: TemplateId;
   onClose: () => void;
   onCreate: (input: NewPlanInput) => void;
+  onSwitchToAi?: () => void;
 }
 
 const ease = [0.23, 1, 0.32, 1] as const;
@@ -77,6 +78,21 @@ export function NewPlanDialog({ initialTemplate, onClose, onCreate }: NewPlanDia
             <XIcon className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
+
+        {onSwitchToAi && (
+          <div className="mx-5 mt-4 flex items-center justify-between rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-emerald-500/10 p-3">
+            <div className="flex items-center gap-2">
+              <SparklesIcon className="h-4 w-4 text-amber-500 shrink-0" aria-hidden="true" />
+              <span className="text-xs text-ink font-medium">¿Prefieres que la IA trace el plano automáticamente sobre el satélite?</span>
+            </div>
+            <button
+              type="button"
+              onClick={onSwitchToAi}
+              className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline ml-2 shrink-0">
+              {t('aiWizardButton')} →
+            </button>
+          </div>
+        )}
 
         <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5">
           <div>

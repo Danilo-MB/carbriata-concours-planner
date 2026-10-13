@@ -13,6 +13,7 @@ import { UserMenu } from '../components/auth/UserMenu';
 import { LandingHero } from '../components/home/LandingHero';
 import { FeatureCards } from '../components/home/FeatureCards';
 import { EmbedShowcase } from '../components/home/EmbedShowcase';
+import { AiWizardModal } from '../components/ai/AiWizardModal';
 import { useProjects } from '../contexts/ProjectsContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { planTemplates } from '../data/templates';
@@ -23,6 +24,7 @@ export function ProjectsPage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [dialogTemplate, setDialogTemplate] = useState<TemplateId | null>(null);
+  const [isAiWizardOpen, setIsAiWizardOpen] = useState(false);
   const sorted = useMemo(() => [...projects].sort((a, b) => b.updatedAt - a.updatedAt), [projects]);
   const [featured, ...others] = sorted;
 
@@ -71,6 +73,7 @@ export function ProjectsPage() {
       {/* 1. Marketing Hero at the Top */}
       <LandingHero
         onCreateClick={() => setDialogTemplate('event')}
+        onAiClick={() => setIsAiWizardOpen(true)}
         demoProjectId={demoId}
       />
 
@@ -95,13 +98,22 @@ export function ProjectsPage() {
               {t('brandTagline')}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setDialogTemplate('event')}
-            className="inline-flex h-10 w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-4 text-sm font-medium text-on-ink shadow-sm transition-colors duration-150 hover:bg-ink/90 active:scale-95">
-            <PlusIcon className="h-4 w-4" aria-hidden="true" />
-            {t('newPlan')}
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsAiWizardOpen(true)}
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-semibold text-ink shadow-2xs transition-all hover:bg-subtle active:scale-95">
+              <SparklesIcon className="h-4 w-4 text-amber-500" aria-hidden="true" />
+              <span>{t('aiWizardButton')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setDialogTemplate('event')}
+              className="inline-flex h-10 w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-4 text-sm font-medium text-on-ink shadow-sm transition-colors duration-150 hover:bg-ink/90 active:scale-95">
+              <PlusIcon className="h-4 w-4" aria-hidden="true" />
+              {t('newPlan')}
+            </button>
+          </div>
         </div>
 
         <div className="mt-8">
@@ -167,12 +179,23 @@ export function ProjectsPage() {
       </footer>
 
       <AnimatePresence>
+        {isAiWizardOpen && (
+          <AiWizardModal
+            key="ai-wizard"
+            onClose={() => setIsAiWizardOpen(false)}
+            onCreate={handleCreate}
+          />
+        )}
         {dialogTemplate && (
           <NewPlanDialog
             key="new-plan"
             initialTemplate={dialogTemplate}
             onClose={() => setDialogTemplate(null)}
             onCreate={handleCreate}
+            onSwitchToAi={() => {
+              setDialogTemplate(null);
+              setIsAiWizardOpen(true);
+            }}
           />
         )}
       </AnimatePresence>

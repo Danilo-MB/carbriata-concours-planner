@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, CompassIcon, LayersIcon, MapPinIcon, PlusIcon } from 'lucide-react';
+import { ArrowRightIcon, CompassIcon, LayersIcon, MapPinIcon, PlusIcon, SparklesIcon } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LandingHeroProps {
   onCreateClick: () => void;
+  onAiClick?: () => void;
   demoProjectId?: string;
 }
 
-export function LandingHero({ onCreateClick, demoProjectId = 'carbriata-2027' }: LandingHeroProps) {
+export function LandingHero({ onCreateClick, onAiClick, demoProjectId = 'carbriata-2027' }: LandingHeroProps) {
   const { t } = useLanguage();
 
   return (
@@ -34,6 +35,18 @@ export function LandingHero({ onCreateClick, demoProjectId = 'carbriata-2027' }:
 
           {/* CTA Buttons */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {onAiClick && (
+              <button
+                type="button"
+                onClick={onAiClick}
+                className="inline-flex h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-500 p-[1.5px] shadow-md transition-all hover:scale-[1.02] active:scale-95">
+                <span className="flex h-full w-full items-center gap-2 rounded-[10px] bg-surface px-5 text-sm font-bold text-ink">
+                  <SparklesIcon className="h-4 w-4 text-amber-500" aria-hidden="true" />
+                  <span>{t('aiWizardButton')}</span>
+                </span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={onCreateClick}

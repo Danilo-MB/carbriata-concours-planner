@@ -104,4 +104,6 @@ export interface NewPlanInput {
   template: TemplateId;
   place: PlaceResult | null;
   websiteUrl?: string;
+  description?: string;
+  features?: PlanFeature[];
 }

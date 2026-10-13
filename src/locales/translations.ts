@@ -170,7 +170,32 @@ export const translations = {
     planLocationSubtitle: 'Busca el recinto o terreno. Podrás ajustar el centro exacto en el mapa después.',
     planLocationPlaceholder: 'Recinto, dirección o ciudad',
     changeLocation: 'Cambiar',
-    optional: 'opcional'
+    optional: 'opcional',
+
+    // AI Wizard
+    aiWizardButton: 'Diseñar con IA',
+    aiWizardBadge: 'Generador Inteligente',
+    aiWizardTitle: 'Diseñar plano con Asistente IA',
+    aiWizardSubtitle: 'Indica la ubicación y tus necesidades. La IA analizará el terreno satelital y trazará las zonas automáticamente.',
+    aiStep1Title: 'Ubicación y Tipo de Evento',
+    aiStep2Title: 'Capacidad y Zonas Requeridas',
+    aiStep3Title: 'Generando Plano...',
+    aiExpectedCrowd: 'Asistentes esperados',
+    aiBoothsCount: 'Cantidad de puestos o stands',
+    aiZoneParking: 'Estacionamiento de vehículos',
+    aiZoneFood: 'Bulevar gastronómico / Food trucks',
+    aiZoneStage: 'Escenario principal & Backstage',
+    aiZoneVip: 'Sector VIP & Invitados especiales',
+    aiZoneSafety: 'Puesto médico & Vía de emergencia',
+    aiCustomPromptLabel: 'Instrucciones adicionales para la IA (opcional)',
+    aiCustomPromptPlaceholder: 'ej. Ubicar el escenario hacia el norte y dejar la entrada despejada para emergencias...',
+    aiScanningTerrain: 'Analizando morfología satelital del terreno...',
+    aiQueryingOsm: 'Detectando áreas abiertas, playones existentes y accesos viales...',
+    aiCalculatingSafety: 'Calculando dimensiones y capacidades de evacuación...',
+    aiDrawingPolygons: 'Trazando geometrías inteligentes sobre el satélite...',
+    aiGenerateAction: 'Analizar terreno y generar plano con IA',
+    aiOpenInEditor: 'Abrir plano generado en el editor',
+    aiSuccessTitle: '¡Plano inteligente generado con éxito!'
   },
   en: {
     // Brand & Marketing
@@ -341,7 +366,32 @@ export const translations = {
     planLocationSubtitle: 'Search for the venue or terrain. You can adjust the exact center on the map later.',
     planLocationPlaceholder: 'Venue, address, or city',
     changeLocation: 'Change',
-    optional: 'optional'
+    optional: 'optional',
+
+    // AI Wizard
+    aiWizardButton: 'Design with AI',
+    aiWizardBadge: 'Smart Generator',
+    aiWizardTitle: 'Design Plan with AI Assistant',
+    aiWizardSubtitle: 'Choose the venue and your specifications. AI will analyze satellite terrain and draft zones automatically.',
+    aiStep1Title: 'Venue & Event Type',
+    aiStep2Title: 'Capacity & Required Zones',
+    aiStep3Title: 'Generating Plan...',
+    aiExpectedCrowd: 'Expected attendees',
+    aiBoothsCount: 'Number of booths or stands',
+    aiZoneParking: 'Vehicle parking lot',
+    aiZoneFood: 'Food & drinks boulevard / Food trucks',
+    aiZoneStage: 'Main stage & Backstage',
+    aiZoneVip: 'VIP lounge & Special guests',
+    aiZoneSafety: 'Medical post & Evacuation route',
+    aiCustomPromptLabel: 'Additional instructions for AI (optional)',
+    aiCustomPromptPlaceholder: 'e.g. Place stage facing north and keep main gate clear for emergency vehicles...',
+    aiScanningTerrain: 'Analyzing satellite terrain morphology...',
+    aiQueryingOsm: 'Detecting open areas, paved parking lots, and road accesses...',
+    aiCalculatingSafety: 'Calculating dimensions and crowd evacuation capacities...',
+    aiDrawingPolygons: 'Drafting smart polygons over satellite imagery...',
+    aiGenerateAction: 'Analyze terrain and generate with AI',
+    aiOpenInEditor: 'Open generated plan in editor',
+    aiSuccessTitle: 'Smart layout generated successfully!'
   }
 } as const;
 
