@@ -7,6 +7,7 @@ import { fallbackCategory } from '../../utils/plan';
 import { LayerSwatch } from './LayerSwatch';
 import { ImageGallery } from './ImageGallery';
 import { ElementStyleControls } from './ElementStyleControls';
+import { useLanguage } from '../../contexts/LanguageContext';
 import type { Category, PlanFeature } from '../../types/plan';
 
 interface ElementDetailsProps {
@@ -32,6 +33,7 @@ export function ElementDetails({
   onDuplicate,
   onDelete
 }: ElementDetailsProps) {
+  const { t } = useLanguage();
   const nameRef = useRef<HTMLInputElement>(null);
   const kind = featureKinds[feature.kind];
   const KindIcon = kind.icon;
@@ -62,26 +64,26 @@ export function ElementDetails({
         onClick={onBack}
         className="-ml-2 inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm text-muted transition-colors duration-150 hover:bg-subtle hover:text-ink">
         <ArrowLeftIcon className="h-4 w-4" aria-hidden />
-        Todos los elementos
+        {t('allElements')}
       </button>
 
       {/* Action buttons row directly below Todos los elementos */}
       <div className="mt-2.5 flex items-center gap-2 border-b border-line pb-3">
-        <ActionButton onClick={onZoomTo} icon={<ScanIcon className="h-4 w-4" aria-hidden />} label="Zoom to" />
-        <ActionButton onClick={onDuplicate} icon={<CopyIcon className="h-4 w-4" aria-hidden />} label="Duplicate" />
+        <ActionButton onClick={onZoomTo} icon={<ScanIcon className="h-4 w-4" aria-hidden />} label={t('zoomTo')} />
+        <ActionButton onClick={onDuplicate} icon={<CopyIcon className="h-4 w-4" aria-hidden />} label={t('duplicate')} />
         <button
           type="button"
           onClick={onDelete}
           className="ml-auto inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium text-danger transition-colors duration-150 hover:bg-danger/10">
           <Trash2Icon className="h-4 w-4" aria-hidden />
-          Delete
+          {t('delete')}
         </button>
       </div>
 
       <div className="mt-3">
         <label htmlFor="element-name" className="flex items-center gap-1.5 text-xs font-medium text-muted">
           <KindIcon className="h-3.5 w-3.5" aria-hidden />
-          Nombre del {kind.label.toLowerCase()}
+          {t('name')}
         </label>
         <input
           ref={nameRef}
@@ -122,8 +124,8 @@ export function ElementDetails({
       </div>
 
       <fieldset className="mt-6">
-        <legend className="text-sm font-medium text-ink">Layer</legend>
-        <div role="radiogroup" aria-label="Layer" className="mt-2 flex flex-wrap gap-2">
+        <legend className="text-sm font-medium text-ink">{t('category')}</legend>
+        <div role="radiogroup" aria-label={t('category')} className="mt-2 flex flex-wrap gap-2">
           {categories.map((c) => {
             const checked = c.id === feature.categoryId;
             return (
@@ -153,14 +155,14 @@ export function ElementDetails({
 
       <div className="mt-6">
         <label htmlFor="element-notes" className="text-sm font-medium text-ink">
-          Notes
+          {t('notes')}
         </label>
         <textarea
           id="element-notes"
           rows={3}
           value={feature.notes}
           onChange={(e) => onChange({ notes: e.target.value })}
-          placeholder="Capacity, contacts, setup times…"
+          placeholder={t('notesPlaceholder')}
           className="mt-1.5 w-full resize-y rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none" />
         
       </div>

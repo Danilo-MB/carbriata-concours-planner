@@ -15,6 +15,7 @@ import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
 import { computeEdgeMetrics } from '../../utils/dimensions';
 import { LayerSwatch } from './LayerSwatch';
+import { useLanguage } from '../../contexts/LanguageContext';
 import type { Category, PlanFeature } from '../../types/plan';
 
 interface VisitorElementDetailsProps {
@@ -32,6 +33,7 @@ export function VisitorElementDetails({
   onZoomTo,
   onSwitchToEditor
 }: VisitorElementDetailsProps) {
+  const { t } = useLanguage();
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const kind = featureKinds[feature.kind];
@@ -56,17 +58,17 @@ export function VisitorElementDetails({
           onClick={onBack}
           className="-ml-2 inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted transition-colors hover:bg-subtle hover:text-ink">
           <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
-          Volver al plano
+          {t('allElements')}
         </button>
 
         {onSwitchToEditor && (
           <button
             type="button"
             onClick={onSwitchToEditor}
-            title="Editar este elemento en modo organizador"
+            title={t('editorModeTitle')}
             className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-subtle/60 px-2.5 text-xs font-semibold text-ink transition-colors hover:bg-subtle">
             <PencilIcon className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
-            Editar
+            {t('editorMode')}
           </button>
         )}
       </div>
@@ -160,7 +162,7 @@ export function VisitorElementDetails({
 
       {/* Element Title */}
       <h2 className="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl">
-        {feature.name || 'Elemento sin título'}
+        {feature.name || t('untitled')}
       </h2>
 
       {/* Metric Info Cards */}
@@ -168,10 +170,10 @@ export function VisitorElementDetails({
         <div className="rounded-xl border border-line bg-subtle/50 p-3">
           <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
             {feature.kind === 'area'
-              ? 'Superficie'
+              ? t('area')
               : feature.kind === 'line'
-              ? 'Longitud'
-              : 'Coordenadas'}
+              ? t('length')
+              : t('coordinates')}
           </p>
           <p className="mt-1 font-mono text-base font-bold text-ink sm:text-lg">
             {measure.primary}
@@ -181,9 +183,9 @@ export function VisitorElementDetails({
         <div className="rounded-xl border border-line bg-subtle/50 p-3">
           <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
             {feature.kind === 'area'
-              ? 'Perímetro'
+              ? t('perimeter')
               : feature.kind === 'line'
-              ? 'Puntos trazados'
+              ? 'Tramos'
               : 'Ubicación'}
           </p>
           <p className="mt-1 font-mono text-sm font-semibold text-ink sm:text-base">
@@ -201,7 +203,7 @@ export function VisitorElementDetails({
               {feature.kind === 'area' ? 'Dimensiones de los lados' : 'Tramos del recorrido'}
             </span>
             <span className="text-[11px] font-normal text-muted">
-              {edges.length} {edges.length === 1 ? 'lado' : 'lados'}
+              {edges.length} {edges.length === 1 ? t('side') : t('sides')}
             </span>
           </div>
 
@@ -210,7 +212,7 @@ export function VisitorElementDetails({
               <div
                 key={idx}
                 className="flex items-center justify-between rounded-lg border border-line/60 bg-surface px-2.5 py-1.5">
-                <span className="text-[11px] text-muted">Lado {idx + 1}</span>
+                <span className="text-[11px] text-muted">{t('side')} {idx + 1}</span>
                 <span className="font-mono text-xs font-semibold text-ink">{edge.label}</span>
               </div>
             ))}
@@ -222,7 +224,7 @@ export function VisitorElementDetails({
       {feature.notes ? (
         <div className="mt-4 rounded-xl border border-line bg-surface p-3.5 shadow-2xs">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">
-            Información & Detalles
+            {t('notes')}
           </h3>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-ink">
             {feature.notes}
@@ -230,7 +232,7 @@ export function VisitorElementDetails({
         </div>
       ) : (
         <div className="mt-4 rounded-xl border border-dashed border-line p-3 text-center text-xs text-muted">
-          Sin descripción o notas adicionales.
+          Sin notas adicionales.
         </div>
       )}
 
@@ -241,7 +243,7 @@ export function VisitorElementDetails({
           onClick={onZoomTo}
           className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-ink px-4 text-sm font-semibold text-on-ink shadow-sm transition-all hover:opacity-90 active:scale-[0.99]">
           <CompassIcon className="h-4 w-4" aria-hidden="true" />
-          Centrar elemento en el mapa
+          {t('zoomTo')}
         </button>
       </div>
 

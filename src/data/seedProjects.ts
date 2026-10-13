@@ -7,6 +7,7 @@ export const seedProjects: Project[] = [
   description:
   'Segunda edición del festival de autos en movimiento. Expo sin vallado y tramo de 800 m de pista con dos chicanas: cada auto sale dos veces por día. Objetivo: 150+ autos en pista y más de 12.000 visitantes.',
   location: 'Autódromo de Dolores, Buenos Aires',
+  websiteUrl: 'https://carbriata.com',
   template: 'event',
   center: { lat: -36.32639, lng: -57.69722, zoom: 16 },
   basemap: 'satellite',

@@ -55,6 +55,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       name: input.name.trim(),
       description: '',
       location: place ? [place.label, place.secondary.split(',')[0]].filter(Boolean).join(', ') : 'Buenos Aires, Argentina',
+      websiteUrl: input.websiteUrl,
       template: template.id,
       center: place ? { lat: place.lat, lng: place.lng, zoom: 17 } : defaultMapView,
       basemap: 'satellite',

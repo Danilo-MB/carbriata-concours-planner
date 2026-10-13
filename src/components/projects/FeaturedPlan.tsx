@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { ArrowRightIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
+import { ArrowRightIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
 import { PlanThumbnail } from '../PlanThumbnail';
 import { summarizeKinds } from '../../utils/plan';
+import { useLanguage } from '../../contexts/LanguageContext';
 import type { Project } from '../../types/plan';
 
 interface FeaturedPlanProps {
@@ -12,38 +13,70 @@ interface FeaturedPlanProps {
 }
 
 export function FeaturedPlan({ project, onDelete }: FeaturedPlanProps) {
+  const { t } = useLanguage();
+
   return (
     <article className="relative isolate z-0 grid overflow-hidden rounded-2xl border border-line bg-surface lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-      <Link to={`/plan/${project.id}`} aria-label={`Open ${project.name}`} className="block">
+      <Link to={`/plan/${project.id}`} aria-label={`${t('openPlan')} ${project.name}`} className="block">
         <PlanThumbnail project={project} className="aspect-[16/10] h-full w-full lg:aspect-auto lg:min-h-[340px]" />
       </Link>
       <div className="flex flex-col p-5 sm:p-7">
-        <p className="flex items-center gap-1.5 text-sm text-muted">
-          <MapPinIcon className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="truncate">{project.location}</span>
-        </p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-[28px] sm:leading-tight">{project.name}</h2>
-        {project.description && <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted">{project.description}</p>}
+        <div className="flex items-center justify-between gap-2">
+          <p className="flex items-center gap-1.5 text-sm text-muted">
+            <MapPinIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="truncate">{project.location}</span>
+          </p>
+
+          {project.websiteUrl && (
+            <a
+              href={project.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline">
+              <GlobeIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>{t('officialSite')}</span>
+              <ExternalLinkIcon className="h-3 w-3" aria-hidden="true" />
+            </a>
+          )}
+        </div>
+
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-[28px] sm:leading-tight">
+          {project.name}
+        </h2>
+        {project.description && (
+          <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted">
+            {project.description}
+          </p>
+        )}
         <p className="mt-4 text-sm font-medium text-ink">{summarizeKinds(project.features)}</p>
-        <div className="mt-auto flex items-center gap-2 pt-6">
+
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-6">
           <Link
             to={`/plan/${project.id}`}
-            className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-4 text-sm font-medium text-on-ink transition-colors duration-150 hover:bg-ink/90">
-            
-            Open plan
-            <ArrowRightIcon className="h-4 w-4" aria-hidden />
+            className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-4 text-sm font-medium text-on-ink transition-colors duration-150 hover:bg-ink/90 active:scale-95">
+            {t('openPlan')}
+            <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
           </Link>
+
+          <Link
+            to={`/view/${project.id}`}
+            className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg border border-line bg-surface px-3 text-sm font-medium text-ink transition-colors duration-150 hover:bg-subtle active:scale-95">
+            <EyeIcon className="h-4 w-4 text-muted" aria-hidden="true" />
+            <span>{t('visitorMode')}</span>
+          </Link>
+
           <button
             type="button"
             onClick={onDelete}
-            aria-label={`Delete ${project.name}`}
-            className="grid h-10 w-10 place-items-center rounded-lg text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger">
-            
-            <Trash2Icon className="h-4 w-4" aria-hidden />
+            aria-label={`${t('deletePlan')} ${project.name}`}
+            className="grid h-10 w-10 place-items-center rounded-lg text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger active:scale-95">
+            <Trash2Icon className="h-4 w-4" aria-hidden="true" />
           </button>
-          <span className="ml-auto text-xs text-muted">Edited {formatDistanceToNow(project.updatedAt, { addSuffix: true })}</span>
+          <span className="ml-auto text-xs text-muted">
+            {t('edited')} {formatDistanceToNow(project.updatedAt, { addSuffix: true })}
+          </span>
         </div>
       </div>
-    </article>);
-
+    </article>
+  );
 }

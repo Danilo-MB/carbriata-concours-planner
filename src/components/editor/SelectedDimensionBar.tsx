@@ -5,6 +5,7 @@ import { formatArea, formatLength, pathLength, polygonArea } from '../../utils/g
 import { computeEdgeMetrics } from '../../utils/dimensions';
 import { featureKinds } from '../../data/featureKinds';
 import { LayerSwatch } from './LayerSwatch';
+import { useLanguage } from '../../contexts/LanguageContext';
 import type { Category, PlanFeature } from '../../types/plan';
 
 interface SelectedDimensionBarProps {
@@ -20,6 +21,7 @@ export function SelectedDimensionBar({
   onDeselect,
   onZoomTo
 }: SelectedDimensionBarProps) {
+  const { t } = useLanguage();
   const isArea = feature.kind === 'area';
   const isLine = feature.kind === 'line';
   const kind = featureKinds[feature.kind];
@@ -33,7 +35,7 @@ export function SelectedDimensionBar({
     <div className="pointer-events-none absolute left-3 right-14 top-3 z-10 flex justify-start sm:right-3 sm:justify-center">
       <motion.div
         role="region"
-        aria-label="Dimensiones del elemento seleccionado"
+        aria-label={t('planDetails')}
         initial={{ opacity: 0, y: -10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.98 }}
@@ -46,7 +48,7 @@ export function SelectedDimensionBar({
           <div className="flex min-w-0 items-center gap-1">
             <KindIcon className="h-3.5 w-3.5 shrink-0 text-white/70" aria-hidden="true" />
             <span className="max-w-[85px] truncate text-xs font-bold text-white sm:max-w-[180px]">
-              {feature.name || 'Sin título'}
+              {feature.name || t('untitled')}
             </span>
           </div>
         </div>
@@ -55,7 +57,7 @@ export function SelectedDimensionBar({
         {isArea && (
           <div className="flex shrink-0 items-center gap-1">
             <Maximize2Icon className="h-3 w-3 text-amber-400 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
-            <span className="hidden text-[11px] font-medium text-white/70 sm:inline">Superficie:</span>
+            <span className="hidden text-[11px] font-medium text-white/70 sm:inline">{t('area')}:</span>
             <span className="font-mono text-xs font-extrabold text-amber-400 sm:text-sm">
               {formatArea(area)}
             </span>
@@ -65,7 +67,7 @@ export function SelectedDimensionBar({
         {isLine && (
           <div className="flex shrink-0 items-center gap-1">
             <RulerIcon className="h-3 w-3 text-amber-400 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
-            <span className="hidden text-[11px] font-medium text-white/70 sm:inline">Longitud:</span>
+            <span className="hidden text-[11px] font-medium text-white/70 sm:inline">{t('length')}:</span>
             <span className="font-mono text-xs font-extrabold text-amber-400 sm:text-sm">
               {formatLength(perimeter)}
             </span>
@@ -76,7 +78,7 @@ export function SelectedDimensionBar({
         {isArea && (
           <div className="hidden items-center gap-1 sm:flex">
             <span className="text-white/30">·</span>
-            <span className="text-[11px] font-medium text-white/70">Perímetro:</span>
+            <span className="text-[11px] font-medium text-white/70">{t('perimeter')}:</span>
             <span className="font-mono text-xs font-bold text-white">
               {formatLength(perimeter)}
             </span>
@@ -88,7 +90,7 @@ export function SelectedDimensionBar({
           <div className="hidden items-center gap-1 md:flex">
             <span className="text-white/30">·</span>
             <span className="rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-white/90">
-              {edges.length} {edges.length === 1 ? 'lado' : 'lados'}
+              {edges.length} {edges.length === 1 ? t('side') : t('sides')}
             </span>
           </div>
         )}
@@ -98,14 +100,16 @@ export function SelectedDimensionBar({
           <button
             type="button"
             onClick={onZoomTo}
-            title="Centrar en el mapa"
+            title={t('zoomTo')}
+            aria-label={t('zoomTo')}
             className="grid h-7 w-7 place-items-center rounded-lg text-white/80 transition-colors hover:bg-white/15 hover:text-white">
             <CompassIcon className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={onDeselect}
-            title="Deseleccionar"
+            title={t('deselect')}
+            aria-label={t('deselect')}
             className="grid h-7 w-7 place-items-center rounded-lg text-white/80 transition-colors hover:bg-white/15 hover:text-white">
             <XIcon className="h-3.5 w-3.5" aria-hidden="true" />
           </button>

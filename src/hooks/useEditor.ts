@@ -11,8 +11,9 @@ type ProjectUpdater = (fn: (p: Project) => Project) => void;
 
 const toolShortcuts: Record<string, Tool> = { v: 'select', a: 'area', r: 'rectangle', l: 'line', m: 'point' };
 
-export function useEditor(project: Project, update: ProjectUpdater) {
+export function useEditor(project: Project, update: ProjectUpdater, initialMode?: ViewMode) {
   const [mode, setModeState] = useState<ViewMode>(() => {
+    if (initialMode) return initialMode;
     try {
       const params = new URLSearchParams(window.location.search);
       return params.get('mode') === 'visitor' ? 'visitor' : 'editor';

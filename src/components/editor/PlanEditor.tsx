@@ -11,17 +11,32 @@ import { fallbackCategory, pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
 import { DrawingBar } from './DrawingBar';
 import { EditorHeader } from './EditorHeader';
+import { EmbedHeader } from './EmbedHeader';
+import { VisitorHeader } from './VisitorHeader';
 import { EditorToolbar } from './EditorToolbar';
 import { MapCanvas } from './MapCanvas';
 import { MapControls } from './MapControls';
 import { SelectedDimensionBar } from './SelectedDimensionBar';
 import { SidePanel } from './SidePanel';
-import type { FeatureKind, PlaceResult, PlanFeature, Project } from '../../types/plan';
+import type { FeatureKind, PlaceResult, PlanFeature, Project, ViewMode } from '../../types/plan';
 
-export function PlanEditor({ project }: {project: Project;}) {
+interface PlanEditorProps {
+  project: Project;
+  initialMode?: ViewMode;
+  isEmbed?: boolean;
+  isVisitorOnly?: boolean;
+}
+
+export function PlanEditor({
+  project,
+  initialMode,
+  isEmbed = false,
+  isVisitorOnly = false
+}: PlanEditorProps) {
+  const effectiveInitialMode = isEmbed || isVisitorOnly ? 'visitor' : initialMode;
   const { updateProject } = useProjects();
   const update = useCallback((fn: (p: Project) => Project) => updateProject(project.id, fn), [project.id, updateProject]);
-  const editor = useEditor(project, update);
+  const editor = useEditor(project, update, effectiveInitialMode);
   const mapRef = useRef<L.Map | null>(null);
   const [tilted, setTilted] = useState(false);
   const [showClearAllModal, setShowClearAllModal] = useState(false);
@@ -73,17 +88,23 @@ export function PlanEditor({ project }: {project: Project;}) {
     toast.success('GeoJSON downloaded');
   };
 
-  const handleRename = (patch: Partial<Pick<Project, 'name' | 'location' | 'description'>>) =>
+  const handleRename = (patch: Partial<Pick<Project, 'name' | 'location' | 'description' | 'websiteUrl'>>) =>
   update((p) => ({ ...p, ...patch }));
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-canvas">
-      <EditorHeader
-        project={project}
-        mode={editor.mode}
-        onModeChange={editor.setMode}
-        onPickPlace={handlePickPlace}
-      />
+      {isEmbed ? (
+        <EmbedHeader project={project} />
+      ) : isVisitorOnly ? (
+        <VisitorHeader project={project} onPickPlace={handlePickPlace} />
+      ) : (
+        <EditorHeader
+          project={project}
+          mode={editor.mode}
+          onModeChange={editor.setMode}
+          onPickPlace={handlePickPlace}
+        />
+      )}
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <main className="relative min-h-0 flex-1 overflow-hidden">
           <MapCanvas
@@ -150,7 +171,7 @@ export function PlanEditor({ project }: {project: Project;}) {
             onDelete={() => editor.mode === 'editor' && editor.selected && editor.deleteFeature(editor.selected.id)}
           />
 
-          {editor.mode === 'editor' && (
+          {!isEmbed && !isVisitorOnly && editor.mode === 'editor' && (
             <div className={editor.sheetOpen ? 'hidden lg:block' : 'block'}>
               <EditorToolbar
                 tool={editor.tool}

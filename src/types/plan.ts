@@ -72,6 +72,7 @@ export interface Project {
   name: string;
   description: string;
   location: string;
+  websiteUrl?: string;
   template: TemplateId;
   center: MapView;
   basemap: Basemap;
@@ -102,4 +103,5 @@ export interface NewPlanInput {
   name: string;
   template: TemplateId;
   place: PlaceResult | null;
+  websiteUrl?: string;
 }

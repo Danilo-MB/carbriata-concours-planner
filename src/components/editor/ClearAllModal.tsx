@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangleIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ClearAllModalProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ export function ClearAllModal({
   onConfirm,
   onClose
 }: ClearAllModalProps) {
+  const { t } = useLanguage();
+
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,6 +53,7 @@ export function ClearAllModal({
             <button
               type="button"
               onClick={onClose}
+              aria-label={t('cancel')}
               className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-subtle hover:text-ink">
               <XIcon className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -61,17 +65,10 @@ export function ClearAllModal({
 
               <div className="min-w-0 flex-1">
                 <h3 id="clear-all-title" className="text-base font-semibold text-ink">
-                  ¿Borrar todos los elementos del mapa?
+                  {t('clearAllModalTitle')}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
-                  Se eliminarán los{' '}
-                  <span className="font-semibold text-ink">
-                    {elementCount} {elementCount === 1 ? 'elemento' : 'elementos'}
-                  </span>{' '}
-                  (áreas, caminos, parcelas y marcadores con sus fotos) de este plano.
-                </p>
-                <p className="mt-1 text-xs text-muted/80">
-                  Podrás deshacer esta acción inmediatamente desde el aviso que aparecerá en pantalla.
+                  {t('clearAllModalDesc', { count: elementCount })}
                 </p>
               </div>
             </div>
@@ -81,7 +78,7 @@ export function ClearAllModal({
                 type="button"
                 onClick={onClose}
                 className="h-10 rounded-xl border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-subtle">
-                Cancelar
+                {t('cancel')}
               </button>
 
               <button
@@ -92,7 +89,7 @@ export function ClearAllModal({
                 }}
                 className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-700 active:bg-red-800">
                 <Trash2Icon className="h-4 w-4" aria-hidden="true" />
-                Sí, borrar todo
+                {t('confirmClear')}
               </button>
             </div>
           </motion.div>
