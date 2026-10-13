@@ -4,6 +4,7 @@ import {
   ArrowRightIcon,
   CarIcon,
   CheckCircle2Icon,
+  CheckIcon,
   LayersIcon,
   MapPinIcon,
   MusicIcon,
@@ -299,9 +300,27 @@ export function AiWizardModal({ onClose, onCreate }: AiWizardModalProps) {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-ink">
-                    Zonas clave a generar en el terreno
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-ink">
+                      Zonas clave a generar en el terreno
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const allOn = hasParking && hasFood && hasStage && hasVip && hasSafety;
+                        const next = !allOn;
+                        setHasParking(next);
+                        setHasFood(next);
+                        setHasStage(next);
+                        setHasVip(next);
+                        setHasSafety(next);
+                      }}
+                      className="text-xs font-semibold text-accent hover:underline">
+                      {hasParking && hasFood && hasStage && hasVip && hasSafety
+                        ? 'Deseleccionar todas'
+                        : 'Seleccionar todas'}
+                    </button>
+                  </div>
                   <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {[
                       { state: hasParking, set: setHasParking, label: t('aiZoneParking'), icon: CarIcon },
@@ -312,20 +331,27 @@ export function AiWizardModal({ onClose, onCreate }: AiWizardModalProps) {
                     ].map((item, idx) => {
                       const Icon = item.icon;
                       return (
-                        <label
+                        <button
                           key={idx}
-                          className={`flex items-center gap-2.5 rounded-xl border p-3 cursor-pointer transition-colors ${
-                            item.state ? 'border-ink/80 bg-subtle/80 text-ink' : 'border-line text-muted hover:border-ink/30'
+                          type="button"
+                          onClick={() => item.set(!item.state)}
+                          className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                            item.state
+                              ? 'border-accent bg-accent/10 text-ink shadow-2xs'
+                              : 'border-line bg-surface text-muted hover:border-ink/30'
                           }`}>
-                          <input
-                            type="checkbox"
-                            checked={item.state}
-                            onChange={(e) => item.set(e.target.checked)}
-                            className="rounded border-line text-ink focus:ring-ink"
-                          />
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span className="text-xs font-semibold">{item.label}</span>
-                        </label>
+                          <div
+                            className={`grid h-5 w-5 shrink-0 place-items-center rounded-md border transition-colors ${
+                              item.state ? 'border-accent bg-accent text-white' : 'border-line bg-subtle'
+                            }`}>
+                            {item.state && <CheckIcon className="h-3.5 w-3.5 stroke-[3]" />}
+                          </div>
+                          <Icon className={`h-4 w-4 shrink-0 ${item.state ? 'text-accent' : 'text-muted'}`} />
+                          <span className="text-xs font-semibold text-ink">{item.label}</span>
+                          <span className={`ml-auto text-[10px] font-bold uppercase ${item.state ? 'text-accent' : 'text-muted/60'}`}>
+                            {item.state ? 'Activo' : 'Omitir'}
+                          </span>
+                        </button>
                       );
                     })}
                   </div>

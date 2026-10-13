@@ -50,6 +50,31 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     const template = planTemplates.find((t) => t.id === input.template) ?? planTemplates[0];
     const now = Date.now();
     const place = input.place;
+
+    // Merge template categories and ensure all feature categories are present
+    const categoryMap = new Map<string, import('../types/plan').Category>();
+    for (const c of template.categories) {
+      categoryMap.set(c.id, { ...c });
+    }
+    // Also include standard event categories as fallback
+    for (const c of planTemplates[0].categories) {
+      if (!categoryMap.has(c.id)) {
+        categoryMap.set(c.id, { ...c });
+      }
+    }
+    if (input.features) {
+      for (const f of input.features) {
+        if (!categoryMap.has(f.categoryId)) {
+          categoryMap.set(f.categoryId, {
+            id: f.categoryId,
+            name: f.name,
+            color: f.color || '#E8590C',
+            icon: 'pin'
+          });
+        }
+      }
+    }
+
     const project: Project = {
       id: createId(),
       name: input.name.trim(),
@@ -59,7 +84,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       template: template.id,
       center: place ? { lat: place.lat, lng: place.lng, zoom: 17 } : defaultMapView,
       basemap: 'satellite',
-      categories: template.categories.map((c) => ({ ...c })),
+      categories: Array.from(categoryMap.values()),
       features: input.features ? [...input.features] : [],
       hiddenCategoryIds: [],
       createdAt: now,

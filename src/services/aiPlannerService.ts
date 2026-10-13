@@ -254,14 +254,26 @@ export async function generateAiPlan(input: AiPlannerPromptInput): Promise<AiPla
       name: 'Sector VIP & Lounge de Invitados',
       categoryId: 'zones',
       notes: 'Acceso restringido con vista preferencial al escenario, barra privada y sanitarios exclusivos.',
-      coords: createMeterRect(center, 30, 20, 45, 80),
+      coords: createMeterRect(center, 35, 22, 50, 75),
       createdAt: now + 5,
       color: '#AE3EC9',
       opacity: 0.4
     });
+
+    features.push({
+      id: createId(),
+      kind: 'area',
+      name: 'Estacionamiento VIP & Prensa',
+      categoryId: 'parking',
+      notes: 'Plaza exclusiva para sponsors, artistas, prensa y producción.',
+      coords: createMeterRect(center, 40, 25, 65, -80),
+      createdAt: now + 51,
+      color: '#1C7ED6',
+      opacity: 0.4
+    });
   }
 
-  // 6. SAFETY, MEDICAL & ACCESS
+  // 6. SAFETY, MEDICAL, SANITATION & ACCESS
   if (input.hasSafety) {
     // Medical Point
     const medCoords = meterOffsetToLatLng(center, -35, -45);
@@ -289,6 +301,30 @@ export async function generateAiPlan(input: AiPlannerPromptInput): Promise<AiPla
       color: '#F06595'
     });
 
+    // Restrooms North
+    features.push({
+      id: createId(),
+      kind: 'point',
+      name: 'Batería Sanitaria Norte (Baños Químicos)',
+      categoryId: 'safety',
+      notes: 'Módulos químicos y lavamanos con toma de agua y desagote programado.',
+      coords: [meterOffsetToLatLng(center, -45, 60)],
+      createdAt: now + 8,
+      color: '#0CA678'
+    });
+
+    // Restrooms South
+    features.push({
+      id: createId(),
+      kind: 'point',
+      name: 'Batería Sanitaria Sur (Baños Químicos)',
+      categoryId: 'safety',
+      notes: 'Batería sanitaria auxiliar junto a la zona gastronómica y acceso.',
+      coords: [meterOffsetToLatLng(center, 45, -45)],
+      createdAt: now + 9,
+      color: '#0CA678'
+    });
+
     // Emergency Evacuation Path
     const p1 = meterOffsetToLatLng(center, 0, 90);
     const p2 = meterOffsetToLatLng(center, 0, -40);
@@ -300,7 +336,7 @@ export async function generateAiPlan(input: AiPlannerPromptInput): Promise<AiPla
       categoryId: 'access',
       notes: 'Vía principal despejada para libre tránsito de vehículos de emergencia y desconcentración masiva.',
       coords: [p1, p2, p3],
-      createdAt: now + 8,
+      createdAt: now + 10,
       color: '#F06595',
       strokeWidth: 4
     });
