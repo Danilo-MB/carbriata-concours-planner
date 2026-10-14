@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { categoryColors } from '../data/categoryColors';
 import { createId } from '../utils/id';
-import { rectFromCorners, translate } from '../utils/geo';
+import { getFeaturesGeometricCenter, rectFromCorners, translate } from '../utils/geo';
 import { nextFeatureName, pickCategory } from '../utils/plan';
 import { useLatestRef } from './useLatestRef';
 import type { Basemap, Category, FeatureKind, LatLng, MapView, PanelView, PlanFeature, Project, Tool, ViewMode } from '../types/plan';
@@ -71,11 +71,16 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
       images: [],
       createdAt: Date.now()
     };
-    update((p) => ({
-      ...p,
-      features: [...p.features, feature],
-      hiddenCategoryIds: p.hiddenCategoryIds.filter((id) => id !== category.id)
-    }));
+    update((p) => {
+      const nextFeatures = [...p.features, feature];
+      const geomCenter = getFeaturesGeometricCenter(nextFeatures);
+      return {
+        ...p,
+        features: nextFeatures,
+        center: geomCenter ? { lat: geomCenter[0], lng: geomCenter[1], zoom: p.center.zoom } : p.center,
+        hiddenCategoryIds: p.hiddenCategoryIds.filter((id) => id !== category.id)
+      };
+    });
     setToolState('select');
     setDraft([]);
     setSelectedId(feature.id);
@@ -104,7 +109,17 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
   const updateFeature = (id: string, patch: Partial<PlanFeature>) =>
   update((p) => ({ ...p, features: p.features.map((f) => f.id === id ? { ...f, ...patch } : f) }));
 
-  const setGeometry = (id: string, coords: LatLng[]) => updateFeature(id, { coords });
+  const setGeometry = (id: string, coords: LatLng[]) => {
+    update((p) => {
+      const nextFeatures = p.features.map((f) => (f.id === id ? { ...f, coords } : f));
+      const geomCenter = getFeaturesGeometricCenter(nextFeatures);
+      return {
+        ...p,
+        features: nextFeatures,
+        center: geomCenter ? { lat: geomCenter[0], lng: geomCenter[1], zoom: p.center.zoom } : p.center
+      };
+    });
+  };
 
   const duplicateFeature = (id: string) => {
     const source = project.features.find((f) => f.id === id);
@@ -117,7 +132,15 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
       images: source.images ? [...source.images] : [],
       createdAt: Date.now()
     };
-    update((p) => ({ ...p, features: [...p.features, copy] }));
+    update((p) => {
+      const nextFeatures = [...p.features, copy];
+      const geomCenter = getFeaturesGeometricCenter(nextFeatures);
+      return {
+        ...p,
+        features: nextFeatures,
+        center: geomCenter ? { lat: geomCenter[0], lng: geomCenter[1], zoom: p.center.zoom } : p.center
+      };
+    });
     setSelectedId(copy.id);
     setAutoFocusId(copy.id);
   };
@@ -126,7 +149,15 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
     const index = project.features.findIndex((f) => f.id === id);
     const feature = project.features[index];
     if (!feature) return;
-    update((p) => ({ ...p, features: p.features.filter((f) => f.id !== id) }));
+    update((p) => {
+      const nextFeatures = p.features.filter((f) => f.id !== id);
+      const geomCenter = getFeaturesGeometricCenter(nextFeatures);
+      return {
+        ...p,
+        features: nextFeatures,
+        center: geomCenter ? { lat: geomCenter[0], lng: geomCenter[1], zoom: p.center.zoom } : p.center
+      };
+    });
     if (selectedId === id) setSelectedId(null);
     toast(`Deleted “${feature.name}”`, {
       action: {
@@ -135,7 +166,12 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
         update((p) => {
           const features = [...p.features];
           features.splice(Math.min(index, features.length), 0, feature);
-          return { ...p, features };
+          const geomCenter = getFeaturesGeometricCenter(features);
+          return {
+            ...p,
+            features,
+            center: geomCenter ? { lat: geomCenter[0], lng: geomCenter[1], zoom: p.center.zoom } : p.center
+          };
         })
       }
     });

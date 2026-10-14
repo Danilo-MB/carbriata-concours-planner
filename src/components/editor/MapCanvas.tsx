@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { MutableRefObject } from 'react';
 import L from 'leaflet';
+import { getFeaturesBounds } from '../../utils/geo';
 import { tiltedContainerPoint } from '../../utils/mapTilt';
 import { useBasemap } from '../../hooks/useBasemap';
 import { useDraftLayer } from '../../hooks/useDraftLayer';
@@ -67,6 +68,13 @@ export function MapCanvas({
     const { lat, lng, zoom } = initialViewRef.current;
     const instance = L.map(el, { center: [lat, lng], zoom, zoomControl: false, maxZoom: 21, minZoom: 3, zoomSnap: 0.5 });
     instance.attributionControl.setPrefix(false);
+
+    if (features && features.length > 0) {
+      const bounds = getFeaturesBounds(features);
+      if (bounds) {
+        instance.fitBounds(bounds, { padding: [48, 48], maxZoom: 18.5, animate: false });
+      }
+    }
 
     instance.mouseEventToContainerPoint = (event: MouseEvent) => {
       if (getComputedStyle(el).transform === 'none') {

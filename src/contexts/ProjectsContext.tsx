@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { seedProjects } from '../data/seedProjects';
 import { defaultMapView, planTemplates } from '../data/templates';
 import { createId } from '../utils/id';
+import { getFeaturesBounds, getFeaturesGeometricCenter, getOptimalZoomForBounds } from '../utils/geo';
 import { loadProjects, loadProjectsFromIdb, saveProjects } from '../utils/storage';
 import { api } from '../utils/api';
 import { useAuth } from './AuthContext';
@@ -21,23 +22,42 @@ function ensureStreetViewSeed(projs: Project[]): Project[] {
   const carbriataSeed = seedProjects.find((p) => p.id === 'carbriata-2027');
   if (!carbriataSeed) return projs;
   const streetViewRoute = carbriataSeed.features.find((f) => f.id === 'f-recorrido-streetview');
-  if (!streetViewRoute) return projs;
 
-  let modified = false;
-  const result = projs.map((p) => {
-    if (p.id === 'carbriata-2027') {
+  return projs.map((p) => {
+    let current = p;
+    if (p.id === 'carbriata-2027' && streetViewRoute) {
       const hasRoute = p.features.some((f) => f.id === 'f-recorrido-streetview');
       if (!hasRoute) {
-        modified = true;
-        return {
+        current = {
           ...p,
           features: [streetViewRoute, ...p.features],
         };
       }
     }
-    return p;
+    // Ensure center is the geometric center of all features if any exist
+    if (current.features && current.features.length > 0) {
+      const geomCenter = getFeaturesGeometricCenter(current.features);
+      const bounds = getFeaturesBounds(current.features);
+      if (geomCenter) {
+        const optimalZoom = bounds ? getOptimalZoomForBounds(bounds) : current.center.zoom;
+        // Check if center is different
+        if (
+          Math.abs(current.center.lat - geomCenter[0]) > 0.00001 ||
+          Math.abs(current.center.lng - geomCenter[1]) > 0.00001
+        ) {
+          current = {
+            ...current,
+            center: {
+              lat: geomCenter[0],
+              lng: geomCenter[1],
+              zoom: optimalZoom
+            }
+          };
+        }
+      }
+    }
+    return current;
   });
-  return modified ? result : projs;
 }
 
 export function ProjectsProvider({ children }: { children: React.ReactNode }) {
@@ -111,6 +131,19 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    const features = input.features ? [...input.features] : [];
+    const geomCenter = getFeaturesGeometricCenter(features);
+    const bounds = getFeaturesBounds(features);
+    const centerView: MapView = geomCenter && bounds
+      ? {
+          lat: geomCenter[0],
+          lng: geomCenter[1],
+          zoom: getOptimalZoomForBounds(bounds)
+        }
+      : place
+      ? { lat: place.lat, lng: place.lng, zoom: 17 }
+      : defaultMapView;
+
     const project: Project = {
       id: createId(),
       name: input.name.trim(),
@@ -118,10 +151,10 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       location: place ? [place.label, place.secondary.split(',')[0]].filter(Boolean).join(', ') : 'Buenos Aires, Argentina',
       websiteUrl: input.websiteUrl,
       template: template.id,
-      center: place ? { lat: place.lat, lng: place.lng, zoom: 17 } : defaultMapView,
+      center: centerView,
       basemap: 'satellite',
       categories: Array.from(categoryMap.values()),
-      features: input.features ? [...input.features] : [],
+      features,
       hiddenCategoryIds: [],
       createdAt: now,
       updatedAt: now

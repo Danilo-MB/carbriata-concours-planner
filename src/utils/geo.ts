@@ -34,6 +34,71 @@ export function centroid(coords: LatLng[]): LatLng {
   return [sum[0] / coords.length, sum[1] / coords.length];
 }
 
+/**
+ * Calculates the bounding box containing all features: [[minLat, minLng], [maxLat, maxLng]]
+ */
+export function getFeaturesBounds(features: PlanFeature[]): [LatLng, LatLng] | null {
+  if (!features || features.length === 0) return null;
+  let minLat = Infinity;
+  let maxLat = -Infinity;
+  let minLng = Infinity;
+  let maxLng = -Infinity;
+  let count = 0;
+
+  for (const feature of features) {
+    if (!feature.coords || feature.coords.length === 0) continue;
+    for (const [lat, lng] of feature.coords) {
+      if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) continue;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+      count++;
+    }
+  }
+
+  if (count === 0) return null;
+  return [
+    [round6(minLat), round6(minLng)],
+    [round6(maxLat), round6(maxLng)]
+  ];
+}
+
+/**
+ * Calculates the geometric center (midpoint of the bounding box) of all drawn elements.
+ * Returns [centerLat, centerLng] or null if no elements.
+ */
+export function getFeaturesGeometricCenter(features: PlanFeature[]): LatLng | null {
+  const bounds = getFeaturesBounds(features);
+  if (!bounds) return null;
+  const [[minLat, minLng], [maxLat, maxLng]] = bounds;
+  return [
+    round6((minLat + maxLat) / 2),
+    round6((minLng + maxLng) / 2)
+  ];
+}
+
+/**
+ * Calculates an optimal initial zoom level to frame a given bounding box.
+ */
+export function getOptimalZoomForBounds(bounds: [LatLng, LatLng]): number {
+  const [[minLat, minLng], [maxLat, maxLng]] = bounds;
+  const dLat = Math.abs(maxLat - minLat);
+  const dLng = Math.abs(maxLng - minLng);
+  const maxSpan = Math.max(dLat, dLng);
+
+  if (maxSpan === 0) return 18;
+  if (maxSpan < 0.0015) return 18;
+  if (maxSpan < 0.0035) return 17.5;
+  if (maxSpan < 0.008) return 16.5;
+  if (maxSpan < 0.018) return 15.5;
+  if (maxSpan < 0.04) return 14.5;
+  if (maxSpan < 0.08) return 13.5;
+  if (maxSpan < 0.16) return 12.5;
+  if (maxSpan < 0.32) return 11.5;
+  return 10.5;
+}
+
 export function translate(coords: LatLng[], dLat: number, dLng: number): LatLng[] {
   return coords.map(([lat, lng]) => [lat + dLat, lng + dLng]);
 }

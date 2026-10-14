@@ -9,7 +9,7 @@ export const seedProjects: Project[] = [
   location: 'Autódromo de Dolores, Buenos Aires',
   websiteUrl: 'https://carbriata.com',
   template: 'event',
-  center: { lat: -36.32639, lng: -57.69722, zoom: 16 },
+  center: { lat: -36.32635, lng: -57.6969, zoom: 16 },
   basemap: 'satellite',
   hiddenCategoryIds: [],
   createdAt: 1789900000000,

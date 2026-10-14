@@ -5,7 +5,7 @@ import type L from 'leaflet';
 import { useProjects } from '../../contexts/ProjectsContext';
 import { useEditor } from '../../hooks/useEditor';
 import { downloadTextFile, geojsonFileName, toGeoJSON } from '../../utils/geojson';
-import { formatArea, formatLength, pathLength, polygonArea } from '../../utils/geo';
+import { formatArea, formatLength, getFeaturesBounds, getFeaturesGeometricCenter, getOptimalZoomForBounds, pathLength, polygonArea } from '../../utils/geo';
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
 import { fallbackCategory, pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
@@ -83,8 +83,32 @@ export function PlanEditor({
 
   const handleZoomTo = (feature: PlanFeature) => withMap((m) => zoomToFeature(m, feature));
   const handleSaveCenter = () => withMap((m) => editor.saveCenter(readView(m)));
-  const handleGoToCenter = () => withMap((m) => goToView(m, project.center));
+  const handleGoToCenter = () => withMap((m) => {
+    if (project.features && project.features.length > 0) {
+      const bounds = getFeaturesBounds(project.features);
+      if (bounds) {
+        m.fitBounds(bounds, { padding: [48, 48], maxZoom: 18.5, animate: true });
+        return;
+      }
+    }
+    goToView(m, project.center);
+  });
   const handlePickPlace = (place: PlaceResult) => withMap((m) => goToPlace(m, place));
+
+  const effectiveCenter = useMemo(() => {
+    if (project.features && project.features.length > 0) {
+      const geomCenter = getFeaturesGeometricCenter(project.features);
+      const bounds = getFeaturesBounds(project.features);
+      if (geomCenter) {
+        return {
+          lat: geomCenter[0],
+          lng: geomCenter[1],
+          zoom: bounds ? getOptimalZoomForBounds(bounds) : project.center.zoom
+        };
+      }
+    }
+    return project.center;
+  }, [project.features, project.center]);
 
   const handleLocate = () => {
     if (!navigator.geolocation) {
@@ -128,7 +152,7 @@ export function PlanEditor({
         <main className="relative min-h-0 flex-1 overflow-hidden">
           <MapCanvas
             mapRef={mapRef}
-            initialView={project.center}
+            initialView={effectiveCenter}
             basemap={project.basemap}
             features={editor.visibleFeatures}
             categories={project.categories}
