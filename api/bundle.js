@@ -95675,8 +95675,8 @@ var StorageService = class {
     this.load();
   }
   initRedis() {
-    const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+    const url = process.env.STORAGE_REST_API_URL || process.env.STORAGE_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_URL || Object.entries(process.env).find(([k]) => k.endsWith("_REST_API_URL"))?.[1];
+    const token = process.env.STORAGE_REST_API_TOKEN || process.env.STORAGE_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_TOKEN || Object.entries(process.env).find(([k]) => k.endsWith("_REST_API_TOKEN"))?.[1];
     if (url && token) {
       try {
         this.redis = new Redis2({ url, token });
