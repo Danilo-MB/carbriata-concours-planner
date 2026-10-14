@@ -16,7 +16,7 @@ interface NewPlanDialogProps {
 
 const ease = [0.23, 1, 0.32, 1] as const;
 
-export function NewPlanDialog({ initialTemplate, onClose, onCreate }: NewPlanDialogProps) {
+export function NewPlanDialog({ initialTemplate, onClose, onCreate, onSwitchToAi }: NewPlanDialogProps) {
   const { t } = useLanguage();
   const [name, setName] = useState('');
   const [template, setTemplate] = useState<TemplateId>(initialTemplate);
