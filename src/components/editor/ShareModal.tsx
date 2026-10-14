@@ -19,7 +19,7 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedEmbed, setCopiedEmbed] = useState(false);
   const [embedHeight, setEmbedHeight] = useState('600');
-  const [useShortLink, setUseShortLink] = useState(false);
+  const [useShortLink, setUseShortLink] = useState(true);
   const syncedRef = useRef<string | null>(null);
 
   // Sync to cloud backend once when opened
@@ -178,7 +178,7 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
                         onClick={() => setUseShortLink(!useShortLink)}
                         className="text-[11px] text-muted hover:text-ink underline cursor-pointer"
                       >
-                        {useShortLink ? 'Usar enlace portable (recomendado)' : 'Usar enlace corto'}
+                        {useShortLink ? 'Usar enlace portable (offline)' : 'Usar enlace corto (recomendado)'}
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
@@ -208,7 +208,9 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
                       </button>
                     </div>
                     <p className="mt-1.5 text-[11px] text-muted">
-                      {!useShortLink ? '✓ Funciona en cualquier celular (WhatsApp, Safari, Chrome) sin necesidad de cuenta.' : '⚠ Requiere que el plano esté en el servidor.'}
+                      {useShortLink
+                        ? '✓ Enlace corto y limpio para WhatsApp, redes y celulares.'
+                        : '⚠ Enlace portable con todos los datos comprimidos en la URL.'}
                     </p>
                   </div>
 

@@ -7,17 +7,17 @@ export class ProjectsService {
     @Inject(StorageService) private readonly storage: StorageService
   ) {}
 
-  getAll(userId?: string): ProjectEntity[] {
+  async getAll(userId?: string): Promise<ProjectEntity[]> {
     return this.storage.findProjects(userId);
   }
 
-  getOne(id: string): ProjectEntity {
-    const project = this.storage.findProjectById(id);
+  async getOne(id: string): Promise<ProjectEntity> {
+    const project = await this.storage.findProjectById(id);
     if (!project) throw new NotFoundException(`Proyecto con id "${id}" no encontrado.`);
     return project;
   }
 
-  create(data: Partial<ProjectEntity>, userId?: string): ProjectEntity {
+  async create(data: Partial<ProjectEntity>, userId?: string): Promise<ProjectEntity> {
     const id = data.id || 'p_' + Math.random().toString(36).substring(2, 10);
     const now = Date.now();
 
@@ -40,8 +40,8 @@ export class ProjectsService {
     return this.storage.saveProject(project);
   }
 
-  update(id: string, patch: Partial<ProjectEntity>): ProjectEntity {
-    const existing = this.getOne(id);
+  async update(id: string, patch: Partial<ProjectEntity>): Promise<ProjectEntity> {
+    const existing = await this.getOne(id);
     const updated: ProjectEntity = {
       ...existing,
       ...patch,
@@ -50,27 +50,27 @@ export class ProjectsService {
     return this.storage.saveProject(updated);
   }
 
-  delete(id: string): { success: boolean } {
-    const ok = this.storage.deleteProject(id);
+  async delete(id: string): Promise<{ success: boolean }> {
+    const ok = await this.storage.deleteProject(id);
     if (!ok) throw new NotFoundException(`Proyecto "${id}" no encontrado.`);
     return { success: true };
   }
 
   // Feature operations for map elements
-  syncFeatures(projectId: string, features: FeatureEntity[]): ProjectEntity {
-    const project = this.storage.updateProjectFeatures(projectId, features);
+  async syncFeatures(projectId: string, features: FeatureEntity[]): Promise<ProjectEntity> {
+    const project = await this.storage.updateProjectFeatures(projectId, features);
     if (!project) throw new NotFoundException(`Proyecto "${projectId}" no encontrado.`);
     return project;
   }
 
-  saveFeature(projectId: string, feature: FeatureEntity): ProjectEntity {
-    const project = this.storage.addOrUpdateFeature(projectId, feature);
+  async saveFeature(projectId: string, feature: FeatureEntity): Promise<ProjectEntity> {
+    const project = await this.storage.addOrUpdateFeature(projectId, feature);
     if (!project) throw new NotFoundException(`Proyecto "${projectId}" no encontrado.`);
     return project;
   }
 
-  deleteFeature(projectId: string, featureId: string): ProjectEntity {
-    const project = this.storage.deleteFeature(projectId, featureId);
+  async deleteFeature(projectId: string, featureId: string): Promise<ProjectEntity> {
+    const project = await this.storage.deleteFeature(projectId, featureId);
     if (!project) throw new NotFoundException(`Proyecto "${projectId}" o elemento no encontrado.`);
     return project;
   }

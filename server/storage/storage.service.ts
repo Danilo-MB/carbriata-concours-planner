@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Redis } from '@upstash/redis';
 
 export interface UserEntity {
   id: string;
@@ -61,6 +62,7 @@ export class StorageService implements OnModuleInit {
   };
 
   private store: DataStore = StorageService.memoryStore;
+  private redis: Redis | null = null;
 
   private filePath: string = process.env.DATA_FILE_PATH || (
     process.env.VERCEL
@@ -69,7 +71,24 @@ export class StorageService implements OnModuleInit {
   );
 
   onModuleInit() {
+    this.initRedis();
     this.load();
+  }
+
+  private initRedis(): void {
+    const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+
+    if (url && token) {
+      try {
+        this.redis = new Redis({ url, token });
+        console.log('✅ Upstash Redis / Vercel KV initialized successfully');
+      } catch (err) {
+        console.warn('⚠️ Could not initialize Redis client:', err);
+      }
+    } else {
+      console.log('ℹ️ Running with local/memory storage (Upstash Redis environment variables not set)');
+    }
   }
 
   private load(): void {
@@ -119,46 +138,108 @@ export class StorageService implements OnModuleInit {
   }
 
   // Projects
-  findProjects(userId?: string): ProjectEntity[] {
+  async findProjects(userId?: string): Promise<ProjectEntity[]> {
+    // If Redis is configured, pull fresh projects from the cloud
+    if (this.redis) {
+      try {
+        const ids = await this.redis.smembers<string[]>('all_project_ids');
+        if (Array.isArray(ids) && ids.length > 0) {
+          const keys = ids.map((id) => `project:${id}`);
+          const fetched = await this.redis.mget<ProjectEntity[]>(...keys);
+          for (const p of fetched) {
+            if (p && p.id) {
+              this.store.projects[p.id] = p;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Redis findProjects error:', err);
+      }
+    }
+
     const all = Object.values(this.store.projects);
     if (!userId) return all;
     return all.filter((p) => !p.userId || p.userId === userId);
   }
 
-  findProjectById(id: string): ProjectEntity | undefined {
-    return this.store.projects[id] || bundledSeedData.projects[id];
+  async findProjectById(id: string): Promise<ProjectEntity | undefined> {
+    // 1. Try local memory / bundled
+    const local = this.store.projects[id] || bundledSeedData.projects[id];
+
+    // 2. If Redis is configured, fetch from cloud to ensure freshest version across all serverless containers
+    if (this.redis) {
+      try {
+        const cloudProj = await this.redis.get<ProjectEntity>(`project:${id}`);
+        if (cloudProj && cloudProj.id) {
+          this.store.projects[id] = cloudProj;
+          return cloudProj;
+        }
+      } catch (err) {
+        console.warn(`Redis findProjectById(${id}) error:`, err);
+      }
+    }
+
+    return local;
   }
 
-  saveProject(project: ProjectEntity): ProjectEntity {
-    this.store.projects[project.id] = {
+  async saveProject(project: ProjectEntity): Promise<ProjectEntity> {
+    const record: ProjectEntity = {
       ...project,
       updatedAt: Date.now()
     };
+
+    // Save locally first
+    this.store.projects[project.id] = record;
     this.save();
-    return this.store.projects[project.id];
+
+    // Persist to Upstash Redis in the cloud
+    if (this.redis) {
+      try {
+        await Promise.all([
+          this.redis.set(`project:${project.id}`, record),
+          this.redis.sadd('all_project_ids', project.id)
+        ]);
+      } catch (err) {
+        console.warn(`Redis saveProject(${project.id}) error:`, err);
+      }
+    }
+
+    return record;
   }
 
-  deleteProject(id: string): boolean {
+  async deleteProject(id: string): Promise<boolean> {
+    let existed = false;
     if (this.store.projects[id]) {
       delete this.store.projects[id];
       this.save();
-      return true;
+      existed = true;
     }
-    return false;
+
+    if (this.redis) {
+      try {
+        await Promise.all([
+          this.redis.del(`project:${id}`),
+          this.redis.srem('all_project_ids', id)
+        ]);
+        existed = true;
+      } catch (err) {
+        console.warn(`Redis deleteProject(${id}) error:`, err);
+      }
+    }
+
+    return existed;
   }
 
   // Features within project
-  updateProjectFeatures(projectId: string, features: FeatureEntity[]): ProjectEntity | null {
-    const project = this.store.projects[projectId];
+  async updateProjectFeatures(projectId: string, features: FeatureEntity[]): Promise<ProjectEntity | null> {
+    const project = await this.findProjectById(projectId);
     if (!project) return null;
     project.features = features;
-    project.updatedAt = Date.now();
-    this.save();
-    return project;
+    return this.saveProject(project);
   }
 
-  addOrUpdateFeature(projectId: string, feature: FeatureEntity): ProjectEntity | null {
-    const project = this.store.projects[projectId];
+  async addOrUpdateFeature(projectId: string, feature: FeatureEntity): Promise<ProjectEntity | null> {
+    const project = await this.findProjectById(projectId);
     if (!project) return null;
     const idx = project.features.findIndex((f) => f.id === feature.id);
     if (idx >= 0) {
@@ -166,17 +247,13 @@ export class StorageService implements OnModuleInit {
     } else {
       project.features.push(feature);
     }
-    project.updatedAt = Date.now();
-    this.save();
-    return project;
+    return this.saveProject(project);
   }
 
-  deleteFeature(projectId: string, featureId: string): ProjectEntity | null {
-    const project = this.store.projects[projectId];
+  async deleteFeature(projectId: string, featureId: string): Promise<ProjectEntity | null> {
+    const project = await this.findProjectById(projectId);
     if (!project) return null;
     project.features = project.features.filter((f) => f.id !== featureId);
-    project.updatedAt = Date.now();
-    this.save();
-    return project;
+    return this.saveProject(project);
   }
 }
