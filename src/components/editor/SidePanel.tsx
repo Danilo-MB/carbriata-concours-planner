@@ -20,6 +20,7 @@ interface SidePanelProps {
   onGoToCenter: () => void;
   onExport: () => void;
   onRename: (patch: Partial<Pick<Project, 'name' | 'location' | 'description' | 'websiteUrl'>>) => void;
+  onOpenStreetView?: (feature: PlanFeature, initialIndex?: number) => void;
 }
 
 export function SidePanel({
@@ -30,7 +31,8 @@ export function SidePanel({
   onSaveCenter,
   onGoToCenter,
   onExport,
-  onRename
+  onRename,
+  onOpenStreetView
 }: SidePanelProps) {
   const { t } = useLanguage();
   const { selected, sheetOpen, setSheetOpen, mode } = editor;
@@ -89,6 +91,7 @@ export function SidePanel({
               onBack={() => editor.select(null)}
               onZoomTo={() => onZoomTo(selected)}
               onSwitchToEditor={() => editor.setMode('editor')}
+              onOpenStreetView={(idx) => onOpenStreetView?.(selected, idx)}
             />
           ) : (
             <ElementDetails
@@ -102,6 +105,7 @@ export function SidePanel({
               onZoomTo={() => onZoomTo(selected)}
               onDuplicate={() => editor.duplicateFeature(selected.id)}
               onDelete={() => editor.deleteFeature(selected.id)}
+              onOpenStreetView={(idx) => onOpenStreetView?.(selected, idx)}
             />
           )
         ) : mode === 'visitor' ? (

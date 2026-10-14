@@ -27,6 +27,7 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
   const [panel, setPanel] = useState<PanelView>('elements');
   const [sheetOpen, setSheetOpen] = useState(false);
   const [autoFocusId, setAutoFocusId] = useState<string | null>(null);
+  const [newlyCreatedRoute, setNewlyCreatedRoute] = useState<PlanFeature | null>(null);
 
   const selected = project.features.find((f) => f.id === selectedId) ?? null;
   const visibleFeatures = useMemo(
@@ -80,6 +81,9 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
     setSelectedId(feature.id);
     setAutoFocusId(feature.id);
     setSheetOpen(true);
+    if (kind === 'line' && coords.length >= 2) {
+      setNewlyCreatedRoute(feature);
+    }
   };
 
   const handleMapClick = (point: LatLng) => {
@@ -276,7 +280,9 @@ export function useEditor(project: Project, update: ProjectUpdater, initialMode?
     sheetOpen,
     setSheetOpen,
     autoFocusId,
-    clearAutoFocus: () => setAutoFocusId(null)
+    clearAutoFocus: () => setAutoFocusId(null),
+    newlyCreatedRoute,
+    setNewlyCreatedRoute
   };
 }
 

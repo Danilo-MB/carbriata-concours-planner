@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CompassIcon,
+  FootprintsIcon,
   Maximize2Icon,
   PencilIcon,
   RulerIcon,
@@ -24,6 +25,7 @@ interface VisitorElementDetailsProps {
   onBack: () => void;
   onZoomTo: () => void;
   onSwitchToEditor?: () => void;
+  onOpenStreetView?: (initialIndex?: number) => void;
 }
 
 export function VisitorElementDetails({
@@ -31,7 +33,8 @@ export function VisitorElementDetails({
   category,
   onBack,
   onZoomTo,
-  onSwitchToEditor
+  onSwitchToEditor,
+  onOpenStreetView
 }: VisitorElementDetailsProps) {
   const { t } = useLanguage();
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -72,6 +75,38 @@ export function VisitorElementDetails({
           </button>
         )}
       </div>
+
+      {/* Street View Virtual Walk Hero Card for routes */}
+      {feature.kind === 'line' && onOpenStreetView && (
+        <div className="mt-3 overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-transparent p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-black shadow-md">
+              <FootprintsIcon className="h-6 w-6" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                Street View Virtual
+              </span>
+              <h3 className="truncate text-sm font-bold text-ink sm:text-base">
+                Recorrer camino foto a foto
+              </h3>
+            </div>
+          </div>
+
+          <p className="mt-2 text-xs text-muted leading-relaxed">
+            Camina virtualmente por este trayecto con fotos a nivel de suelo, orientación en tiempo real y mini-mapa interactivo.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => onOpenStreetView(0)}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-2.5 px-4 text-xs font-bold text-black shadow-md hover:from-amber-400 hover:to-orange-400 transition-all active:scale-98"
+          >
+            <FootprintsIcon className="h-4 w-4" />
+            Comenzar paseo Street View
+          </button>
+        </div>
+      )}
 
       {/* Hero photo / gallery if photos exist */}
       {images.length > 0 && (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CompassIcon, Maximize2Icon, RulerIcon, XIcon } from 'lucide-react';
+import { CompassIcon, FootprintsIcon, Maximize2Icon, RulerIcon, XIcon } from 'lucide-react';
 import { formatArea, formatLength, pathLength, polygonArea } from '../../utils/geo';
 import { computeEdgeMetrics } from '../../utils/dimensions';
 import { featureKinds } from '../../data/featureKinds';
@@ -13,13 +13,15 @@ interface SelectedDimensionBarProps {
   category: Category;
   onDeselect: () => void;
   onZoomTo: () => void;
+  onOpenStreetView?: (initialIndex?: number) => void;
 }
 
 export function SelectedDimensionBar({
   feature,
   category,
   onDeselect,
-  onZoomTo
+  onZoomTo,
+  onOpenStreetView
 }: SelectedDimensionBarProps) {
   const { t } = useLanguage();
   const isArea = feature.kind === 'area';
@@ -97,6 +99,17 @@ export function SelectedDimensionBar({
 
         {/* Actions */}
         <div className="ml-auto flex shrink-0 items-center gap-0.5 pl-1 sm:gap-1">
+          {isLine && onOpenStreetView && (
+            <button
+              type="button"
+              onClick={() => onOpenStreetView(0)}
+              title="Abrir Street View"
+              aria-label="Abrir Street View"
+              className="inline-flex h-7 items-center gap-1 rounded-lg bg-amber-500/25 px-2 text-xs font-bold text-amber-300 transition-colors hover:bg-amber-500/40">
+              <FootprintsIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Street View</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onZoomTo}

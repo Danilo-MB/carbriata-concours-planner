@@ -195,7 +195,14 @@ export const translations = {
     aiDrawingPolygons: 'Trazando geometrías inteligentes sobre el satélite...',
     aiGenerateAction: 'Analizar terreno y generar plano con IA',
     aiOpenInEditor: 'Abrir plano generado en el editor',
-    aiSuccessTitle: '¡Plano inteligente generado con éxito!'
+    aiSuccessTitle: '¡Plano inteligente generado con éxito!',
+
+    // Street View
+    streetViewTitle: 'Street View Virtual',
+    streetViewSubtitle: 'Caminar foto a foto por la ruta',
+    streetViewWalk: 'Caminar en Street View',
+    streetViewLoadSamples: 'Cargar fotos de ejemplo',
+    streetViewUploadPhotos: 'Subir fotos a cada punto'
   },
   en: {
     // Brand & Marketing
@@ -391,7 +398,14 @@ export const translations = {
     aiDrawingPolygons: 'Drafting smart polygons over satellite imagery...',
     aiGenerateAction: 'Analyze terrain and generate with AI',
     aiOpenInEditor: 'Open generated plan in editor',
-    aiSuccessTitle: 'Smart layout generated successfully!'
+    aiSuccessTitle: 'Smart layout generated successfully!',
+
+    // Street View
+    streetViewTitle: 'Virtual Street View',
+    streetViewSubtitle: 'Walk photo-by-photo along the route',
+    streetViewWalk: 'Walk in Street View',
+    streetViewLoadSamples: 'Load sample photos',
+    streetViewUploadPhotos: 'Upload photos per point'
   }
 } as const;
 

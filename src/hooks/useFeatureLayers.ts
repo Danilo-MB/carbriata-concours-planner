@@ -3,6 +3,7 @@ import type { MutableRefObject } from 'react';
 import L from 'leaflet';
 import { escapeHtml, pinIcon } from '../utils/mapIcons';
 import { fallbackCategory } from '../utils/plan';
+import { hasStreetViewPhotos } from '../data/streetViewSamples';
 import type { MapCallbacks } from '../types/map';
 import type { Category, FeatureKind, PlanFeature, Tool } from '../types/plan';
 
@@ -41,9 +42,10 @@ callbacks: MutableRefObject<MapCallbacks>)
       const effectiveOpacity = feature.opacity;
       const effectiveStrokeWidth = feature.strokeWidth;
       const styleSig = `${effectiveColor}|${effectiveOpacity ?? 'def'}|${effectiveStrokeWidth ?? 'def'}|${category.icon}|${selected}`;
-      const hasImages = feature.images && feature.images.length > 0;
+      const hasStreetView = feature.kind === 'line' && hasStreetViewPhotos(feature);
+      const hasImages = (feature.images && feature.images.length > 0) || hasStreetView;
       const labelText = escapeHtml(feature.name.trim() || 'Untitled');
-      const label = hasImages ? `${labelText} 📷` : labelText;
+      const label = hasStreetView ? `${labelText} 🚶‍♂️📷` : hasImages ? `${labelText} 📷` : labelText;
 
       let entry = entries.current.get(feature.id);
       if (entry && entry.kind !== feature.kind) {

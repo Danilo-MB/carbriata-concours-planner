@@ -58,6 +58,53 @@ export const seedProjects: Project[] = [
     createdAt: 1789900200000
   },
   {
+    id: 'f-recorrido-streetview',
+    kind: 'line',
+    name: 'Paseo Principal (Street View 360)',
+    categoryId: 'accesos',
+    notes: 'Recorrido interactivo con 5 puntos fotografiados a nivel de suelo para caminar virtualmente por el predio.',
+    coords: [
+      [-36.3242, -57.6990],
+      [-36.3249, -57.6982],
+      [-36.3256, -57.6975],
+      [-36.3262, -57.6968],
+      [-36.3268, -57.6962]
+    ],
+    routeWaypoints: [
+      {
+        index: 0,
+        title: 'Acceso y Entrada Principal',
+        caption: 'Pórtico de bienvenida, control de acreditaciones y acceso peatonal al evento.',
+        image: '/streetview/point1_entrance.jpg'
+      },
+      {
+        index: 1,
+        title: 'Paseo Central Arbolado',
+        caption: 'Avenida principal con jardines florales, cartelería digital y circulación fluida.',
+        image: '/streetview/point2_promenade.jpg'
+      },
+      {
+        index: 2,
+        title: 'Pabellón de Stands y Sponsors',
+        caption: 'Pabellones modernos, carpas de exhibición, stands de marcas y demostraciones.',
+        image: '/streetview/point3_stands.jpg'
+      },
+      {
+        index: 3,
+        title: 'Patio Gastronómico & Food Trucks',
+        caption: 'Pérgolas de madera con guirnaldas de luces, mesas al aire libre y variedad culinaria.',
+        image: '/streetview/point4_foodcourt.jpg'
+      },
+      {
+        index: 4,
+        title: 'Plaza Central & Escenario Principal',
+        caption: 'Gran explanada verde para el público con escenario central y shows en vivo.',
+        image: '/streetview/point5_plaza.jpg'
+      }
+    ],
+    createdAt: 1789900250000
+  },
+  {
     id: 'f-chicana-1',
     kind: 'point',
     name: 'Chicana 1',

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ArrowLeftIcon, CopyIcon, RulerIcon, ScanIcon, Trash2Icon } from 'lucide-react';
+import { ArrowLeftIcon, CopyIcon, FootprintsIcon, RulerIcon, ScanIcon, Trash2Icon } from 'lucide-react';
 import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
 import { computeEdgeMetrics } from '../../utils/dimensions';
@@ -7,6 +7,7 @@ import { fallbackCategory } from '../../utils/plan';
 import { LayerSwatch } from './LayerSwatch';
 import { ImageGallery } from './ImageGallery';
 import { ElementStyleControls } from './ElementStyleControls';
+import { RouteWaypointManager } from '../streetview/RouteWaypointManager';
 import { useLanguage } from '../../contexts/LanguageContext';
 import type { Category, PlanFeature } from '../../types/plan';
 
@@ -20,6 +21,7 @@ interface ElementDetailsProps {
   onZoomTo: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  onOpenStreetView?: (initialIndex?: number) => void;
 }
 
 export function ElementDetails({
@@ -31,7 +33,8 @@ export function ElementDetails({
   onChange,
   onZoomTo,
   onDuplicate,
-  onDelete
+  onDelete,
+  onOpenStreetView
 }: ElementDetailsProps) {
   const { t } = useLanguage();
   const nameRef = useRef<HTMLInputElement>(null);
@@ -71,6 +74,13 @@ export function ElementDetails({
       <div className="mt-2.5 flex items-center gap-2 border-b border-line pb-3">
         <ActionButton onClick={onZoomTo} icon={<ScanIcon className="h-4 w-4" aria-hidden />} label={t('zoomTo')} />
         <ActionButton onClick={onDuplicate} icon={<CopyIcon className="h-4 w-4" aria-hidden />} label={t('duplicate')} />
+        {feature.kind === 'line' && onOpenStreetView && (
+          <ActionButton
+            onClick={() => onOpenStreetView(0)}
+            icon={<FootprintsIcon className="h-4 w-4 text-amber-500" aria-hidden />}
+            label="Street View"
+          />
+        )}
         <button
           type="button"
           onClick={onDelete}
@@ -172,6 +182,14 @@ export function ElementDetails({
         onChange={(images) => onChange({ images })}
         elementName={feature.name || 'Elemento'}
       />
+
+      {feature.kind === 'line' && onOpenStreetView && (
+        <RouteWaypointManager
+          feature={feature}
+          onChange={onChange}
+          onOpenStreetView={onOpenStreetView}
+        />
+      )}
 
       <p className="mt-4 rounded-lg bg-subtle px-3 py-2.5 text-xs leading-relaxed text-muted">{hint}</p>
     </div>);

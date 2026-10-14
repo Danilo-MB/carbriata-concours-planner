@@ -18,6 +18,9 @@ import { MapCanvas } from './MapCanvas';
 import { MapControls } from './MapControls';
 import { SelectedDimensionBar } from './SelectedDimensionBar';
 import { SidePanel } from './SidePanel';
+import { RouteStreetViewPromptModal } from '../streetview/RouteStreetViewPromptModal';
+import { StreetViewPlayer } from '../streetview/StreetViewPlayer';
+import { generateSampleWaypointsForCoords } from '../../data/streetViewSamples';
 import type { FeatureKind, PlaceResult, PlanFeature, Project, ViewMode } from '../../types/plan';
 
 interface PlanEditorProps {
@@ -40,6 +43,13 @@ export function PlanEditor({
   const mapRef = useRef<L.Map | null>(null);
   const [tilted, setTilted] = useState(false);
   const [showClearAllModal, setShowClearAllModal] = useState(false);
+  const [streetViewFeature, setStreetViewFeature] = useState<PlanFeature | null>(null);
+  const [streetViewInitialIndex, setStreetViewInitialIndex] = useState<number>(0);
+
+  const handleOpenStreetView = useCallback((feature: PlanFeature, initialIndex = 0) => {
+    setStreetViewFeature(feature);
+    setStreetViewInitialIndex(initialIndex);
+  }, []);
 
   const draftKind: FeatureKind = editor.tool === 'line' ? 'line' : editor.tool === 'point' ? 'point' : 'area';
   const draftColor = pickCategory(project.categories, draftKind).color;
@@ -153,6 +163,11 @@ export function PlanEditor({
                   editor.setSheetOpen(false);
                 }}
                 onZoomTo={() => handleZoomTo(editor.selected!)}
+                onOpenStreetView={
+                  editor.selected.kind === 'line'
+                    ? (idx) => handleOpenStreetView(editor.selected!, idx)
+                    : undefined
+                }
               />
             )}
           </AnimatePresence>
@@ -191,6 +206,7 @@ export function PlanEditor({
           onGoToCenter={handleGoToCenter}
           onExport={handleExport}
           onRename={handleRename}
+          onOpenStreetView={handleOpenStreetView}
         />
       </div>
 
@@ -200,6 +216,53 @@ export function PlanEditor({
         onConfirm={editor.deleteAllFeatures}
         onClose={() => setShowClearAllModal(false)}
       />
+
+      {/* Street View Prompt Modal after drawing a route */}
+      <AnimatePresence>
+        {editor.newlyCreatedRoute && (
+          <RouteStreetViewPromptModal
+            key="route-streetview-prompt"
+            feature={editor.newlyCreatedRoute}
+            onClose={() => editor.setNewlyCreatedRoute(null)}
+            onApplySamplePhotos={() => {
+              const route = editor.newlyCreatedRoute!;
+              const samples = generateSampleWaypointsForCoords(route.coords.length);
+              editor.updateFeature(route.id, { routeWaypoints: samples });
+              editor.setNewlyCreatedRoute(null);
+              handleOpenStreetView({ ...route, routeWaypoints: samples }, 0);
+              toast.success('¡Fotos de Street View asignadas a tu ruta!');
+            }}
+            onOpenWaypointManager={() => {
+              const route = editor.newlyCreatedRoute!;
+              editor.setNewlyCreatedRoute(null);
+              editor.select(route.id);
+              editor.setSheetOpen(true);
+            }}
+          />
+        )}
+
+        {/* Full Interactive Street View Player */}
+        {streetViewFeature && (
+          <StreetViewPlayer
+            key={`streetview-${streetViewFeature.id}`}
+            feature={streetViewFeature}
+            initialIndex={streetViewInitialIndex}
+            onClose={() => setStreetViewFeature(null)}
+            canEdit={editor.mode === 'editor' && !isVisitorOnly && !isEmbed}
+            onUpdateWaypoint={(idx, patch) => {
+              const currentWps = [...(streetViewFeature.routeWaypoints || [])];
+              const existingIdx = currentWps.findIndex((w) => w.index === idx);
+              if (existingIdx >= 0) {
+                currentWps[existingIdx] = { ...currentWps[existingIdx], ...patch };
+              } else {
+                currentWps.push({ index: idx, title: `Punto ${idx + 1}`, ...patch });
+              }
+              editor.updateFeature(streetViewFeature.id, { routeWaypoints: currentWps });
+              setStreetViewFeature((f) => (f ? { ...f, routeWaypoints: currentWps } : null));
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

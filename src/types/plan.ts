@@ -47,6 +47,13 @@ export interface Category {
   kindHint?: FeatureKind;
 }
 
+export interface RouteWaypoint {
+  index: number;
+  title?: string;
+  image?: string;
+  caption?: string;
+}
+
 export interface PlanFeature {
   id: string;
   kind: FeatureKind;
@@ -56,6 +63,7 @@ export interface PlanFeature {
   coords: LatLng[];
   createdAt: number;
   images?: string[];
+  routeWaypoints?: RouteWaypoint[];
   color?: string;
   opacity?: number;
   strokeWidth?: number;
