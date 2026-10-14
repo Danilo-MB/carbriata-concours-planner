@@ -19,6 +19,7 @@ export interface FeatureEntity {
   coords: [number, number][];
   createdAt: number;
   images?: string[];
+  routeWaypoints?: any[];
   color?: string;
   opacity?: number;
   strokeWidth?: number;

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { EyeIcon, EyeOffIcon, ImageIcon, MapPinIcon, PentagonIcon, SplineIcon, Trash2Icon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, FootprintsIcon, ImageIcon, MapPinIcon, PentagonIcon, SplineIcon, Trash2Icon } from 'lucide-react';
 import { featureKinds } from '../../data/featureKinds';
 import { measureFeature } from '../../utils/geo';
 import { LayerSwatch } from './LayerSwatch';
-import type { Project } from '../../types/plan';
+import { hasStreetViewPhotos } from '../../data/streetViewSamples';
+import type { PlanFeature, Project } from '../../types/plan';
 
 interface ElementListProps {
   project: Project;
@@ -11,9 +12,10 @@ interface ElementListProps {
   onSelect: (id: string) => void;
   onToggleLayer: (id: string) => void;
   onDelete?: (id: string) => void;
+  onOpenStreetView?: (feature: PlanFeature, initialIndex?: number) => void;
 }
 
-export function ElementList({ project, readOnly = false, onSelect, onToggleLayer, onDelete }: ElementListProps) {
+export function ElementList({ project, readOnly = false, onSelect, onToggleLayer, onDelete, onOpenStreetView }: ElementListProps) {
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
 
@@ -100,6 +102,23 @@ export function ElementList({ project, readOnly = false, onSelect, onToggleLayer
                             <ImageIcon className="h-3 w-3" aria-hidden="true" />
                             <span>{f.images.length}</span>
                           </span>
+                        )}
+                        {f.kind === 'line' && hasStreetViewPhotos(f) && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onOpenStreetView) {
+                                onOpenStreetView(f, 0);
+                              } else {
+                                onSelect(f.id);
+                              }
+                            }}
+                            title="Recorrer en Street View"
+                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-500/30 transition-colors">
+                            <FootprintsIcon className="h-3 w-3" />
+                            <span>Street View</span>
+                          </button>
                         )}
                         {f.kind !== 'point' &&
                         <span className="shrink-0 text-xs tabular-nums text-muted">{measureFeature(f).primary}</span>

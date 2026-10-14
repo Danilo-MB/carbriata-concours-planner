@@ -20,7 +20,8 @@ import { SelectedDimensionBar } from './SelectedDimensionBar';
 import { SidePanel } from './SidePanel';
 import { RouteStreetViewPromptModal } from '../streetview/RouteStreetViewPromptModal';
 import { StreetViewPlayer } from '../streetview/StreetViewPlayer';
-import { generateSampleWaypointsForCoords } from '../../data/streetViewSamples';
+import { generateSampleWaypointsForCoords, hasStreetViewPhotos } from '../../data/streetViewSamples';
+import { FootprintsIcon } from 'lucide-react';
 import type { FeatureKind, PlaceResult, PlanFeature, Project, ViewMode } from '../../types/plan';
 
 interface PlanEditorProps {
@@ -50,6 +51,10 @@ export function PlanEditor({
     setStreetViewFeature(feature);
     setStreetViewInitialIndex(initialIndex);
   }, []);
+
+  const streetViewRoutes = useMemo(() => {
+    return project.features.filter((f) => f.kind === 'line' && hasStreetViewPhotos(f));
+  }, [project.features]);
 
   const draftKind: FeatureKind = editor.tool === 'line' ? 'line' : editor.tool === 'point' ? 'point' : 'area';
   const draftColor = pickCategory(project.categories, draftKind).color;
@@ -106,7 +111,11 @@ export function PlanEditor({
       {isEmbed ? (
         <EmbedHeader project={project} />
       ) : isVisitorOnly ? (
-        <VisitorHeader project={project} onPickPlace={handlePickPlace} />
+        <VisitorHeader
+          project={project}
+          onPickPlace={handlePickPlace}
+          onOpenStreetView={handleOpenStreetView}
+        />
       ) : (
         <EditorHeader
           project={project}
@@ -135,6 +144,22 @@ export function PlanEditor({
             onGeometryChange={editor.setGeometry}
             onDelete={editor.deleteFeature}
           />
+
+          {/* Floating Street View Pill on Map for 1-click exploration */}
+          {streetViewRoutes.length > 0 && !editor.selected && (
+            <div className="pointer-events-none absolute left-3 top-3 z-10 flex">
+              <button
+                type="button"
+                onClick={() => handleOpenStreetView(streetViewRoutes[0], 0)}
+                className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-amber-400/50 bg-black/85 px-3.5 py-2 text-xs font-bold text-amber-300 shadow-float backdrop-blur-md transition-all hover:bg-black hover:scale-105 active:scale-95"
+              >
+                <span className="grid h-6 w-6 place-items-center rounded-lg bg-amber-500 text-black shadow-sm">
+                  <FootprintsIcon className="h-3.5 w-3.5" />
+                </span>
+                <span>Paseo Street View 360</span>
+              </button>
+            </div>
+          )}
 
           <AnimatePresence>
             {editor.mode === 'editor' && editor.tool !== 'select' && (

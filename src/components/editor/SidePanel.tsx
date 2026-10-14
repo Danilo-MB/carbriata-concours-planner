@@ -1,7 +1,8 @@
 import React from 'react';
-import { ChevronUpIcon, ExternalLinkIcon, EyeIcon, GlobeIcon } from 'lucide-react';
+import { ChevronUpIcon, ExternalLinkIcon, EyeIcon, FootprintsIcon, GlobeIcon } from 'lucide-react';
 import { measureFeature } from '../../utils/geo';
 import { fallbackCategory } from '../../utils/plan';
+import { hasStreetViewPhotos } from '../../data/streetViewSamples';
 import { ElementDetails } from './ElementDetails';
 import { VisitorElementDetails } from './VisitorElementDetails';
 import { ElementList } from './ElementList';
@@ -140,11 +141,44 @@ export function SidePanel({
               </div>
             )}
 
+            {/* Street View Virtual Tours Banner in Visitor Mode */}
+            {(() => {
+              const streetViewRoutes = project.features.filter((f) => f.kind === 'line' && hasStreetViewPhotos(f));
+              if (streetViewRoutes.length === 0 || !onOpenStreetView) return null;
+              return (
+                <div className="border-b border-line bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent p-3.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-black shadow-md">
+                        <FootprintsIcon className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="truncate text-xs font-bold text-ink">
+                          Paseo Street View 360
+                        </h3>
+                        <p className="truncate text-[11px] text-muted">
+                          {streetViewRoutes.length} {streetViewRoutes.length === 1 ? 'recorrido interactivo' : 'recorridos interactivos'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onOpenStreetView(streetViewRoutes[0], 0)}
+                      className="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-black shadow-sm hover:bg-amber-400 active:scale-95 transition-all"
+                    >
+                      Caminar →
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
             <ElementList
               project={project}
               readOnly={true}
               onSelect={onSelectFromList}
               onToggleLayer={editor.toggleLayer}
+              onOpenStreetView={onOpenStreetView}
             />
           </>
         ) : (
@@ -176,6 +210,7 @@ export function SidePanel({
                   onSelect={onSelectFromList}
                   onToggleLayer={editor.toggleLayer}
                   onDelete={editor.deleteFeature}
+                  onOpenStreetView={onOpenStreetView}
                 />
               ) : (
                 <PlanSettings

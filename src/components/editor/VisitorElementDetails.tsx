@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CompassIcon,
+  DownloadIcon,
   FootprintsIcon,
   Maximize2Icon,
   PencilIcon,
@@ -42,7 +43,22 @@ export function VisitorElementDetails({
   const kind = featureKinds[feature.kind];
   const KindIcon = kind.icon;
   const measure = measureFeature(feature);
-  const images = feature.images || [];
+  const routePhotos = (feature.routeWaypoints || []).map((w) => w.image).filter(Boolean) as string[];
+  const images = feature.images && feature.images.length > 0 ? feature.images : routePhotos;
+
+  const handleDownloadImage = (imgSrc: string, index: number) => {
+    try {
+      const link = document.createElement('a');
+      link.href = imgSrc;
+      const baseName = (feature.name || 'foto').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      link.download = `${baseName}_${index + 1}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error downloading image:', err);
+    }
+  };
 
   const edges =
     feature.kind === 'area' || feature.kind === 'line'
@@ -118,6 +134,19 @@ export function VisitorElementDetails({
               onClick={() => setLightboxOpen(true)}
               className="h-full w-full cursor-zoom-in object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             />
+
+            {/* Download button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownloadImage(images[activeImageIdx], activeImageIdx);
+              }}
+              title="Guardar / Descargar foto"
+              aria-label="Descargar foto"
+              className="absolute bottom-2.5 right-12 grid h-8 w-8 place-items-center rounded-lg bg-black/60 text-white backdrop-blur-sm transition-transform hover:scale-105 active:scale-95">
+              <DownloadIcon className="h-4 w-4" aria-hidden="true" />
+            </button>
 
             {/* Lightbox zoom button */}
             <button
@@ -294,13 +323,23 @@ export function VisitorElementDetails({
               className="fixed inset-0 bg-black/90 backdrop-blur-md"
             />
 
-            <button
-              type="button"
-              onClick={() => setLightboxOpen(false)}
-              aria-label="Cerrar visor"
-              className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20">
-              <XIcon className="h-5 w-5" aria-hidden="true" />
-            </button>
+            <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleDownloadImage(images[activeImageIdx], activeImageIdx)}
+                title="Guardar / Descargar foto"
+                aria-label="Descargar foto"
+                className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+                <DownloadIcon className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(false)}
+                aria-label="Cerrar visor"
+                className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+                <XIcon className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}

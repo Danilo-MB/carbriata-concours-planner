@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeftIcon, ExternalLinkIcon, GlobeIcon, SearchIcon, Share2Icon, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, ExternalLinkIcon, FootprintsIcon, GlobeIcon, SearchIcon, Share2Icon, XIcon } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { PlaceSearch } from '../PlaceSearch';
 import { LanguageToggle } from '../LanguageToggle';
 import { ShareModal } from './ShareModal';
 import { useLanguage } from '../../contexts/LanguageContext';
-import type { PlaceResult, Project } from '../../types/plan';
+import { hasStreetViewPhotos } from '../../data/streetViewSamples';
+import type { PlaceResult, PlanFeature, Project } from '../../types/plan';
 
 interface VisitorHeaderProps {
   project: Project;
   onPickPlace: (place: PlaceResult) => void;
+  onOpenStreetView?: (feature: PlanFeature, initialIndex?: number) => void;
 }
 
-export function VisitorHeader({ project, onPickPlace }: VisitorHeaderProps) {
+export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: VisitorHeaderProps) {
   const { t } = useLanguage();
   const [searchOpen, setSearchOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -57,6 +59,23 @@ export function VisitorHeader({ project, onPickPlace }: VisitorHeaderProps) {
             <ExternalLinkIcon className="h-3 w-3 text-muted" aria-hidden="true" />
           </a>
         )}
+
+        {/* Street View Virtual Tour Button */}
+        {(() => {
+          const streetViewRoute = project.features.find((f) => f.kind === 'line' && hasStreetViewPhotos(f));
+          if (!streetViewRoute || !onOpenStreetView) return null;
+          return (
+            <button
+              type="button"
+              onClick={() => onOpenStreetView(streetViewRoute, 0)}
+              title="Recorrer evento en Street View virtual"
+              className="flex h-9 items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3 text-xs font-bold text-black shadow-sm transition-all hover:scale-105 active:scale-95"
+            >
+              <FootprintsIcon className="h-4 w-4" />
+              <span>Street View</span>
+            </button>
+          );
+        })()}
 
         {/* Share & Embed Button */}
         <button

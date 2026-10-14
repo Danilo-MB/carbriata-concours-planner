@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { seedProjects } from '../data/seedProjects';
 import { defaultMapView, planTemplates } from '../data/templates';
 import { createId } from '../utils/id';
-import { loadProjects, saveProjects } from '../utils/storage';
+import { loadProjects, loadProjectsFromIdb, saveProjects } from '../utils/storage';
 import { api } from '../utils/api';
 import { useAuth } from './AuthContext';
 import type { NewPlanInput, Project } from '../types/plan';
@@ -17,9 +17,45 @@ interface ProjectsContextValue {
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
 
+function ensureStreetViewSeed(projs: Project[]): Project[] {
+  const carbriataSeed = seedProjects.find((p) => p.id === 'carbriata-2027');
+  if (!carbriataSeed) return projs;
+  const streetViewRoute = carbriataSeed.features.find((f) => f.id === 'f-recorrido-streetview');
+  if (!streetViewRoute) return projs;
+
+  let modified = false;
+  const result = projs.map((p) => {
+    if (p.id === 'carbriata-2027') {
+      const hasRoute = p.features.some((f) => f.id === 'f-recorrido-streetview');
+      if (!hasRoute) {
+        modified = true;
+        return {
+          ...p,
+          features: [streetViewRoute, ...p.features],
+        };
+      }
+    }
+    return p;
+  });
+  return modified ? result : projs;
+}
+
 export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useAuth();
-  const [projects, setProjects] = useState<Project[]>(() => loadProjects() ?? seedProjects);
+  const [projects, setProjects] = useState<Project[]>(() => {
+    const loaded = loadProjects();
+    const initial = loaded && loaded.length > 0 ? loaded : seedProjects;
+    return ensureStreetViewSeed(initial);
+  });
+
+  // Restore high-resolution images from IndexedDB
+  useEffect(() => {
+    loadProjectsFromIdb().then((idbProjects) => {
+      if (idbProjects && idbProjects.length > 0) {
+        setProjects(() => ensureStreetViewSeed(idbProjects));
+      }
+    });
+  }, []);
 
   // Sync from cloud when authenticated
   useEffect(() => {
@@ -32,7 +68,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
             for (const cp of cloudProjects) {
               map.set(cp.id, cp);
             }
-            return Array.from(map.values());
+            return ensureStreetViewSeed(Array.from(map.values()));
           });
         }
       } catch {

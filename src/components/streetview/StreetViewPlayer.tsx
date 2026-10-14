@@ -6,6 +6,7 @@ import {
   ChevronRightIcon,
   ChevronUpIcon,
   CompassIcon,
+  DownloadIcon,
   FootprintsIcon,
   Maximize2Icon,
   Minimize2Icon,
@@ -156,6 +157,24 @@ export function StreetViewPlayer({
   // Fallback image if current waypoint has no image
   const currentImage = currentWaypoint.image || SAMPLE_STREETVIEW_WAYPOINTS[currentIndex % SAMPLE_STREETVIEW_WAYPOINTS.length].image;
 
+  // Save / download image to user's device
+  const handleDownloadImage = () => {
+    try {
+      const link = document.createElement('a');
+      link.href = currentImage;
+      const safeTitle = (currentWaypoint.title || `punto_${currentIndex + 1}`)
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/gi, '_');
+      link.download = `streetview_${safeTitle}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Foto descargada correctamente');
+    } catch {
+      window.open(currentImage, '_blank');
+    }
+  };
+
   const content = (
     <div
       ref={containerRef}
@@ -255,6 +274,18 @@ export function StreetViewPlayer({
                 </span>
               </button>
             )}
+
+            {/* Download / Save photo to device */}
+            <button
+              type="button"
+              onClick={handleDownloadImage}
+              title="Guardar / Descargar foto"
+              aria-label="Descargar foto"
+              className="flex h-9 items-center gap-1.5 rounded-xl border border-white/20 bg-black/60 px-3 text-xs font-semibold text-white backdrop-blur-md transition-all hover:bg-black/80 hover:border-amber-400 active:scale-95"
+            >
+              <DownloadIcon className="h-3.5 w-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Guardar foto</span>
+            </button>
 
             <button
               type="button"

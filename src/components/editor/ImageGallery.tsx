@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  DownloadIcon,
   ImageIcon,
   LinkIcon,
   Maximize2Icon,
@@ -218,6 +219,22 @@ export function ImageGallery({ images, onChange, elementName }: ImageGalleryProp
                 </button>
                 <button
                   type="button"
+                  title="Guardar / Descargar imagen"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const link = document.createElement('a');
+                    link.href = src;
+                    link.download = `${elementName.toLowerCase().replace(/\s+/g, '_')}_${idx + 1}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    toast.success('Imagen descargada');
+                  }}
+                  className="grid h-7 w-7 place-items-center rounded-full bg-surface text-ink shadow-sm hover:scale-110">
+                  <DownloadIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
                   title="Eliminar imagen"
                   onClick={(e) => handleDeleteImage(idx, e)}
                   className="grid h-7 w-7 place-items-center rounded-full bg-red-600 text-white shadow-sm hover:bg-red-700 hover:scale-110">
@@ -251,14 +268,33 @@ export function ImageGallery({ images, onChange, elementName }: ImageGalleryProp
             <div
               onClick={(e) => e.stopPropagation()}
               className="relative flex max-h-[92vh] max-w-[92vw] flex-col items-center justify-center">
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => setLightboxIndex(null)}
-                aria-label="Cerrar imagen"
-                className="absolute -top-11 right-0 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur-xs transition-colors hover:bg-white/20">
-                <XIcon className="h-5 w-5" aria-hidden="true" />
-              </button>
+              {/* Close & Download Buttons */}
+              <div className="absolute -top-11 right-0 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const src = images[lightboxIndex];
+                    const link = document.createElement('a');
+                    link.href = src;
+                    link.download = `${elementName.toLowerCase().replace(/\s+/g, '_')}_${lightboxIndex + 1}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    toast.success('Imagen descargada');
+                  }}
+                  title="Descargar imagen"
+                  aria-label="Descargar imagen"
+                  className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur-xs transition-colors hover:bg-white/20">
+                  <DownloadIcon className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(null)}
+                  aria-label="Cerrar imagen"
+                  className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur-xs transition-colors hover:bg-white/20">
+                  <XIcon className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
 
               {/* Title & Counter */}
               <div className="absolute -top-10 left-0 flex items-center gap-2 text-white">

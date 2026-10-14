@@ -91291,6 +91291,8 @@ AppModule = __decorateClass([
 // server/vercel.ts
 var import_express2 = __toESM(require_express2(), 1);
 var server = (0, import_express2.default)();
+server.use(import_express2.default.json({ limit: "50mb" }));
+server.use(import_express2.default.urlencoded({ limit: "50mb", extended: true }));
 var isReady = false;
 var initPromise = null;
 async function bootstrap() {
