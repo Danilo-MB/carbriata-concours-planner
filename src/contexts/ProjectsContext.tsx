@@ -20,21 +20,35 @@ interface ProjectsContextValue {
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
 
 function ensureStreetViewSeed(projs: Project[]): Project[] {
-  const carbriataSeed = seedProjects.find((p) => p.id === 'carbriata-2027');
-  if (!carbriataSeed) return projs;
-  const streetViewRoute = carbriataSeed.features.find((f) => f.id === 'f-recorrido-streetview');
-
   return projs.map((p) => {
     let current = p;
-    if (p.id === 'carbriata-2027' && streetViewRoute) {
-      const hasRoute = p.features.some((f) => f.id === 'f-recorrido-streetview');
-      if (!hasRoute) {
-        current = {
-          ...p,
-          features: [streetViewRoute, ...p.features],
-        };
+    const seedProj = seedProjects.find((s) => s.id === p.id);
+    if (seedProj) {
+      // Merge any routeWaypoints from seed if missing or empty in local copy
+      current = {
+        ...current,
+        features: current.features.map((f) => {
+          const sf = seedProj.features.find((feat) => feat.id === f.id);
+          if (sf && sf.routeWaypoints && sf.routeWaypoints.length > 0) {
+            if (!f.routeWaypoints || f.routeWaypoints.length === 0) {
+              return { ...f, routeWaypoints: sf.routeWaypoints };
+            }
+          }
+          return f;
+        })
+      };
+
+      if (p.id === 'carbriata-2027') {
+        const streetViewRoute = seedProj.features.find((f) => f.id === 'f-recorrido-streetview');
+        if (streetViewRoute && !current.features.some((f) => f.id === 'f-recorrido-streetview')) {
+          current = {
+            ...current,
+            features: [streetViewRoute, ...current.features],
+          };
+        }
       }
     }
+
     // Ensure center is the geometric center of all features if any exist
     if (current.features && current.features.length > 0) {
       const geomCenter = getFeaturesGeometricCenter(current.features);

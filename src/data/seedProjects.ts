@@ -589,5 +589,471 @@ export const seedProjects: Project[] = [
   "hiddenCategoryIds": [],
   "createdAt": 1791992584008,
   "updatedAt": 1791994258267
+},
+{
+  "id": "i6666hqmv8mdpge",
+  "name": "Planta Logística",
+  "description": "Predio industrial logístico con accesos para transporte pesado, pesaje de camiones, naves de almacenaje, dársenas de carga y Street View en cada recorrido.",
+  "location": "Ford Argentina, Luis María Drago",
+  "websiteUrl": "",
+  "template": "event",
+  "center": {
+    "lat": -34.438662,
+    "lng": -58.702736,
+    "zoom": 16
+  },
+  "basemap": "satellite",
+  "categories": [
+    {
+      "id": "zones",
+      "name": "Zones",
+      "color": "#E8590C",
+      "icon": "tent",
+      "kindHint": "area"
+    },
+    {
+      "id": "stages",
+      "name": "Stages & shows",
+      "color": "#AE3EC9",
+      "icon": "music"
+    },
+    {
+      "id": "food",
+      "name": "Food & drinks",
+      "color": "#F59F00",
+      "icon": "food"
+    },
+    {
+      "id": "parking",
+      "name": "Parking",
+      "color": "#1C7ED6",
+      "icon": "parking"
+    },
+    {
+      "id": "access",
+      "name": "Access & paths",
+      "color": "#F06595",
+      "icon": "door",
+      "kindHint": "line"
+    },
+    {
+      "id": "safety",
+      "name": "Safety & services",
+      "color": "#0CA678",
+      "icon": "ambulance",
+      "kindHint": "point"
+    }
+  ],
+  "features": [
+    {
+      "id": "xwy1noimv8mhomw",
+      "kind": "area",
+      "coords": [
+        [
+          -34.438456,
+          -58.706021
+        ],
+        [
+          -34.438418,
+          -58.705981
+        ],
+        [
+          -34.438363,
+          -58.705992
+        ],
+        [
+          -34.438208,
+          -58.705895
+        ],
+        [
+          -34.438175,
+          -58.705865
+        ],
+        [
+          -34.438151,
+          -58.705922
+        ],
+        [
+          -34.43785,
+          -58.705739
+        ],
+        [
+          -34.437803,
+          -58.705773
+        ],
+        [
+          -34.437775,
+          -58.705712
+        ],
+        [
+          -34.438125,
+          -58.704901
+        ],
+        [
+          -34.438188,
+          -58.704893
+        ],
+        [
+          -34.438222,
+          -58.704821
+        ],
+        [
+          -34.438275,
+          -58.704779
+        ],
+        [
+          -34.43892,
+          -58.705166
+        ],
+        [
+          -34.438888,
+          -58.705257
+        ],
+        [
+          -34.43882,
+          -58.705208
+        ]
+      ],
+      "name": "Parking",
+      "categoryId": "parking",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011060000
+    },
+    {
+      "id": "ioa26ummv8mhxok",
+      "kind": "point",
+      "coords": [
+        [
+          -34.438375,
+          -58.705303
+        ]
+      ],
+      "name": "Parking 1",
+      "categoryId": "parking",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011070000
+    },
+    {
+      "id": "zcgu49wmv8mibw2",
+      "kind": "area",
+      "coords": [
+        [
+          -34.439765,
+          -58.703282
+        ],
+        [
+          -34.439031,
+          -58.705085
+        ],
+        [
+          -34.438372,
+          -58.704693
+        ],
+        [
+          -34.43846,
+          -58.704484
+        ],
+        [
+          -34.438261,
+          -58.704393
+        ],
+        [
+          -34.438969,
+          -58.70273
+        ]
+      ],
+      "name": "Area 2",
+      "categoryId": "parking",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011080000
+    },
+    {
+      "id": "jzmosrxmv8mieeb",
+      "kind": "point",
+      "coords": [
+        [
+          -34.438686,
+          -58.704409
+        ]
+      ],
+      "name": "Parking 2",
+      "categoryId": "parking",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011090000
+    },
+    {
+      "id": "wz1pxpfmv8mjd3n",
+      "kind": "line",
+      "coords": [
+        [
+          -34.438876,
+          -58.702247
+        ],
+        [
+          -34.439027,
+          -58.702397
+        ],
+        [
+          -34.437505,
+          -58.705906
+        ],
+        [
+          -34.436567,
+          -58.705283
+        ],
+        [
+          -34.435466,
+          -58.704472
+        ],
+        [
+          -34.434853,
+          -58.70608
+        ]
+      ],
+      "name": "Path 1",
+      "categoryId": "access",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011100000,
+      "routeWaypoints": [
+        {
+          "index": 0,
+          "title": "Acceso Principal y Garita de Seguridad",
+          "caption": "Ingreso principal al predio logístico con barreras automáticas, control de accesos y garita de vigilancia.",
+          "image": "/streetview/logistica/path1_pt0.jpg"
+        },
+        {
+          "index": 1,
+          "title": "Control de Báscula y Pesaje de Camiones",
+          "caption": "Báscula de pesaje de camiones pesados, verificación de remitos y escaneo de patentes.",
+          "image": "/streetview/logistica/path1_pt1.jpg"
+        },
+        {
+          "index": 2,
+          "title": "Avenida Central de Circulación Logística",
+          "caption": "Arteria troncal de doble mano para camiones de gran porte flanqueada por centros de distribución.",
+          "image": "/streetview/logistica/path1_pt2.jpg"
+        },
+        {
+          "index": 3,
+          "title": "Derivador Sector Cargas y Almacén 2",
+          "caption": "Intersección señalizada para distribución de tránsito pesado hacia dársenas y depósitos.",
+          "image": "/streetview/logistica/path1_pt3.jpg"
+        },
+        {
+          "index": 4,
+          "title": "Corredor de Naves y Bahías de Descarga",
+          "caption": "Línea de portones seccionales y rampas para utilitarios y camiones de distribución interna.",
+          "image": "/streetview/logistica/path1_pt4.jpg"
+        },
+        {
+          "index": 5,
+          "title": "Terminal Norte de Contenedores y Carga",
+          "caption": "Playa de maniobras norte con acopio de contenedores intermodales, grúa pórtico y autoelevadores pesados.",
+          "image": "/streetview/logistica/path1_pt5.jpg"
+        }
+      ]
+    },
+    {
+      "id": "286e1mfmv8mju8t",
+      "kind": "area",
+      "coords": [
+        [
+          -34.438669,
+          -58.702348
+        ],
+        [
+          -34.438131,
+          -58.703577
+        ],
+        [
+          -34.437193,
+          -58.702985
+        ],
+        [
+          -34.437743,
+          -58.701756
+        ]
+      ],
+      "name": "Depósito 1",
+      "categoryId": "zones",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011110000
+    },
+    {
+      "id": "3pu9quemv8mkn24",
+      "kind": "area",
+      "coords": [
+        [
+          -34.439796,
+          -58.699875
+        ],
+        [
+          -34.43932,
+          -58.701104
+        ],
+        [
+          -34.439007,
+          -58.700861
+        ],
+        [
+          -34.43892,
+          -58.701028
+        ],
+        [
+          -34.438569,
+          -58.70077
+        ],
+        [
+          -34.438832,
+          -58.700102
+        ],
+        [
+          -34.438394,
+          -58.69992
+        ],
+        [
+          -34.438669,
+          -58.698964
+        ]
+      ],
+      "name": "Depósito 2",
+      "categoryId": "zones",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011120000,
+      "color": "#D4AF37"
+    },
+    {
+      "id": "hcwpykzmv8ml09e",
+      "kind": "point",
+      "coords": [
+        [
+          -34.43897,
+          -58.700026
+        ]
+      ],
+      "name": "Depósito 2",
+      "categoryId": "safety",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011130000
+    },
+    {
+      "id": "fnz3wxmmv8mm4c2",
+      "kind": "area",
+      "coords": [
+        [
+          -34.441885,
+          -58.698615
+        ],
+        [
+          -34.441135,
+          -58.700239
+        ],
+        [
+          -34.440621,
+          -58.699859
+        ],
+        [
+          -34.441347,
+          -58.698266
+        ]
+      ],
+      "name": "Area 5",
+      "categoryId": "access",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011140000
+    },
+    {
+      "id": "5su0ldmmv8mmahp",
+      "kind": "point",
+      "coords": [
+        [
+          -34.441648,
+          -58.69863
+        ]
+      ],
+      "name": "Área de Carga",
+      "categoryId": "safety",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011150000,
+      "color": "#EF4444"
+    },
+    {
+      "id": "nzf2nrvmv8mnerw",
+      "kind": "line",
+      "coords": [
+        [
+          -34.438628,
+          -58.6964
+        ],
+        [
+          -34.439823,
+          -58.697011
+        ],
+        [
+          -34.439363,
+          -58.698009
+        ],
+        [
+          -34.438938,
+          -58.697655
+        ],
+        [
+          -34.438655,
+          -58.698342
+        ]
+      ],
+      "name": "Path 2",
+      "categoryId": "access",
+      "notes": "",
+      "images": [],
+      "createdAt": 1792011160000,
+      "color": "#EF4444",
+      "routeWaypoints": [
+        {
+          "index": 0,
+          "title": "Acceso Cargas Este (Transporte Pesado)",
+          "caption": "Puesto de control perimetral este con barreras de seguridad exclusivo para camiones articulados.",
+          "image": "/streetview/logistica/path2_pt0.jpg"
+        },
+        {
+          "index": 1,
+          "title": "Boulevard de Maniobras Este",
+          "caption": "Avenida de maniobras en pavimento de hormigón de alto tránsito y áreas de estacionamiento de trailers.",
+          "image": "/streetview/logistica/path2_pt1.jpg"
+        },
+        {
+          "index": 2,
+          "title": "Dársenas de Carga y Descarga (Bays 10 a 12)",
+          "caption": "Muelles de carga con fuelles neumáticos, niveladores hidráulicos y semirremolques acoplados.",
+          "image": "/streetview/logistica/path2_pt2.jpg"
+        },
+        {
+          "index": 3,
+          "title": "Operación de Docks y Autoelevadores",
+          "caption": "Sector activo de carga con autoelevadores eléctricos, pallets filmados y personal de logística.",
+          "image": "/streetview/logistica/path2_pt3.jpg"
+        },
+        {
+          "index": 4,
+          "title": "Playa de Acopio Exterior y Expedición",
+          "caption": "Racks metálicos pesados para intemperie, camiones playos y preparación de despacho general.",
+          "image": "/streetview/logistica/path2_pt4.jpg"
+        }
+      ]
+    }
+  ],
+  "hiddenCategoryIds": [],
+  "createdAt": 1792011000000,
+  "updatedAt": 1792015000000
 }
 ];

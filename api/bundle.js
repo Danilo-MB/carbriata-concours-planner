@@ -85523,6 +85523,472 @@ var require_carbriata_data = __commonJS({
           hiddenCategoryIds: [],
           createdAt: 1791992584008,
           updatedAt: 1791994258267
+        },
+        i6666hqmv8mdpge: {
+          id: "i6666hqmv8mdpge",
+          name: "Planta Log\xEDstica",
+          description: "Predio industrial log\xEDstico con accesos para transporte pesado, pesaje de camiones, naves de almacenaje, d\xE1rsenas de carga y Street View en cada recorrido.",
+          location: "Ford Argentina, Luis Mar\xEDa Drago",
+          websiteUrl: "",
+          template: "event",
+          center: {
+            lat: -34.438662,
+            lng: -58.702736,
+            zoom: 16
+          },
+          basemap: "satellite",
+          categories: [
+            {
+              id: "zones",
+              name: "Zones",
+              color: "#E8590C",
+              icon: "tent",
+              kindHint: "area"
+            },
+            {
+              id: "stages",
+              name: "Stages & shows",
+              color: "#AE3EC9",
+              icon: "music"
+            },
+            {
+              id: "food",
+              name: "Food & drinks",
+              color: "#F59F00",
+              icon: "food"
+            },
+            {
+              id: "parking",
+              name: "Parking",
+              color: "#1C7ED6",
+              icon: "parking"
+            },
+            {
+              id: "access",
+              name: "Access & paths",
+              color: "#F06595",
+              icon: "door",
+              kindHint: "line"
+            },
+            {
+              id: "safety",
+              name: "Safety & services",
+              color: "#0CA678",
+              icon: "ambulance",
+              kindHint: "point"
+            }
+          ],
+          features: [
+            {
+              id: "xwy1noimv8mhomw",
+              kind: "area",
+              coords: [
+                [
+                  -34.438456,
+                  -58.706021
+                ],
+                [
+                  -34.438418,
+                  -58.705981
+                ],
+                [
+                  -34.438363,
+                  -58.705992
+                ],
+                [
+                  -34.438208,
+                  -58.705895
+                ],
+                [
+                  -34.438175,
+                  -58.705865
+                ],
+                [
+                  -34.438151,
+                  -58.705922
+                ],
+                [
+                  -34.43785,
+                  -58.705739
+                ],
+                [
+                  -34.437803,
+                  -58.705773
+                ],
+                [
+                  -34.437775,
+                  -58.705712
+                ],
+                [
+                  -34.438125,
+                  -58.704901
+                ],
+                [
+                  -34.438188,
+                  -58.704893
+                ],
+                [
+                  -34.438222,
+                  -58.704821
+                ],
+                [
+                  -34.438275,
+                  -58.704779
+                ],
+                [
+                  -34.43892,
+                  -58.705166
+                ],
+                [
+                  -34.438888,
+                  -58.705257
+                ],
+                [
+                  -34.43882,
+                  -58.705208
+                ]
+              ],
+              name: "Parking",
+              categoryId: "parking",
+              notes: "",
+              images: [],
+              createdAt: 179201106e4
+            },
+            {
+              id: "ioa26ummv8mhxok",
+              kind: "point",
+              coords: [
+                [
+                  -34.438375,
+                  -58.705303
+                ]
+              ],
+              name: "Parking 1",
+              categoryId: "parking",
+              notes: "",
+              images: [],
+              createdAt: 179201107e4
+            },
+            {
+              id: "zcgu49wmv8mibw2",
+              kind: "area",
+              coords: [
+                [
+                  -34.439765,
+                  -58.703282
+                ],
+                [
+                  -34.439031,
+                  -58.705085
+                ],
+                [
+                  -34.438372,
+                  -58.704693
+                ],
+                [
+                  -34.43846,
+                  -58.704484
+                ],
+                [
+                  -34.438261,
+                  -58.704393
+                ],
+                [
+                  -34.438969,
+                  -58.70273
+                ]
+              ],
+              name: "Area 2",
+              categoryId: "parking",
+              notes: "",
+              images: [],
+              createdAt: 179201108e4
+            },
+            {
+              id: "jzmosrxmv8mieeb",
+              kind: "point",
+              coords: [
+                [
+                  -34.438686,
+                  -58.704409
+                ]
+              ],
+              name: "Parking 2",
+              categoryId: "parking",
+              notes: "",
+              images: [],
+              createdAt: 179201109e4
+            },
+            {
+              id: "wz1pxpfmv8mjd3n",
+              kind: "line",
+              coords: [
+                [
+                  -34.438876,
+                  -58.702247
+                ],
+                [
+                  -34.439027,
+                  -58.702397
+                ],
+                [
+                  -34.437505,
+                  -58.705906
+                ],
+                [
+                  -34.436567,
+                  -58.705283
+                ],
+                [
+                  -34.435466,
+                  -58.704472
+                ],
+                [
+                  -34.434853,
+                  -58.70608
+                ]
+              ],
+              name: "Path 1",
+              categoryId: "access",
+              notes: "",
+              images: [],
+              createdAt: 17920111e5,
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Acceso Principal y Garita de Seguridad",
+                  caption: "Ingreso principal al predio log\xEDstico con barreras autom\xE1ticas, control de accesos y garita de vigilancia.",
+                  image: "/streetview/logistica/path1_pt0.jpg"
+                },
+                {
+                  index: 1,
+                  title: "Control de B\xE1scula y Pesaje de Camiones",
+                  caption: "B\xE1scula de pesaje de camiones pesados, verificaci\xF3n de remitos y escaneo de patentes.",
+                  image: "/streetview/logistica/path1_pt1.jpg"
+                },
+                {
+                  index: 2,
+                  title: "Avenida Central de Circulaci\xF3n Log\xEDstica",
+                  caption: "Arteria troncal de doble mano para camiones de gran porte flanqueada por centros de distribuci\xF3n.",
+                  image: "/streetview/logistica/path1_pt2.jpg"
+                },
+                {
+                  index: 3,
+                  title: "Derivador Sector Cargas y Almac\xE9n 2",
+                  caption: "Intersecci\xF3n se\xF1alizada para distribuci\xF3n de tr\xE1nsito pesado hacia d\xE1rsenas y dep\xF3sitos.",
+                  image: "/streetview/logistica/path1_pt3.jpg"
+                },
+                {
+                  index: 4,
+                  title: "Corredor de Naves y Bah\xEDas de Descarga",
+                  caption: "L\xEDnea de portones seccionales y rampas para utilitarios y camiones de distribuci\xF3n interna.",
+                  image: "/streetview/logistica/path1_pt4.jpg"
+                },
+                {
+                  index: 5,
+                  title: "Terminal Norte de Contenedores y Carga",
+                  caption: "Playa de maniobras norte con acopio de contenedores intermodales, gr\xFAa p\xF3rtico y autoelevadores pesados.",
+                  image: "/streetview/logistica/path1_pt5.jpg"
+                }
+              ]
+            },
+            {
+              id: "286e1mfmv8mju8t",
+              kind: "area",
+              coords: [
+                [
+                  -34.438669,
+                  -58.702348
+                ],
+                [
+                  -34.438131,
+                  -58.703577
+                ],
+                [
+                  -34.437193,
+                  -58.702985
+                ],
+                [
+                  -34.437743,
+                  -58.701756
+                ]
+              ],
+              name: "Dep\xF3sito 1",
+              categoryId: "zones",
+              notes: "",
+              images: [],
+              createdAt: 179201111e4
+            },
+            {
+              id: "3pu9quemv8mkn24",
+              kind: "area",
+              coords: [
+                [
+                  -34.439796,
+                  -58.699875
+                ],
+                [
+                  -34.43932,
+                  -58.701104
+                ],
+                [
+                  -34.439007,
+                  -58.700861
+                ],
+                [
+                  -34.43892,
+                  -58.701028
+                ],
+                [
+                  -34.438569,
+                  -58.70077
+                ],
+                [
+                  -34.438832,
+                  -58.700102
+                ],
+                [
+                  -34.438394,
+                  -58.69992
+                ],
+                [
+                  -34.438669,
+                  -58.698964
+                ]
+              ],
+              name: "Dep\xF3sito 2",
+              categoryId: "zones",
+              notes: "",
+              images: [],
+              createdAt: 179201112e4,
+              color: "#D4AF37"
+            },
+            {
+              id: "hcwpykzmv8ml09e",
+              kind: "point",
+              coords: [
+                [
+                  -34.43897,
+                  -58.700026
+                ]
+              ],
+              name: "Dep\xF3sito 2",
+              categoryId: "safety",
+              notes: "",
+              images: [],
+              createdAt: 179201113e4
+            },
+            {
+              id: "fnz3wxmmv8mm4c2",
+              kind: "area",
+              coords: [
+                [
+                  -34.441885,
+                  -58.698615
+                ],
+                [
+                  -34.441135,
+                  -58.700239
+                ],
+                [
+                  -34.440621,
+                  -58.699859
+                ],
+                [
+                  -34.441347,
+                  -58.698266
+                ]
+              ],
+              name: "Area 5",
+              categoryId: "access",
+              notes: "",
+              images: [],
+              createdAt: 179201114e4
+            },
+            {
+              id: "5su0ldmmv8mmahp",
+              kind: "point",
+              coords: [
+                [
+                  -34.441648,
+                  -58.69863
+                ]
+              ],
+              name: "\xC1rea de Carga",
+              categoryId: "safety",
+              notes: "",
+              images: [],
+              createdAt: 179201115e4,
+              color: "#EF4444"
+            },
+            {
+              id: "nzf2nrvmv8mnerw",
+              kind: "line",
+              coords: [
+                [
+                  -34.438628,
+                  -58.6964
+                ],
+                [
+                  -34.439823,
+                  -58.697011
+                ],
+                [
+                  -34.439363,
+                  -58.698009
+                ],
+                [
+                  -34.438938,
+                  -58.697655
+                ],
+                [
+                  -34.438655,
+                  -58.698342
+                ]
+              ],
+              name: "Path 2",
+              categoryId: "access",
+              notes: "",
+              images: [],
+              createdAt: 179201116e4,
+              color: "#EF4444",
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Acceso Cargas Este (Transporte Pesado)",
+                  caption: "Puesto de control perimetral este con barreras de seguridad exclusivo para camiones articulados.",
+                  image: "/streetview/logistica/path2_pt0.jpg"
+                },
+                {
+                  index: 1,
+                  title: "Boulevard de Maniobras Este",
+                  caption: "Avenida de maniobras en pavimento de hormig\xF3n de alto tr\xE1nsito y \xE1reas de estacionamiento de trailers.",
+                  image: "/streetview/logistica/path2_pt1.jpg"
+                },
+                {
+                  index: 2,
+                  title: "D\xE1rsenas de Carga y Descarga (Bays 10 a 12)",
+                  caption: "Muelles de carga con fuelles neum\xE1ticos, niveladores hidr\xE1ulicos y semirremolques acoplados.",
+                  image: "/streetview/logistica/path2_pt2.jpg"
+                },
+                {
+                  index: 3,
+                  title: "Operaci\xF3n de Docks y Autoelevadores",
+                  caption: "Sector activo de carga con autoelevadores el\xE9ctricos, pallets filmados y personal de log\xEDstica.",
+                  image: "/streetview/logistica/path2_pt3.jpg"
+                },
+                {
+                  index: 4,
+                  title: "Playa de Acopio Exterior y Expedici\xF3n",
+                  caption: "Racks met\xE1licos pesados para intemperie, camiones playos y preparaci\xF3n de despacho general.",
+                  image: "/streetview/logistica/path2_pt4.jpg"
+                }
+              ]
+            }
+          ],
+          hiddenCategoryIds: [],
+          createdAt: 1792011e6,
+          updatedAt: 1792015e6
         }
       }
     };
