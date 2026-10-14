@@ -163,6 +163,8 @@ export const translations = {
     openInNewTab: 'Abrir en nueva pestaña',
     preview: 'Vista previa',
     openFullMap: 'Abrir mapa completo',
+    closeAndReturnToMap: 'Cerrar y volver al mapa',
+    pressEscToClose: 'Presioná Esc para volver',
 
     // Home & Projects
     myPlans: 'Mis planos y eventos',
@@ -374,6 +376,8 @@ export const translations = {
     openInNewTab: 'Open in new tab',
     preview: 'Preview',
     openFullMap: 'Open full map',
+    closeAndReturnToMap: 'Close and view map',
+    pressEscToClose: 'Press Esc to exit',
 
     // Home & Projects
     myPlans: 'My plans & events',
