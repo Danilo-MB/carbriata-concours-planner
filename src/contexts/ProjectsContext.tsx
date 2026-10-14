@@ -11,6 +11,7 @@ import type { NewPlanInput, Project } from '../types/plan';
 interface ProjectsContextValue {
   projects: Project[];
   createProject: (input: NewPlanInput) => Project;
+  importProject: (project: Project) => Project;
   updateProject: (id: string, fn: (p: Project) => Project) => void;
   deleteProject: (id: string) => void;
   restoreProject: (project: Project, index: number) => void;
@@ -165,6 +166,20 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     return project;
   }, []);
 
+  const importProject = useCallback((project: Project): Project => {
+    setProjects((ps) => {
+      const existingIdx = ps.findIndex((p) => p.id === project.id);
+      if (existingIdx >= 0) {
+        const next = [...ps];
+        next[existingIdx] = { ...ps[existingIdx], ...project, updatedAt: Date.now() };
+        return next;
+      }
+      return [project, ...ps];
+    });
+    api.projects.create(project).catch(() => undefined);
+    return project;
+  }, []);
+
   const updateProject = useCallback((id: string, fn: (p: Project) => Project) => {
     setProjects((ps) => {
       const next = ps.map((p) => {
@@ -193,8 +208,8 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ projects, createProject, updateProject, deleteProject, restoreProject }),
-    [projects, createProject, updateProject, deleteProject, restoreProject]
+    () => ({ projects, createProject, importProject, updateProject, deleteProject, restoreProject }),
+    [projects, createProject, importProject, updateProject, deleteProject, restoreProject]
   );
 
   return <ProjectsContext.Provider value={value}>{children}</ProjectsContext.Provider>;

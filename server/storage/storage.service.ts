@@ -48,10 +48,12 @@ interface DataStore {
 
 @Injectable()
 export class StorageService implements OnModuleInit {
-  private store: DataStore = {
+  private static memoryStore: DataStore = {
     users: {},
     projects: {}
   };
+
+  private store: DataStore = StorageService.memoryStore;
 
   private filePath: string = process.env.DATA_FILE_PATH || (
     process.env.VERCEL
@@ -64,10 +66,25 @@ export class StorageService implements OnModuleInit {
   }
 
   private load(): void {
+    if (Object.keys(StorageService.memoryStore.projects).length > 0) {
+      this.store = StorageService.memoryStore;
+      return;
+    }
+
     try {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, 'utf-8');
         this.store = JSON.parse(raw);
+        StorageService.memoryStore = this.store;
+        return;
+      }
+
+      const cwdFile = path.join(process.cwd(), 'carbriata_data.json');
+      if (fs.existsSync(cwdFile)) {
+        const raw = fs.readFileSync(cwdFile, 'utf-8');
+        this.store = JSON.parse(raw);
+        StorageService.memoryStore = this.store;
+        this.save();
       }
     } catch (err) {
       console.warn('Could not load storage file, initializing in-memory fallback', err);
@@ -76,6 +93,7 @@ export class StorageService implements OnModuleInit {
 
   private save(): void {
     try {
+      StorageService.memoryStore = this.store;
       fs.writeFileSync(this.filePath, JSON.stringify(this.store, null, 2), 'utf-8');
     } catch (err) {
       console.warn('Could not persist storage file', err);

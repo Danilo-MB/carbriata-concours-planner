@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRightIcon, CompassIcon, FootprintsIcon, LayersIcon, MapPinIcon, PlusIcon, SparklesIcon } from 'lucide-react';
+import { ArrowRightIcon, FootprintsIcon, LayersIcon, MapPinIcon, PlusIcon, SparklesIcon } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LandingHeroProps {
@@ -9,7 +8,7 @@ interface LandingHeroProps {
   demoProjectId?: string;
 }
 
-export function LandingHero({ onCreateClick, onAiClick, demoProjectId = 'carbriata-2027' }: LandingHeroProps) {
+export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
   const { t } = useLanguage();
 
   return (
@@ -66,13 +65,6 @@ export function LandingHero({ onCreateClick, onAiClick, demoProjectId = 'carbria
               <span>{t('heroCtaPrimary')}</span>
               <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
             </button>
-
-            <Link
-              to={`/view/${demoProjectId}`}
-              className="inline-flex h-12 items-center gap-2 rounded-xl border border-line bg-surface px-6 text-sm font-semibold text-ink shadow-2xs transition-colors hover:bg-subtle active:scale-95">
-              <CompassIcon className="h-4 w-4 text-accent" aria-hidden="true" />
-              <span>{t('heroCtaSecondary')}</span>
-            </Link>
           </div>
         </div>
 

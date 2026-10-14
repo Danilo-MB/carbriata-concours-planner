@@ -5,6 +5,7 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
@@ -41,6 +42,7 @@ var __decorateClass = (decorators, target, key, kind) => {
   return result;
 };
 var __decorateParam = (index, decorator) => (target, key) => decorator(target, key, index);
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // node_modules/reflect-metadata/Reflect.js
 var require_Reflect = __commonJS({
@@ -88959,19 +88961,29 @@ init_common();
 var fs = __toESM(require("fs"), 1);
 var path = __toESM(require("path"), 1);
 var StorageService = class {
-  store = {
-    users: {},
-    projects: {}
-  };
+  store = StorageService.memoryStore;
   filePath = process.env.DATA_FILE_PATH || (process.env.VERCEL ? "/tmp/carbriata_data.json" : path.join(process.cwd(), "carbriata_data.json"));
   onModuleInit() {
     this.load();
   }
   load() {
+    if (Object.keys(StorageService.memoryStore.projects).length > 0) {
+      this.store = StorageService.memoryStore;
+      return;
+    }
     try {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, "utf-8");
         this.store = JSON.parse(raw);
+        StorageService.memoryStore = this.store;
+        return;
+      }
+      const cwdFile = path.join(process.cwd(), "carbriata_data.json");
+      if (fs.existsSync(cwdFile)) {
+        const raw = fs.readFileSync(cwdFile, "utf-8");
+        this.store = JSON.parse(raw);
+        StorageService.memoryStore = this.store;
+        this.save();
       }
     } catch (err) {
       console.warn("Could not load storage file, initializing in-memory fallback", err);
@@ -88979,6 +88991,7 @@ var StorageService = class {
   }
   save() {
     try {
+      StorageService.memoryStore = this.store;
       fs.writeFileSync(this.filePath, JSON.stringify(this.store, null, 2), "utf-8");
     } catch (err) {
       console.warn("Could not persist storage file", err);
@@ -89053,6 +89066,10 @@ var StorageService = class {
     return project;
   }
 };
+__publicField(StorageService, "memoryStore", {
+  users: {},
+  projects: {}
+});
 StorageService = __decorateClass([
   Injectable()
 ], StorageService);

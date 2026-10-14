@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckIcon, Code2Icon, CopyIcon, ExternalLinkIcon, Link2Icon, XIcon } from 'lucide-react';
+import { CheckIcon, Code2Icon, CopyIcon, ExternalLinkIcon, Link2Icon, SmartphoneIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getShareUrls } from '../../utils/shareUrl';
+import { api } from '../../utils/api';
 import type { Project } from '../../types/plan';
 
 interface ShareModalProps {
@@ -17,17 +19,25 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedEmbed, setCopiedEmbed] = useState(false);
   const [embedHeight, setEmbedHeight] = useState('600');
+  const [useShortLink, setUseShortLink] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen && project) {
+      // Sync to cloud backend as fallback
+      api.projects.create(project).catch(() => undefined);
+    }
+  }, [isOpen, project]);
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://event-planner-map.vercel.app';
-  const visitorUrl = `${origin}/view/${project.id}`;
-  const embedUrl = `${origin}/embed/${project.id}`;
-  const iframeSnippet = `<iframe src="${embedUrl}" width="100%" height="${embedHeight}" style="border:0; border-radius:12px; overflow:hidden;" allowfullscreen loading="lazy" title="${project.name}"></iframe>`;
+  const { visitorUrl, embedUrl, bareVisitorUrl } = useMemo(() => getShareUrls(project, origin), [project, origin]);
+
+  const currentVisitorUrl = useShortLink ? bareVisitorUrl : visitorUrl;
+  const currentEmbedUrl = embedUrl;
+  const iframeSnippet = `<iframe src="${currentEmbedUrl}" width="100%" height="${embedHeight}" style="border:0; border-radius:12px; overflow:hidden;" allowfullscreen loading="lazy" title="${project.name}"></iframe>`;
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(visitorUrl);
+      await navigator.clipboard.writeText(currentVisitorUrl);
       setCopiedLink(true);
       toast.success(t('linkCopied'));
       setTimeout(() => setCopiedLink(false), 2000);
@@ -122,14 +132,23 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
               </p>
 
               <div>
-                <label className="text-xs font-medium text-ink block mb-1.5">
-                  URL pública
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-medium text-ink flex items-center gap-1.5">
+                    <SmartphoneIcon className="h-3.5 w-3.5 text-accent" />
+                    <span>Enlace público para celulares y visitantes</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setUseShortLink(!useShortLink)}
+                    className="text-[11px] text-muted hover:text-ink underline">
+                    {useShortLink ? 'Usar enlace portable (recomendado)' : 'Usar enlace corto'}
+                  </button>
+                </div>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     readOnly
-                    value={visitorUrl}
+                    value={currentVisitorUrl}
                     onFocus={(e) => e.target.select()}
                     className="h-10 flex-1 rounded-lg border border-line bg-subtle px-3 font-mono text-xs text-ink focus:border-ink focus:outline-none"
                   />
@@ -150,11 +169,14 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
                     )}
                   </button>
                 </div>
+                <p className="mt-1.5 text-[11px] text-muted">
+                  {!useShortLink ? '✓ Funciona en cualquier celular (WhatsApp, Safari, Chrome) sin necesidad de cuenta.' : '⚠ Requiere que el plano esté en el servidor.'}
+                </p>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-1">
                 <a
-                  href={visitorUrl}
+                  href={currentVisitorUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-accent hover:underline">
