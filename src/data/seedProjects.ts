@@ -716,8 +716,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Parking",
       "categoryId": "parking",
-      "notes": "",
-      "images": [],
+      "notes": "Playa de estacionamiento pavimentada para personal operativo, administrativos, visitantes y flota liviana de logística.",
+      "images": [
+        "/streetview/logistica/area_parking.jpg"
+      ],
       "createdAt": 1792011060000
     },
     {
@@ -731,8 +733,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Parking 1",
       "categoryId": "parking",
-      "notes": "",
-      "images": [],
+      "notes": "Acceso peatonal y vehicular al estacionamiento central.",
+      "images": [
+        "/streetview/logistica/area_parking.jpg"
+      ],
       "createdAt": 1792011070000
     },
     {
@@ -766,8 +770,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Area 2",
       "categoryId": "parking",
-      "notes": "",
-      "images": [],
+      "notes": "Playa de maniobras y pulmón de espera para camiones pesados y semirremolques con dársenas de espera numeradas.",
+      "images": [
+        "/streetview/logistica/area_pulmon_camiones.jpg"
+      ],
       "createdAt": 1792011080000
     },
     {
@@ -781,8 +787,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Parking 2",
       "categoryId": "parking",
-      "notes": "",
-      "images": [],
+      "notes": "Puesto de asignación de dársenas para transporte pesado.",
+      "images": [
+        "/streetview/logistica/area_pulmon_camiones.jpg"
+      ],
       "createdAt": 1792011090000
     },
     {
@@ -817,7 +825,14 @@ export const seedProjects: Project[] = [
       "name": "Path 1",
       "categoryId": "access",
       "notes": "",
-      "images": [],
+      "images": [
+        "/streetview/logistica/path1_pt0.jpg",
+        "/streetview/logistica/path1_pt1.jpg",
+        "/streetview/logistica/path1_pt2.jpg",
+        "/streetview/logistica/path1_pt3.jpg",
+        "/streetview/logistica/path1_pt4.jpg",
+        "/streetview/logistica/path1_pt5.jpg"
+      ],
       "createdAt": 1792011100000,
       "routeWaypoints": [
         {
@@ -881,8 +896,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Depósito 1",
       "categoryId": "zones",
-      "notes": "",
-      "images": [],
+      "notes": "Nave industrial de recepción y expedición de repuestos y componentes con portones seccionales y rampas niveladoras.",
+      "images": [
+        "/streetview/logistica/area_deposito1.jpg"
+      ],
       "createdAt": 1792011110000
     },
     {
@@ -924,8 +941,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Depósito 2",
       "categoryId": "zones",
-      "notes": "",
-      "images": [],
+      "notes": "Centro de distribución y almacenaje de alta densidad con racks industriales, autoelevadores eléctricos y control de stock.",
+      "images": [
+        "/streetview/logistica/area_deposito2.jpg"
+      ],
       "createdAt": 1792011120000,
       "color": "#D4AF37"
     },
@@ -940,8 +959,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Depósito 2",
       "categoryId": "safety",
-      "notes": "",
-      "images": [],
+      "notes": "Acceso principal a oficinas técnicas y control de stock de Depósito 2.",
+      "images": [
+        "/streetview/logistica/area_deposito2.jpg"
+      ],
       "createdAt": 1792011130000
     },
     {
@@ -967,8 +988,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Area 5",
       "categoryId": "access",
-      "notes": "",
-      "images": [],
+      "notes": "Playa de acopio exterior, racks industriales de intemperie y preparación de despacho final.",
+      "images": [
+        "/streetview/logistica/area_sector5_carga.jpg"
+      ],
       "createdAt": 1792011140000
     },
     {
@@ -982,8 +1005,10 @@ export const seedProjects: Project[] = [
       ],
       "name": "Área de Carga",
       "categoryId": "safety",
-      "notes": "",
-      "images": [],
+      "notes": "Punto neurálgico de carga, estiba de pallets y despacho de camiones playos.",
+      "images": [
+        "/streetview/logistica/area_sector5_carga.jpg"
+      ],
       "createdAt": 1792011150000,
       "color": "#EF4444"
     },
@@ -1015,7 +1040,13 @@ export const seedProjects: Project[] = [
       "name": "Path 2",
       "categoryId": "access",
       "notes": "",
-      "images": [],
+      "images": [
+        "/streetview/logistica/path2_pt0.jpg",
+        "/streetview/logistica/path2_pt1.jpg",
+        "/streetview/logistica/path2_pt2.jpg",
+        "/streetview/logistica/path2_pt3.jpg",
+        "/streetview/logistica/path2_pt4.jpg"
+      ],
       "createdAt": 1792011160000,
       "color": "#EF4444",
       "routeWaypoints": [

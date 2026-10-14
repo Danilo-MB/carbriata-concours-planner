@@ -34,15 +34,74 @@ export const SAMPLE_STREETVIEW_WAYPOINTS: SampleWaypointData[] = [
   },
 ];
 
+export const SAMPLE_INDUSTRIAL_WAYPOINTS: SampleWaypointData[] = [
+  {
+    title: 'Acceso Principal y Garita de Control',
+    caption: 'Portón corredizo con barreras vehiculares automáticas y garita de vigilancia.',
+    image: '/streetview/logistica/path1_pt0.jpg',
+  },
+  {
+    title: 'Báscula y Pesaje de Camiones',
+    caption: 'Puesto de pesaje con balanza integrada para camiones pesados y control de remitos.',
+    image: '/streetview/logistica/path1_pt1.jpg',
+  },
+  {
+    title: 'Avenida Central de Circulación Logística',
+    caption: 'Arteria de doble mano flanqueada por depósitos y centros de distribución con dársenas.',
+    image: '/streetview/logistica/path1_pt2.jpg',
+  },
+  {
+    title: 'Derivador Sector Cargas y Almacén 2',
+    caption: 'Intersección señalizada hacia docks de carga, almacenes y oficinas operativas.',
+    image: '/streetview/logistica/path1_pt3.jpg',
+  },
+  {
+    title: 'Dársenas y Muelles de Carga (Bays 10-12)',
+    caption: 'Muelles de carga con fuelles neumáticos y rampas hidráulicas para semirremolques.',
+    image: '/streetview/logistica/path2_pt2.jpg',
+  },
+  {
+    title: 'Operación de Docks y Autoelevadores',
+    caption: 'Zona activa de carga y descarga de pallets estandarizados con autoelevadores eléctricos.',
+    image: '/streetview/logistica/path2_pt3.jpg',
+  },
+  {
+    title: 'Playa de Acopio Exterior y Expedición',
+    caption: 'Racks industriales de exterior para mercadería pesada y playa de preparación para despacho final.',
+    image: '/streetview/logistica/path2_pt4.jpg',
+  },
+  {
+    title: 'Terminal Norte de Contenedores y Carga',
+    caption: 'Playa de maniobras norte con acopio de contenedores intermodales y grúa pórtico.',
+    image: '/streetview/logistica/path1_pt5.jpg',
+  },
+];
+
 /**
  * Returns waypoints filled with sample photos for a given number of coordinates.
  */
-export function generateSampleWaypointsForCoords(coordsCount: number): RouteWaypoint[] {
+export function generateSampleWaypointsForCoords(
+  coordsCount: number,
+  featureContext?: PlanFeature | boolean
+): RouteWaypoint[] {
+  const isIndustrial =
+    typeof featureContext === 'boolean'
+      ? featureContext
+      : Boolean(
+          featureContext?.categoryId === 'access' ||
+          featureContext?.categoryId === 'parking' ||
+          featureContext?.name?.toLowerCase().includes('logistica') ||
+          featureContext?.name?.toLowerCase().includes('carga') ||
+          featureContext?.name?.toLowerCase().includes('deposito') ||
+          featureContext?.name?.toLowerCase().includes('industrial')
+        );
+
+  const samplesList = isIndustrial ? SAMPLE_INDUSTRIAL_WAYPOINTS : SAMPLE_STREETVIEW_WAYPOINTS;
   const waypoints: RouteWaypoint[] = [];
   const count = Math.max(coordsCount, 1);
   for (let i = 0; i < count; i++) {
-    const sample = SAMPLE_STREETVIEW_WAYPOINTS[i % SAMPLE_STREETVIEW_WAYPOINTS.length];
-    const isSingleCycle = count <= SAMPLE_STREETVIEW_WAYPOINTS.length;
+    const sample = samplesList[i % samplesList.length];
+    const isSingleCycle = count <= samplesList.length;
     waypoints.push({
       index: i,
       title: isSingleCycle ? sample.title : `${sample.title} (${i + 1})`,

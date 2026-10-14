@@ -85650,8 +85650,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Parking",
               categoryId: "parking",
-              notes: "",
-              images: [],
+              notes: "Playa de estacionamiento pavimentada para personal operativo, administrativos, visitantes y flota liviana de log\xEDstica.",
+              images: [
+                "/streetview/logistica/area_parking.jpg"
+              ],
               createdAt: 179201106e4
             },
             {
@@ -85665,8 +85667,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Parking 1",
               categoryId: "parking",
-              notes: "",
-              images: [],
+              notes: "Acceso peatonal y vehicular al estacionamiento central.",
+              images: [
+                "/streetview/logistica/area_parking.jpg"
+              ],
               createdAt: 179201107e4
             },
             {
@@ -85700,8 +85704,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Area 2",
               categoryId: "parking",
-              notes: "",
-              images: [],
+              notes: "Playa de maniobras y pulm\xF3n de espera para camiones pesados y semirremolques con d\xE1rsenas de espera numeradas.",
+              images: [
+                "/streetview/logistica/area_pulmon_camiones.jpg"
+              ],
               createdAt: 179201108e4
             },
             {
@@ -85715,8 +85721,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Parking 2",
               categoryId: "parking",
-              notes: "",
-              images: [],
+              notes: "Puesto de asignaci\xF3n de d\xE1rsenas para transporte pesado.",
+              images: [
+                "/streetview/logistica/area_pulmon_camiones.jpg"
+              ],
               createdAt: 179201109e4
             },
             {
@@ -85751,7 +85759,14 @@ var require_carbriata_data = __commonJS({
               name: "Path 1",
               categoryId: "access",
               notes: "",
-              images: [],
+              images: [
+                "/streetview/logistica/path1_pt0.jpg",
+                "/streetview/logistica/path1_pt1.jpg",
+                "/streetview/logistica/path1_pt2.jpg",
+                "/streetview/logistica/path1_pt3.jpg",
+                "/streetview/logistica/path1_pt4.jpg",
+                "/streetview/logistica/path1_pt5.jpg"
+              ],
               createdAt: 17920111e5,
               routeWaypoints: [
                 {
@@ -85815,8 +85830,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Dep\xF3sito 1",
               categoryId: "zones",
-              notes: "",
-              images: [],
+              notes: "Nave industrial de recepci\xF3n y expedici\xF3n de repuestos y componentes con portones seccionales y rampas niveladoras.",
+              images: [
+                "/streetview/logistica/area_deposito1.jpg"
+              ],
               createdAt: 179201111e4
             },
             {
@@ -85858,8 +85875,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Dep\xF3sito 2",
               categoryId: "zones",
-              notes: "",
-              images: [],
+              notes: "Centro de distribuci\xF3n y almacenaje de alta densidad con racks industriales, autoelevadores el\xE9ctricos y control de stock.",
+              images: [
+                "/streetview/logistica/area_deposito2.jpg"
+              ],
               createdAt: 179201112e4,
               color: "#D4AF37"
             },
@@ -85874,8 +85893,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Dep\xF3sito 2",
               categoryId: "safety",
-              notes: "",
-              images: [],
+              notes: "Acceso principal a oficinas t\xE9cnicas y control de stock de Dep\xF3sito 2.",
+              images: [
+                "/streetview/logistica/area_deposito2.jpg"
+              ],
               createdAt: 179201113e4
             },
             {
@@ -85901,8 +85922,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Area 5",
               categoryId: "access",
-              notes: "",
-              images: [],
+              notes: "Playa de acopio exterior, racks industriales de intemperie y preparaci\xF3n de despacho final.",
+              images: [
+                "/streetview/logistica/area_sector5_carga.jpg"
+              ],
               createdAt: 179201114e4
             },
             {
@@ -85916,8 +85939,10 @@ var require_carbriata_data = __commonJS({
               ],
               name: "\xC1rea de Carga",
               categoryId: "safety",
-              notes: "",
-              images: [],
+              notes: "Punto neur\xE1lgico de carga, estiba de pallets y despacho de camiones playos.",
+              images: [
+                "/streetview/logistica/area_sector5_carga.jpg"
+              ],
               createdAt: 179201115e4,
               color: "#EF4444"
             },
@@ -85949,7 +85974,13 @@ var require_carbriata_data = __commonJS({
               name: "Path 2",
               categoryId: "access",
               notes: "",
-              images: [],
+              images: [
+                "/streetview/logistica/path2_pt0.jpg",
+                "/streetview/logistica/path2_pt1.jpg",
+                "/streetview/logistica/path2_pt2.jpg",
+                "/streetview/logistica/path2_pt3.jpg",
+                "/streetview/logistica/path2_pt4.jpg"
+              ],
               createdAt: 179201116e4,
               color: "#EF4444",
               routeWaypoints: [

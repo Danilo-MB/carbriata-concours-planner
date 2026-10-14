@@ -29,10 +29,18 @@ function ensureStreetViewSeed(projs: Project[]): Project[] {
         ...current,
         features: current.features.map((f) => {
           const sf = seedProj.features.find((feat) => feat.id === f.id);
-          if (sf && sf.routeWaypoints && sf.routeWaypoints.length > 0) {
-            if (!f.routeWaypoints || f.routeWaypoints.length === 0) {
-              return { ...f, routeWaypoints: sf.routeWaypoints };
+          if (sf) {
+            let updated = f;
+            if (sf.routeWaypoints && sf.routeWaypoints.length > 0 && (!f.routeWaypoints || f.routeWaypoints.length === 0)) {
+              updated = { ...updated, routeWaypoints: sf.routeWaypoints };
             }
+            if (sf.images && sf.images.length > 0 && (!f.images || f.images.length === 0)) {
+              updated = { ...updated, images: sf.images };
+            }
+            if (sf.notes && (!f.notes || f.notes.trim() === '')) {
+              updated = { ...updated, notes: sf.notes };
+            }
+            return updated;
           }
           return f;
         })

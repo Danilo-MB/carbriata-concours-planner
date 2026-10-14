@@ -75,7 +75,7 @@ export function RouteWaypointManager({
   };
 
   const handleApplySamplePhotos = () => {
-    const samples = generateSampleWaypointsForCoords(feature.coords.length);
+    const samples = generateSampleWaypointsForCoords(feature.coords.length, feature);
     onChange({ routeWaypoints: samples });
     toast.success('Fotos de ejemplo cargadas en todos los puntos');
   };

@@ -275,7 +275,7 @@ export function PlanEditor({
             onClose={() => editor.setNewlyCreatedRoute(null)}
             onApplySamplePhotos={() => {
               const route = editor.newlyCreatedRoute!;
-              const samples = generateSampleWaypointsForCoords(route.coords.length);
+              const samples = generateSampleWaypointsForCoords(route.coords.length, route);
               editor.updateFeature(route.id, { routeWaypoints: samples });
               editor.setNewlyCreatedRoute(null);
               handleOpenStreetView({ ...route, routeWaypoints: samples }, 0);
