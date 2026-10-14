@@ -1,5 +1,5 @@
 import React from 'react';
-import { CameraIcon, Code2Icon, LayersIcon, SmartphoneIcon } from 'lucide-react';
+import { Code2Icon, CompassIcon, FootprintsIcon, LayersIcon, SmartphoneIcon, SparklesIcon } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export function FeatureCards() {
@@ -7,32 +7,46 @@ export function FeatureCards() {
 
   const features = [
     {
-      icon: LayersIcon,
+      icon: CompassIcon,
       color: 'from-amber-500/20 to-orange-500/10 text-amber-500',
-      badge: 'GIS & Métrica',
+      badge: 'Territorios Nuevos',
       title: t('feature1Title'),
       desc: t('feature1Desc')
     },
     {
-      icon: CameraIcon,
-      color: 'from-emerald-500/20 to-teal-500/10 text-emerald-500',
-      badge: 'Multimedia',
+      icon: FootprintsIcon,
+      color: 'from-orange-500/20 to-amber-500/10 text-orange-500',
+      badge: 'Street View 360',
       title: t('feature2Title'),
       desc: t('feature2Desc')
+    },
+    {
+      icon: LayersIcon,
+      color: 'from-emerald-500/20 to-teal-500/10 text-emerald-500',
+      badge: 'GIS & Métrica',
+      title: t('feature3Title'),
+      desc: t('feature3Desc')
     },
     {
       icon: Code2Icon,
       color: 'from-blue-500/20 to-indigo-500/10 text-blue-500',
       badge: '1-Clic Embed',
-      title: t('feature3Title'),
-      desc: t('feature3Desc')
+      title: t('feature4Title'),
+      desc: t('feature4Desc')
+    },
+    {
+      icon: SparklesIcon,
+      color: 'from-violet-500/20 to-purple-500/10 text-violet-500',
+      badge: 'Inteligencia Artificial',
+      title: t('feature5Title'),
+      desc: t('feature5Desc')
     },
     {
       icon: SmartphoneIcon,
-      color: 'from-purple-500/20 to-pink-500/10 text-purple-500',
+      color: 'from-pink-500/20 to-rose-500/10 text-pink-500',
       badge: 'Mobile & GPS',
-      title: t('feature4Title'),
-      desc: t('feature4Desc')
+      title: t('feature6Title'),
+      desc: t('feature6Desc')
     }
   ];
 
@@ -48,7 +62,7 @@ export function FeatureCards() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, idx) => {
             const Icon = feature.icon;
             return (

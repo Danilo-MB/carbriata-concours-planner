@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, CompassIcon, LayersIcon, MapPinIcon, PlusIcon, SparklesIcon } from 'lucide-react';
+import { ArrowRightIcon, CompassIcon, FootprintsIcon, LayersIcon, MapPinIcon, PlusIcon, SparklesIcon } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LandingHeroProps {
@@ -19,6 +19,17 @@ export function LandingHero({ onCreateClick, onAiClick, demoProjectId = 'carbria
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col items-center text-center">
+          {/* Top Value Pill */}
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-ink shadow-2xs backdrop-blur-sm">
+            <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-amber-700 dark:text-amber-400 font-bold">{t('heroTopBadgeTitle')}</span>
+            <span className="text-muted/60">·</span>
+            <span className="text-muted flex items-center gap-1">
+              <FootprintsIcon className="h-3.5 w-3.5 text-amber-500" />
+              {t('heroTopBadgeSub')}
+            </span>
+          </div>
+
           {/* Headline */}
           <h1 className="max-w-4xl text-3xl font-extrabold tracking-tight text-ink sm:text-5xl lg:text-6xl sm:leading-[1.15]">
             {t('heroTitlePart1')}{' '}
@@ -76,6 +87,11 @@ export function LandingHero({ onCreateClick, onAiClick, demoProjectId = 'carbria
             />
 
             {/* Floating Interactive Glassmorphism Badges */}
+            <div className="pointer-events-none absolute top-3 left-3 hidden sm:flex items-center gap-2 rounded-xl border border-amber-400/40 bg-black/85 px-3.5 py-1.5 text-xs font-bold text-amber-300 shadow-xl backdrop-blur-md">
+              <FootprintsIcon className="h-4 w-4 text-amber-400" aria-hidden="true" />
+              <span>{t('heroBadgeStreetView')}</span>
+            </div>
+
             <div className="pointer-events-none absolute bottom-3 left-3 hidden sm:flex items-center gap-2 rounded-xl border border-white/20 bg-ink/80 px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>{t('heroBadgeSatellite')}</span>
