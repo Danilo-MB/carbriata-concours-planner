@@ -46,11 +46,18 @@ interface DataStore {
   projects: Record<string, ProjectEntity>;
 }
 
+let bundledSeedData: DataStore = { users: {}, projects: {} };
+try {
+  bundledSeedData = require('../../carbriata_data.json');
+} catch {
+  // fallback
+}
+
 @Injectable()
 export class StorageService implements OnModuleInit {
   private static memoryStore: DataStore = {
-    users: {},
-    projects: {}
+    users: { ...bundledSeedData.users },
+    projects: { ...bundledSeedData.projects }
   };
 
   private store: DataStore = StorageService.memoryStore;
@@ -66,29 +73,24 @@ export class StorageService implements OnModuleInit {
   }
 
   private load(): void {
-    if (Object.keys(StorageService.memoryStore.projects).length > 0) {
-      this.store = StorageService.memoryStore;
-      return;
-    }
+    const mergedStore: DataStore = {
+      users: { ...bundledSeedData.users, ...StorageService.memoryStore.users },
+      projects: { ...bundledSeedData.projects, ...StorageService.memoryStore.projects }
+    };
 
     try {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, 'utf-8');
-        this.store = JSON.parse(raw);
-        StorageService.memoryStore = this.store;
-        return;
-      }
-
-      const cwdFile = path.join(process.cwd(), 'carbriata_data.json');
-      if (fs.existsSync(cwdFile)) {
-        const raw = fs.readFileSync(cwdFile, 'utf-8');
-        this.store = JSON.parse(raw);
-        StorageService.memoryStore = this.store;
-        this.save();
+        const parsed = JSON.parse(raw);
+        if (parsed.users) Object.assign(mergedStore.users, parsed.users);
+        if (parsed.projects) Object.assign(mergedStore.projects, parsed.projects);
       }
     } catch (err) {
-      console.warn('Could not load storage file, initializing in-memory fallback', err);
+      console.warn('Could not read runtime storage file', err);
     }
+
+    this.store = mergedStore;
+    StorageService.memoryStore = mergedStore;
   }
 
   private save(): void {
@@ -124,7 +126,7 @@ export class StorageService implements OnModuleInit {
   }
 
   findProjectById(id: string): ProjectEntity | undefined {
-    return this.store.projects[id];
+    return this.store.projects[id] || bundledSeedData.projects[id];
   }
 
   saveProject(project: ProjectEntity): ProjectEntity {

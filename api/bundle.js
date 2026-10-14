@@ -85133,6 +85133,402 @@ var init_core2 = __esm({
   }
 });
 
+// carbriata_data.json
+var require_carbriata_data = __commonJS({
+  "carbriata_data.json"(exports2, module2) {
+    module2.exports = {
+      users: {
+        u_demo: {
+          id: "u_demo",
+          email: "demo@carbriata.com",
+          name: "Danilo Carbriata",
+          passwordHash: "$2b$10$JbDMUFLryePevo.tCFnjieKbJQjoCyqegn9jjI0fSilC4ymg/.LTS",
+          createdAt: 1791499033432
+        }
+      },
+      projects: {
+        p_qbdc696r: {
+          id: "p_qbdc696r",
+          name: "Goodwood Festival of Speed",
+          description: "Plano y mapa general",
+          location: "West Sussex, UK",
+          template: "event",
+          center: {
+            lat: -36.32639,
+            lng: -57.69722,
+            zoom: 16
+          },
+          basemap: "satellite",
+          categories: [],
+          features: [
+            {
+              id: "feat_1",
+              kind: "point",
+              name: "Acceso Principal",
+              categoryId: "cat_access",
+              notes: "Puerta 1",
+              coords: [
+                [
+                  -36.326,
+                  -57.697
+                ]
+              ],
+              createdAt: 1791499055547,
+              color: "#10b981",
+              opacity: 0.9
+            }
+          ],
+          hiddenCategoryIds: [],
+          createdAt: 1791499055547,
+          updatedAt: 1791499060316
+        },
+        ijdhormmv8a4760: {
+          id: "ijdhormmv8a4760",
+          name: "Barrio Carlina",
+          description: "",
+          location: "Alto Los Cardales, Partido de Campana",
+          template: "realEstate",
+          center: {
+            lat: -34.304266,
+            lng: -58.941935,
+            zoom: 16.5
+          },
+          basemap: "satellite",
+          categories: [
+            {
+              id: "lots",
+              name: "Lots",
+              color: "#E8590C",
+              icon: "house",
+              kindHint: "area"
+            },
+            {
+              id: "streets",
+              name: "Streets",
+              color: "#F59F00",
+              icon: "route",
+              kindHint: "line"
+            },
+            {
+              id: "green",
+              name: "Green spaces",
+              color: "#74B816",
+              icon: "trees"
+            },
+            {
+              id: "amenities",
+              name: "Amenities",
+              color: "#AE3EC9",
+              icon: "store"
+            },
+            {
+              id: "common",
+              name: "Common areas",
+              color: "#1C7ED6",
+              icon: "building"
+            },
+            {
+              id: "poi",
+              name: "Points of interest",
+              color: "#F06595",
+              icon: "pin",
+              kindHint: "point"
+            },
+            {
+              id: "zones",
+              name: "Zones",
+              color: "#E8590C",
+              icon: "tent",
+              kindHint: "area"
+            },
+            {
+              id: "stages",
+              name: "Stages & shows",
+              color: "#AE3EC9",
+              icon: "music"
+            },
+            {
+              id: "food",
+              name: "Food & drinks",
+              color: "#F59F00",
+              icon: "food"
+            },
+            {
+              id: "parking",
+              name: "Parking",
+              color: "#1C7ED6",
+              icon: "parking"
+            },
+            {
+              id: "access",
+              name: "Access & paths",
+              color: "#F06595",
+              icon: "door",
+              kindHint: "line"
+            },
+            {
+              id: "safety",
+              name: "Safety & services",
+              color: "#0CA678",
+              icon: "ambulance",
+              kindHint: "point"
+            }
+          ],
+          features: [
+            {
+              id: "6fux4gomv8aabt7",
+              kind: "line",
+              coords: [
+                [
+                  -34.30501815089936,
+                  -58.939901760668334
+                ],
+                [
+                  -34.30419261690571,
+                  -58.94047683925086
+                ],
+                [
+                  -34.30332152215112,
+                  -58.94248724392484
+                ],
+                [
+                  -34.30286359178835,
+                  -58.94281183532002
+                ]
+              ],
+              name: "Path 1",
+              categoryId: "streets",
+              notes: "",
+              images: [],
+              createdAt: 1791992869963,
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Acceso y Entrada Principal",
+                  caption: "Entrada principal",
+                  image: "/streetview/carlina/point1.jpg"
+                },
+                {
+                  index: 1,
+                  title: "Paseo Central Arbolado",
+                  caption: "Avenida principal con jardines florales, carteler\uFFFDa digital y circulaci\uFFFDn fluida.",
+                  image: "/streetview/carlina/point2.jpg"
+                },
+                {
+                  index: 2,
+                  title: "Zona Lotes 1",
+                  caption: "",
+                  image: "/streetview/carlina/point3.jpg"
+                },
+                {
+                  index: 3,
+                  title: "Zona Lotes 2",
+                  caption: "",
+                  image: "/streetview/carlina/point4.jpg"
+                }
+              ]
+            },
+            {
+              id: "rcan1f8mv8afn09",
+              kind: "area",
+              coords: [
+                [
+                  -34.305525757304714,
+                  -58.94090316978896
+                ],
+                [
+                  -34.305162286363434,
+                  -58.94121421353097
+                ],
+                [
+                  -34.304980550302844,
+                  -58.94071350897065
+                ],
+                [
+                  -34.305356555510535,
+                  -58.94041005166137
+                ]
+              ],
+              name: "Lote 23422",
+              categoryId: "parking",
+              notes: "",
+              images: [
+                "/streetview/carlina/lote_23422_1.jpg"
+              ],
+              createdAt: 1791993117753
+            },
+            {
+              id: "yt6qwlbmv8afquu",
+              kind: "area",
+              coords: [
+                [
+                  -34.30511841801675,
+                  -58.94121611013915
+                ],
+                [
+                  -34.304754947075466,
+                  -58.94152715388116
+                ],
+                [
+                  -34.304573211014876,
+                  -58.941026449320844
+                ],
+                [
+                  -34.30494921622257,
+                  -58.94072299201156
+                ]
+              ],
+              name: "Lote 12321",
+              categoryId: "lots",
+              notes: "",
+              images: [
+                "/streetview/carlina/lote_12321_1.jpg"
+              ],
+              createdAt: 1791993122742
+            },
+            {
+              id: "rszz2wnmv8afv0r",
+              kind: "area",
+              coords: [
+                [
+                  -34.305694959550294,
+                  -58.94214924136517
+                ],
+                [
+                  -34.30533148860901,
+                  -58.94246028510718
+                ],
+                [
+                  -34.305149752548424,
+                  -58.941959580546865
+                ],
+                [
+                  -34.305525757756115,
+                  -58.94165612323758
+                ]
+              ],
+              name: "Lote 23211",
+              categoryId: "lots",
+              notes: "",
+              images: [
+                "/streetview/carlina/lote_23211_1.jpg"
+              ],
+              createdAt: 1791993128139
+            },
+            {
+              id: "omnzmh0mv8agyxg",
+              kind: "area",
+              coords: [
+                [
+                  -34.30527748011667,
+                  -58.94248361411409
+                ],
+                [
+                  -34.30491400917539,
+                  -58.9427946578561
+                ],
+                [
+                  -34.3047322731148,
+                  -58.94229395329578
+                ],
+                [
+                  -34.30510827832249,
+                  -58.941990495986495
+                ]
+              ],
+              name: "Lote 4567",
+              categoryId: "lots",
+              notes: "",
+              images: [
+                "/streetview/carlina/lote_4567_1.jpg"
+              ],
+              createdAt: 1791993179860,
+              color: "#D4AF37"
+            },
+            {
+              id: "rl5oukumv8ah2p8",
+              kind: "area",
+              coords: [
+                [
+                  -34.30486980207181,
+                  -58.942837665704054
+                ],
+                [
+                  -34.30450633113053,
+                  -58.94314870944606
+                ],
+                [
+                  -34.30432459506994,
+                  -58.94264800488575
+                ],
+                [
+                  -34.304700600277634,
+                  -58.94234454757646
+                ]
+              ],
+              name: "Lote 1234",
+              categoryId: "lots",
+              notes: "",
+              images: [
+                "/streetview/carlina/lote_1234_1.jpg"
+              ],
+              createdAt: 1791993184748,
+              color: "#10B981"
+            },
+            {
+              id: "417xf5umv8ahkzc",
+              kind: "point",
+              coords: [
+                [
+                  -34.303084815965335,
+                  -58.94308805465699
+                ]
+              ],
+              name: "Marker 1",
+              categoryId: "parking",
+              notes: "",
+              images: [],
+              createdAt: 1791993208440
+            },
+            {
+              id: "rfm2qormv8ahuzm",
+              kind: "area",
+              coords: [
+                [
+                  -34.3032886589137,
+                  -58.943967819213874
+                ],
+                [
+                  -34.30371406869046,
+                  -58.943699598312385
+                ],
+                [
+                  -34.303235482540096,
+                  -58.942734003067024
+                ],
+                [
+                  -34.302836658664745,
+                  -58.94305586814881
+                ]
+              ],
+              name: "\xC1rea de estacionamiento",
+              categoryId: "parking",
+              notes: "",
+              images: [
+                "/streetview/carlina/estacionamiento_1.jpg"
+              ],
+              createdAt: 1791993221410
+            }
+          ],
+          hiddenCategoryIds: [],
+          createdAt: 1791992584008,
+          updatedAt: 1791994258267
+        }
+      }
+    };
+  }
+});
+
 // node_modules/safe-buffer/index.js
 var require_safe_buffer = __commonJS({
   "node_modules/safe-buffer/index.js"(exports2, module2) {
@@ -88960,6 +89356,11 @@ init_common();
 init_common();
 var fs = __toESM(require("fs"), 1);
 var path = __toESM(require("path"), 1);
+var bundledSeedData = { users: {}, projects: {} };
+try {
+  bundledSeedData = require_carbriata_data();
+} catch {
+}
 var StorageService = class {
   store = StorageService.memoryStore;
   filePath = process.env.DATA_FILE_PATH || (process.env.VERCEL ? "/tmp/carbriata_data.json" : path.join(process.cwd(), "carbriata_data.json"));
@@ -88967,27 +89368,22 @@ var StorageService = class {
     this.load();
   }
   load() {
-    if (Object.keys(StorageService.memoryStore.projects).length > 0) {
-      this.store = StorageService.memoryStore;
-      return;
-    }
+    const mergedStore = {
+      users: { ...bundledSeedData.users, ...StorageService.memoryStore.users },
+      projects: { ...bundledSeedData.projects, ...StorageService.memoryStore.projects }
+    };
     try {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, "utf-8");
-        this.store = JSON.parse(raw);
-        StorageService.memoryStore = this.store;
-        return;
-      }
-      const cwdFile = path.join(process.cwd(), "carbriata_data.json");
-      if (fs.existsSync(cwdFile)) {
-        const raw = fs.readFileSync(cwdFile, "utf-8");
-        this.store = JSON.parse(raw);
-        StorageService.memoryStore = this.store;
-        this.save();
+        const parsed = JSON.parse(raw);
+        if (parsed.users) Object.assign(mergedStore.users, parsed.users);
+        if (parsed.projects) Object.assign(mergedStore.projects, parsed.projects);
       }
     } catch (err) {
-      console.warn("Could not load storage file, initializing in-memory fallback", err);
+      console.warn("Could not read runtime storage file", err);
     }
+    this.store = mergedStore;
+    StorageService.memoryStore = mergedStore;
   }
   save() {
     try {
@@ -89017,7 +89413,7 @@ var StorageService = class {
     return all.filter((p) => !p.userId || p.userId === userId);
   }
   findProjectById(id) {
-    return this.store.projects[id];
+    return this.store.projects[id] || bundledSeedData.projects[id];
   }
   saveProject(project) {
     this.store.projects[project.id] = {
@@ -89067,8 +89463,8 @@ var StorageService = class {
   }
 };
 __publicField(StorageService, "memoryStore", {
-  users: {},
-  projects: {}
+  users: { ...bundledSeedData.users },
+  projects: { ...bundledSeedData.projects }
 });
 StorageService = __decorateClass([
   Injectable()

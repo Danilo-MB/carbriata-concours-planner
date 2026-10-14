@@ -12,7 +12,6 @@ dist
 dist-ssr
 dist-server
 *.local
-carbriata_data.json
 
 # Editor directories and files
 .vscode/*
