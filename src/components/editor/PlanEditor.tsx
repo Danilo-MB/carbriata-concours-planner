@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import type L from 'leaflet';
@@ -8,7 +8,7 @@ import { useEditor } from '../../hooks/useEditor';
 import { downloadTextFile, geojsonFileName, toGeoJSON } from '../../utils/geojson';
 import { formatArea, formatLength, getFeaturesBounds, getFeaturesGeometricCenter, getOptimalZoomForBounds, pathLength, polygonArea } from '../../utils/geo';
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
-import { canExportGeoJSON, fallbackCategory, pickCategory } from '../../utils/plan';
+import { canEditProject, canExportGeoJSON, fallbackCategory, pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
 import { DrawingBar } from './DrawingBar';
 import { EditorHeader } from './EditorHeader';
@@ -38,11 +38,27 @@ export function PlanEditor({
   isEmbed = false,
   isVisitorOnly = false
 }: PlanEditorProps) {
-  const effectiveInitialMode = isEmbed || isVisitorOnly ? 'visitor' : initialMode;
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
+  const canEdit = canEditProject(project, user);
+  const effectiveInitialMode = !canEdit || isEmbed || isVisitorOnly ? 'visitor' : initialMode;
   const { updateProject } = useProjects();
   const update = useCallback((fn: (p: Project) => Project) => updateProject(project.id, fn), [project.id, updateProject]);
   const editor = useEditor(project, update, effectiveInitialMode);
+
+  useEffect(() => {
+    if (!canEdit && editor.mode !== 'visitor') {
+      editor.setMode('visitor');
+    }
+  }, [canEdit, editor.mode, editor.setMode]);
+
+  const handleModeChange = useCallback((nextMode: ViewMode) => {
+    if (!canEdit && nextMode === 'editor') {
+      openAuthModal();
+      toast.info('Inicia sesión para editar este mapa');
+      return;
+    }
+    editor.setMode(nextMode);
+  }, [canEdit, editor, openAuthModal]);
   const mapRef = useRef<L.Map | null>(null);
   const [tilted, setTilted] = useState(false);
   const [showClearAllModal, setShowClearAllModal] = useState(false);
@@ -150,7 +166,8 @@ export function PlanEditor({
         <EditorHeader
           project={project}
           mode={editor.mode}
-          onModeChange={editor.setMode}
+          canEdit={canEdit}
+          onModeChange={handleModeChange}
           onPickPlace={handlePickPlace}
         />
       )}
@@ -255,6 +272,7 @@ export function PlanEditor({
         <SidePanel
           project={project}
           editor={editor}
+          canEdit={canEdit}
           onSelectFromList={handleSelectFromList}
           onZoomTo={handleZoomTo}
           onSaveCenter={handleSaveCenter}
@@ -303,7 +321,7 @@ export function PlanEditor({
             feature={streetViewFeature}
             initialIndex={streetViewInitialIndex}
             onClose={() => setStreetViewFeature(null)}
-            canEdit={editor.mode === 'editor' && !isVisitorOnly && !isEmbed}
+            canEdit={editor.mode === 'editor' && !isVisitorOnly && !isEmbed && canEdit}
             onUpdateWaypoint={(idx, patch) => {
               const currentWps = [...(streetViewFeature.routeWaypoints || [])];
               const existingIdx = currentWps.findIndex((w) => w.index === idx);

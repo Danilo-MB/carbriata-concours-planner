@@ -176,7 +176,7 @@ export const translations = {
     // Home & Projects
     myPlans: 'Mis planos y eventos',
     newPlan: 'Crear nuevo plano',
-    openPlan: 'Abrir plano',
+    openPlan: 'Abrir mapa',
     edited: 'Editado',
     deletePlan: 'Eliminar plano',
     whatPlanning: '¿Qué vas a planificar?',
@@ -396,7 +396,7 @@ export const translations = {
     // Home & Projects
     myPlans: 'My plans & events',
     newPlan: 'New plan',
-    openPlan: 'Open plan',
+    openPlan: 'Open map',
     edited: 'Edited',
     deletePlan: 'Delete plan',
     whatPlanning: 'What are you planning?',

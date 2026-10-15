@@ -79,3 +79,17 @@ export function canDeleteProject(
 
   return false;
 }
+
+export function canEditProject(
+  project: { id: string; userId?: string; authorEmail?: string; isLocalOnly?: boolean },
+  user: { id?: string; email?: string; role?: string; isAdmin?: boolean } | null | undefined
+): boolean {
+  // If this is a draft newly created by a guest in this browser, they can work on it
+  if (project.isLocalOnly) return true;
+
+  // Unauthenticated users cannot edit existing maps (only visitor mode)
+  if (!user) return false;
+
+  // Logged-in users can edit
+  return true;
+}

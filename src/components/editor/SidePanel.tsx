@@ -15,6 +15,7 @@ import type { PanelView, PlanFeature, Project } from '../../types/plan';
 interface SidePanelProps {
   project: Project;
   editor: Editor;
+  canEdit?: boolean;
   onSelectFromList: (id: string) => void;
   onZoomTo: (feature: PlanFeature) => void;
   onSaveCenter: () => void;
@@ -27,6 +28,7 @@ interface SidePanelProps {
 export function SidePanel({
   project,
   editor,
+  canEdit = true,
   onSelectFromList,
   onZoomTo,
   onSaveCenter,
@@ -91,7 +93,7 @@ export function SidePanel({
               category={selectedCategory || fallbackCategory}
               onBack={() => editor.select(null)}
               onZoomTo={() => onZoomTo(selected)}
-              onSwitchToEditor={() => editor.setMode('editor')}
+              onSwitchToEditor={canEdit ? () => editor.setMode('editor') : undefined}
               onOpenStreetView={(idx) => onOpenStreetView?.(selected, idx)}
             />
           ) : (

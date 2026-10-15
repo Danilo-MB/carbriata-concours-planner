@@ -86717,6 +86717,678 @@ var require_carbriata_data = __commonJS({
           hiddenCategoryIds: [],
           createdAt: 1792034864027,
           updatedAt: 1792036056172
+        },
+        xfb7p5vmva1kcj5: {
+          id: "xfb7p5vmva1kcj5",
+          userId: "u_goog_w1ihdcum",
+          authorEmail: "dmarinobata@gmail.com",
+          authorName: "Danilo",
+          name: "Aeropuerto San Fernando",
+          description: "Plano aeroportuario interactivo de San Fernando con terminal FBO, hangares, rampa de aeronaves, calle de rodaje y recorrido virtual 360\xB0 foto a foto.",
+          location: "Aeropuerto San Fernando, Avenida Hip\xF3lito Yrigoyen",
+          template: "event",
+          center: {
+            lat: -33.332755,
+            lng: -62.664468,
+            zoom: 5.5
+          },
+          basemap: "satellite",
+          categories: [
+            {
+              id: "zones",
+              name: "Zones",
+              color: "#E8590C",
+              icon: "tent",
+              kindHint: "area"
+            },
+            {
+              id: "stages",
+              name: "Stages & shows",
+              color: "#AE3EC9",
+              icon: "music"
+            },
+            {
+              id: "food",
+              name: "Food & drinks",
+              color: "#F59F00",
+              icon: "food"
+            },
+            {
+              id: "parking",
+              name: "Parking",
+              color: "#1C7ED6",
+              icon: "parking"
+            },
+            {
+              id: "access",
+              name: "Access & paths",
+              color: "#F06595",
+              icon: "door",
+              kindHint: "line"
+            },
+            {
+              id: "safety",
+              name: "Safety & services",
+              color: "#0CA678",
+              icon: "ambulance",
+              kindHint: "point"
+            }
+          ],
+          features: [
+            {
+              id: "anguyrumva1lfcg",
+              kind: "area",
+              coords: [
+                [
+                  -34.45863007506201,
+                  -58.59066724777222
+                ],
+                [
+                  -34.45884459756684,
+                  -58.59054386615754
+                ],
+                [
+                  -34.458718538017386,
+                  -58.590230047702796
+                ],
+                [
+                  -34.45849738045321,
+                  -58.590361475944526
+                ]
+              ],
+              name: "Estacionamiento Terminal y Veh\xEDculos VIP",
+              categoryId: "parking",
+              notes: "Sector de estacionamiento para pasajeros ejecutivos, tripulaciones y transfers privados.",
+              images: [
+                "/streetview/aeropuerto/area1_parking.jpg"
+              ],
+              createdAt: 1792099203568
+            },
+            {
+              id: "2t6prhwmva1lzzq",
+              kind: "point",
+              coords: [
+                [
+                  -34.458802577738176,
+                  -58.59030514955521
+                ]
+              ],
+              name: "Acceso Vehicular y Barrera de Estacionamiento",
+              categoryId: "parking",
+              notes: "Barrera automatizada y control de ingreso con ticket para veh\xEDculos particulares y remises autorizados.",
+              images: [
+                "/streetview/aeropuerto/marker1_estacionamiento.jpg"
+              ],
+              createdAt: 1792099230326
+            },
+            {
+              id: "ejcehn1mva1mbzt",
+              kind: "area",
+              coords: [
+                [
+                  -34.45847084150615,
+                  -58.59027564525605
+                ],
+                [
+                  -34.45829612656073,
+                  -58.58988672494888
+                ],
+                [
+                  -34.45858363197292,
+                  -58.58969897031785
+                ],
+                [
+                  -34.45875171160148,
+                  -58.59008520841599
+                ]
+              ],
+              name: "Puesto de Control y Seguridad PSA",
+              categoryId: "safety",
+              notes: "Edificio de control de la Polic\xEDa de Seguridad Aeroportuaria (PSA), esc\xE1ner de equipaje y control de acceso a plataforma.",
+              images: [
+                "/streetview/aeropuerto/area2_seguridad.jpg"
+              ],
+              createdAt: 1792099245881
+            },
+            {
+              id: "7l1eflxmva1mgj3",
+              kind: "point",
+              coords: [
+                [
+                  -34.45862344033658,
+                  -58.589969873428345
+                ]
+              ],
+              name: "Puesto de Guardia PSA - Acceso a Rampa",
+              categoryId: "safety",
+              notes: "Control de credenciales aeroportuarias, control de personal y veh\xEDculos de apoyo terrestre.",
+              images: [
+                "/streetview/aeropuerto/marker2_psa_control.jpg"
+              ],
+              createdAt: 1792099251759
+            },
+            {
+              id: "flpnis5mva1n0bu",
+              kind: "area",
+              coords: [
+                [
+                  -34.458278433887656,
+                  -58.5898518562317
+                ],
+                [
+                  -34.458052851977186,
+                  -58.58932346105576
+                ],
+                [
+                  -34.458302761312176,
+                  -58.589170575141914
+                ],
+                [
+                  -34.45849738045321,
+                  -58.58962923288346
+                ],
+                [
+                  -34.458559304630235,
+                  -58.58958095312119
+                ],
+                [
+                  -34.45858805512537,
+                  -58.589658737182624
+                ]
+              ],
+              name: "Terminal de Aviaci\xF3n Ejecutiva (FBO)",
+              categoryId: "zones",
+              notes: "Terminal de pasajeros con salas de espera ejecutivas, mostradores de check-in, aduana y migraciones.",
+              images: [
+                "/streetview/aeropuerto/area3_terminal.jpg"
+              ],
+              createdAt: 1792099277418
+            },
+            {
+              id: "06c8q9zmva1n42g",
+              kind: "point",
+              coords: [
+                [
+                  -34.458331511895665,
+                  -58.58949780464173
+                ]
+              ],
+              name: "Sala VIP y Sal\xF3n de Espera FBO",
+              categoryId: "safety",
+              notes: "Sal\xF3n exclusivo para pasajeros con vista panor\xE1mica a la rampa de aeronaves, barra de caf\xE9 y conectividad.",
+              images: [
+                "/streetview/aeropuerto/marker3_vip_lounge.jpg"
+              ],
+              createdAt: 1792099282264
+            },
+            {
+              id: "r61ieclmva1ne1x",
+              kind: "area",
+              coords: [
+                [
+                  -34.45830054972843,
+                  -58.58909010887147
+                ],
+                [
+                  -34.458017466524176,
+                  -58.58930468559266
+                ],
+                [
+                  -34.457853808608895,
+                  -58.588870167732246
+                ],
+                [
+                  -34.458132469191646,
+                  -58.58870923519135
+                ]
+              ],
+              name: "Hangar 1 - Aviaci\xF3n Ejecutiva",
+              categoryId: "zones",
+              notes: "Hangar climatizado para guarda y pernocte de aeronaves ejecutivas de gran porte (Gulfstream, Global Express).",
+              images: [
+                "/streetview/aeropuerto/area4_hangar1.jpg"
+              ],
+              createdAt: 1792099295205,
+              color: "#D4AF37"
+            },
+            {
+              id: "sh49znhmva1nhi8",
+              kind: "point",
+              coords: [
+                [
+                  -34.45811919966118,
+                  -58.588907718658454
+                ]
+              ],
+              name: "Bah\xEDa de Maniobras Hangar 1",
+              categoryId: "safety",
+              notes: "Zona de remolque y posicionamiento de aeronaves asistida por tractores de empuje (tugs).",
+              images: [
+                "/streetview/aeropuerto/marker4_hangar1_bay.jpg"
+              ],
+              createdAt: 1792099299680,
+              color: "#D4AF37"
+            },
+            {
+              id: "on2mwb0mva1olx7",
+              kind: "area",
+              coords: [
+                [
+                  -34.457836115842085,
+                  -58.58882188796998
+                ],
+                [
+                  -34.45767688077208,
+                  -58.58845174312592
+                ],
+                [
+                  -34.45798208105615,
+                  -58.58827471733094
+                ],
+                [
+                  -34.45813689236801,
+                  -58.588666319847114
+                ]
+              ],
+              name: "Hangar 2 - Mantenimiento y Helic\xF3pteros",
+              categoryId: "zones",
+              notes: "Taller de mantenimiento aeron\xE1utico habilitado para inspecciones, mec\xE1nica de motores y servicios de avi\xF3nica.",
+              images: [
+                "/streetview/aeropuerto/area5_hangar2.jpg"
+              ],
+              createdAt: 1792099352059,
+              color: "#8B5CF6"
+            },
+            {
+              id: "9wr8wetmva1oqar",
+              kind: "point",
+              coords: [
+                [
+                  -34.457920156451046,
+                  -58.58850002288819
+                ]
+              ],
+              name: "Taller T\xE9cnico y Banco de Motores",
+              categoryId: "safety",
+              notes: "\xC1rea de bancos de trabajo, herramientas especializadas y servicio de turbinas y avi\xF3nica.",
+              images: [
+                "/streetview/aeropuerto/marker5_taller_mantenimiento.jpg"
+              ],
+              createdAt: 1792099357731,
+              color: "#8B5CF6"
+            },
+            {
+              id: "6hq0pp4mva1pp7o",
+              kind: "line",
+              coords: [
+                [
+                  -34.46008749030386,
+                  -58.592657446861274
+                ],
+                [
+                  -34.45997691340804,
+                  -58.59273791313172
+                ],
+                [
+                  -34.459512488846364,
+                  -58.591659665107734
+                ],
+                [
+                  -34.459419603624035,
+                  -58.59174549579621
+                ]
+              ],
+              name: "Acceso Terrestre a Terminal FBO",
+              categoryId: "access",
+              notes: "Recorrido desde el p\xF3rtico de ingreso sobre Av. Hip\xF3lito Yrigoyen hasta la terminal de aviaci\xF3n ejecutiva.",
+              images: [
+                "/streetview/aeropuerto/path1_wp0_acceso.jpg"
+              ],
+              createdAt: 1792099402980,
+              color: "#F59E0B",
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "P\xF3rtico de Entrada (Av. Hip\xF3lito Yrigoyen)",
+                  image: "/streetview/aeropuerto/path1_wp0_acceso.jpg",
+                  caption: "Ingreso principal al predio del Aeropuerto Internacional de San Fernando."
+                },
+                {
+                  index: 1,
+                  title: "Boulevard Interno y Rotonda",
+                  image: "/streetview/aeropuerto/path1_wp1_rotonda.jpg",
+                  caption: "Circunvalaci\xF3n arbolada hacia terminales, hangares y estacionamientos."
+                },
+                {
+                  index: 2,
+                  title: "Ingreso a Estacionamiento Ejecutivo",
+                  image: "/streetview/aeropuerto/path1_wp2_parking_entry.jpg",
+                  caption: "Barrera de control y playa de estacionamiento para pasajeros y visitas."
+                },
+                {
+                  index: 3,
+                  title: "Llegada a Terminal Ejecutiva FBO",
+                  image: "/streetview/aeropuerto/path1_wp3_terminal_curb.jpg",
+                  caption: "D\xE1rsena de descenso de pasajeros frente a la terminal principal."
+                }
+              ]
+            },
+            {
+              id: "yphdy4lmva1qeq6",
+              kind: "area",
+              coords: [
+                [
+                  -34.457650282591054,
+                  -58.58839957289838
+                ],
+                [
+                  -34.457831687610096,
+                  -58.588278189974666
+                ],
+                [
+                  -34.45770563157107,
+                  -58.5879796743393
+                ],
+                [
+                  -34.457518920089846,
+                  -58.588118874887314
+                ]
+              ],
+              name: "Rampa Principal de Aeronaves (Apron)",
+              categoryId: "zones",
+              notes: "Plataforma de estacionamiento con posiciones numeradas para jets ejecutivos y turboh\xE9lices.",
+              images: [
+                "/streetview/aeropuerto/area6_rampa.jpg"
+              ],
+              createdAt: 1792099436046
+            },
+            {
+              id: "r15ttizmva1qllz",
+              kind: "point",
+              coords: [
+                [
+                  -34.457714477968764,
+                  -58.58819693326951
+                ]
+              ],
+              name: "Posici\xF3n de Estacionamiento Stand Norte",
+              categoryId: "safety",
+              notes: "Puesto de rampa para embarque y desembarque de pasajeros ejecutivos con alfombra roja y asistencia en tierra.",
+              images: [
+                "/streetview/aeropuerto/marker6_rampa_stand.jpg"
+              ],
+              createdAt: 1792099444967,
+              color: "#EF4444"
+            },
+            {
+              id: "ml922lumva1r4dw",
+              kind: "line",
+              coords: [
+                [
+                  -34.45667723145109,
+                  -58.58447134494782
+                ],
+                [
+                  -34.4565401104781,
+                  -58.584138751029975
+                ],
+                [
+                  -34.45627029113186,
+                  -58.584122657775886
+                ],
+                [
+                  -34.45606239694253,
+                  -58.584122657775886
+                ],
+                [
+                  -34.455907581784444,
+                  -58.583650588989265
+                ]
+              ],
+              name: "Calle de Rodaje Taxiway Alpha a Pista 05",
+              categoryId: "access",
+              notes: "Ruta de carreteo para aeronaves desde la rampa hacia la cabecera activa de Pista 05.",
+              images: [
+                "/streetview/aeropuerto/path2_wp0_rampa_exit.jpg"
+              ],
+              createdAt: 1792099469300,
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Salida de Rampa Norte",
+                  image: "/streetview/aeropuerto/path2_wp0_rampa_exit.jpg",
+                  caption: "Aeronave iniciando maniobra de pushback y rodaje guiada por se\xF1alero."
+                },
+                {
+                  index: 1,
+                  title: "Calle de Rodaje Taxiway Alpha",
+                  image: "/streetview/aeropuerto/path2_wp1_taxiway_alpha.jpg",
+                  caption: "Arteria principal de rodaje pavimentada con l\xEDnea amarilla central de gu\xEDa."
+                },
+                {
+                  index: 2,
+                  title: "Curva de Conexi\xF3n a Pista",
+                  image: "/streetview/aeropuerto/path2_wp2_taxiway_turn.jpg",
+                  caption: "Viraje se\xF1alizado con luces de borde de calle de rodaje."
+                },
+                {
+                  index: 3,
+                  title: "Punto de Espera (Holding Point RWY 05)",
+                  image: "/streetview/aeropuerto/path2_wp3_holding_point.jpg",
+                  caption: "L\xEDnea de detenci\xF3n obligatoria antes de recibir autorizaci\xF3n de Torre de Control."
+                },
+                {
+                  index: 4,
+                  title: "Alineaci\xF3n en Cabecera Pista 05",
+                  image: "/streetview/aeropuerto/path2_wp4_runway_threshold.jpg",
+                  caption: "Aeronave alineada sobre el eje de Pista 05 lista para carrera de despegue."
+                }
+              ]
+            },
+            {
+              id: "v053g98mva1rhje",
+              kind: "area",
+              coords: [
+                [
+                  -34.4575064093647,
+                  -58.58805818342545
+                ],
+                [
+                  -34.45775036816754,
+                  -58.587936800501744
+                ],
+                [
+                  -34.457575147096144,
+                  -58.58749687671662
+                ],
+                [
+                  -34.457350025141764,
+                  -58.58767886178885
+                ]
+              ],
+              name: "Planta de Combustible YPF Aviaci\xF3n",
+              categoryId: "zones",
+              notes: "Dep\xF3sito de tanques de combustible aeron\xE1utico Jet A-1 y Avgas 100LL con sistemas de filtrado de alta seguridad.",
+              images: [
+                "/streetview/aeropuerto/area7_combustible.jpg"
+              ],
+              createdAt: 1792099486346,
+              color: "#10B981"
+            },
+            {
+              id: "fqvdg06mva1rpdc",
+              kind: "point",
+              coords: [
+                [
+                  -34.45755745427028,
+                  -58.587716817855835
+                ]
+              ],
+              name: "Isla de Carga y Cami\xF3n Cisterna",
+              categoryId: "safety",
+              notes: "Unidad de reabastecimiento m\xF3vil para despacho directo de combustible a las aeronaves en rampa.",
+              images: [
+                "/streetview/aeropuerto/marker7_cisterna_fuel.jpg"
+              ],
+              createdAt: 1792099496496
+            },
+            {
+              id: "tlhznbwmva1sb9f",
+              kind: "line",
+              coords: [
+                [
+                  -34.45873245152264,
+                  -58.589901686579324
+                ],
+                [
+                  -34.458826280538034,
+                  -58.58981064938654
+                ],
+                [
+                  -34.45765653794312,
+                  -58.587231262257674
+                ],
+                [
+                  -34.457525175451735,
+                  -58.58727678085407
+                ]
+              ],
+              name: "Corredor de Servicio Operativo y Hangares",
+              categoryId: "access",
+              notes: "V\xEDa de circulaci\xF3n interna para veh\xEDculos de apoyo terrestre, cisternas de combustible y remolcadores.",
+              images: [
+                "/streetview/aeropuerto/path3_wp0_hangar_road.jpg"
+              ],
+              createdAt: 1792099524867,
+              color: "#D4AF37",
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Frente Hangar 1",
+                  image: "/streetview/aeropuerto/path3_wp0_hangar_road.jpg",
+                  caption: "Calle de servicio frente al hangar principal de aviaci\xF3n ejecutiva."
+                },
+                {
+                  index: 1,
+                  title: "V\xEDa de Tr\xE1nsito de Apoyo Terrestre",
+                  image: "/streetview/aeropuerto/path3_wp1_service_road.jpg",
+                  caption: "Carril delimitado para tractores, carritos de equipaje y vans de tripulaci\xF3n."
+                },
+                {
+                  index: 2,
+                  title: "Conexi\xF3n a Planta de Combustible YPF",
+                  image: "/streetview/aeropuerto/path3_wp2_fuel_corridor.jpg",
+                  caption: "Acceso regulado hacia la estaci\xF3n de reabastecimiento y camiones cisterna."
+                },
+                {
+                  index: 3,
+                  title: "Plataforma de Mantenimiento Sur",
+                  image: "/streetview/aeropuerto/path3_wp3_ramp_east.jpg",
+                  caption: "\xC1rea de operaciones frente a talleres aeron\xE1uticos y hangares t\xE9cnicos."
+                }
+              ]
+            },
+            {
+              id: "dxe2iz3mva1taii",
+              kind: "area",
+              coords: [
+                [
+                  -34.45950810154941,
+                  -58.592769358152005
+                ],
+                [
+                  -34.458651132957364,
+                  -58.590721021314366
+                ],
+                [
+                  -34.45895138572785,
+                  -58.590561706227
+                ],
+                [
+                  -34.45978333047197,
+                  -58.59255693803551
+                ]
+              ],
+              name: "Sector Sur - Hangares Aeroclub y Escuelas de Vuelo",
+              categoryId: "zones",
+              notes: "Instalaciones tradicionales del Aeroclub San Fernando y escuelas de instrucci\xF3n de pilotos civiles.",
+              images: [
+                "/streetview/aeropuerto/area8_aeroclub.jpg"
+              ],
+              createdAt: 1792099570554,
+              color: "#D4AF37"
+            },
+            {
+              id: "g6ety57mva1th1g",
+              kind: "point",
+              coords: [
+                [
+                  -34.45918282983483,
+                  -58.59157070178035
+                ]
+              ],
+              name: "Punto de Prueba de Motores (Run-Up Bay)",
+              categoryId: "safety",
+              notes: "\xC1rea habilitada para chequeo previo de magnetos, potencia y h\xE9lices antes de ingresar a la pista.",
+              images: [
+                "/streetview/aeropuerto/marker8_runup_bay.jpg"
+              ],
+              createdAt: 1792099579012,
+              color: "#D4AF37"
+            },
+            {
+              id: "4frjgwemva1u54p",
+              kind: "area",
+              coords: [
+                [
+                  -34.455558140801145,
+                  -58.58348965644837
+                ],
+                [
+                  -34.45594739142394,
+                  -58.58321070671082
+                ],
+                [
+                  -34.45515561836245,
+                  -58.58135998249055
+                ],
+                [
+                  -34.45476194069395,
+                  -58.581644296646125
+                ]
+              ],
+              name: "Cabecera de Pista 05 y Franja de Seguridad",
+              categoryId: "zones",
+              notes: "Umbral activo de la pista principal 05/23 (asfalto 1800m), zona libre de obst\xE1culos y franja de seguridad operacional.",
+              images: [
+                "/streetview/aeropuerto/area9_pista.jpg"
+              ],
+              createdAt: 1792099610233,
+              opacity: 0.35
+            },
+            {
+              id: "xy8cb2nmva1ukyu",
+              kind: "point",
+              coords: [
+                [
+                  -34.45542986463022,
+                  -58.58232021331788
+                ]
+              ],
+              name: "Umbral de Pista 05 y Luces PAPI",
+              categoryId: "safety",
+              notes: "Se\xF1alizaci\xF3n horizontal de fajas de umbral e indicador visual de senda de aproximaci\xF3n de precisi\xF3n PAPI.",
+              images: [
+                "/streetview/aeropuerto/marker9_papi_lights.jpg"
+              ],
+              createdAt: 1792099630758,
+              color: "#F97316"
+            }
+          ],
+          hiddenCategoryIds: [],
+          createdAt: 1792099153265,
+          updatedAt: 1792101358201,
+          isLocalOnly: false
         }
       }
     };
@@ -97170,14 +97842,14 @@ var StorageService = class {
     setTimeout(async () => {
       try {
         const u = await this.findUserByEmail("dmarinobata@gmail.com");
-        if (u && u.emailVerified) {
-          await this.updateUser(u.id, { emailVerified: false });
-          console.log("Reset dmarinobata@gmail.com to emailVerified: false for OTP test");
+        if (u && (!u.emailVerified || u.role !== "admin")) {
+          await this.updateUser(u.id, { emailVerified: true, role: "admin" });
+          console.log("Ensured dmarinobata@gmail.com is emailVerified: true and role: admin");
         }
       } catch (err) {
-        console.warn("Could not reset admin verification flag:", err);
+        console.warn("Could not verify admin on startup:", err);
       }
-    }, 1500);
+    }, 1e3);
   }
   initRedis() {
     const url = process.env.STORAGE_REST_API_URL || process.env.STORAGE_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_URL || Object.entries(process.env).find(([k]) => k.endsWith("_REST_API_URL"))?.[1];
@@ -105037,7 +105709,7 @@ var AuthService = class {
   }
   toUserDto(user) {
     const isAdmin = user.role === "admin" || isAdminEmail(user.email);
-    const emailVerified = Boolean(user.emailVerified);
+    const emailVerified = Boolean(user.emailVerified || isAdmin);
     return {
       id: user.id,
       email: user.email,
@@ -105191,10 +105863,16 @@ var AuthService = class {
         email: cleanEmail,
         name: name || cleanEmail.split("@")[0],
         role: isAdmin ? "admin" : "user",
+        emailVerified: true,
         createdAt: Date.now()
       });
-    } else if (isAdmin && user.role !== "admin") {
-      user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
+    } else {
+      const patch = {};
+      if (isAdmin && user.role !== "admin") patch.role = "admin";
+      if (!user.emailVerified) patch.emailVerified = true;
+      if (Object.keys(patch).length > 0) {
+        user = await this.storage.updateUser(user.id, patch) || user;
+      }
     }
     const userDto = this.toUserDto(user);
     const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
@@ -105221,10 +105899,16 @@ var AuthService = class {
         email: cleanEmail,
         name: name || cleanEmail.split("@")[0],
         role: isAdmin ? "admin" : "user",
+        emailVerified: true,
         createdAt: Date.now()
       });
-    } else if (isAdmin && user.role !== "admin") {
-      user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
+    } else {
+      const patch = {};
+      if (isAdmin && user.role !== "admin") patch.role = "admin";
+      if (!user.emailVerified) patch.emailVerified = true;
+      if (Object.keys(patch).length > 0) {
+        user = await this.storage.updateUser(user.id, patch) || user;
+      }
     }
     const userDto = this.toUserDto(user);
     const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
@@ -105291,14 +105975,20 @@ var AuthService = class {
           email: cleanEmail,
           name: cleanEmail.split("@")[0],
           role: isAdmin ? "admin" : "user",
+          emailVerified: true,
           createdAt: Date.now()
         });
-      } else if (isAdmin && user.role !== "admin") {
-        user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
+      } else {
+        const patch = {};
+        if (isAdmin && user.role !== "admin") patch.role = "admin";
+        if (!user.emailVerified) patch.emailVerified = true;
+        if (Object.keys(patch).length > 0) {
+          user = await this.storage.updateUser(user.id, patch) || user;
+        }
       }
       await this.storage.deleteMagicEntry(cleanEmail);
       const userDto = this.toUserDto(user);
-      const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+      const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: true });
       return { token: authToken, user: userDto };
     } catch {
       throw new UnauthorizedException("El enlace de acceso ha expirado o ya fue utilizado.");
@@ -105322,14 +106012,20 @@ var AuthService = class {
         email: cleanEmail,
         name: cleanEmail.split("@")[0],
         role: isAdmin ? "admin" : "user",
+        emailVerified: true,
         createdAt: Date.now()
       });
-    } else if (isAdmin && user.role !== "admin") {
-      user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
+    } else {
+      const patch = {};
+      if (isAdmin && user.role !== "admin") patch.role = "admin";
+      if (!user.emailVerified) patch.emailVerified = true;
+      if (Object.keys(patch).length > 0) {
+        user = await this.storage.updateUser(user.id, patch) || user;
+      }
     }
     await this.storage.deleteMagicEntry(cleanEmail);
     const userDto = this.toUserDto(user);
-    const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: true });
     return { token: authToken, user: userDto };
   }
   async getProfile(token) {

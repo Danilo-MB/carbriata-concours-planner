@@ -16,11 +16,12 @@ import type { PlaceResult, Project, ViewMode } from '../../types/plan';
 interface EditorHeaderProps {
   project: Project;
   mode: ViewMode;
+  canEdit?: boolean;
   onModeChange: (mode: ViewMode) => void;
   onPickPlace: (place: PlaceResult) => void;
 }
 
-export function EditorHeader({ project, mode, onModeChange, onPickPlace }: EditorHeaderProps) {
+export function EditorHeader({ project, mode, canEdit = true, onModeChange, onPickPlace }: EditorHeaderProps) {
   const { t } = useLanguage();
   const { isAuthenticated, user, openAuthModal } = useAuth();
   const { saveLocalToCloud } = useProjects();
@@ -97,35 +98,48 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
           </button>
         )}
 
-        {/* Mode Switcher: Editor vs. Visitor */}
-        <div className="flex shrink-0 items-center rounded-xl border border-line bg-subtle/80 p-0.5 shadow-2xs">
-          <button
-            type="button"
-            onClick={() => onModeChange('editor')}
-            aria-pressed={mode === 'editor'}
-            title={t('editorModeTitle')}
-            className={`flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-all sm:h-8 sm:px-2.5 ${
-              mode === 'editor'
-                ? 'bg-surface text-ink shadow-sm'
-                : 'text-muted hover:text-ink'
-            }`}>
-            <PencilIcon className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">{t('editorMode')}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onModeChange('visitor')}
-            aria-pressed={mode === 'visitor'}
-            title={t('visitorModeTitle')}
-            className={`flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-all sm:h-8 sm:px-2.5 ${
-              mode === 'visitor'
-                ? 'bg-amber-600 text-white shadow-sm dark:bg-amber-500'
-                : 'text-muted hover:text-ink'
-            }`}>
-            <EyeIcon className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">{t('visitorMode')}</span>
-          </button>
-        </div>
+        {/* Mode Switcher: Editor vs. Visitor (Only for authorized editors; visitors see only the Visitor badge) */}
+        {canEdit ? (
+          <div className="flex shrink-0 items-center rounded-xl border border-line bg-subtle/80 p-0.5 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => onModeChange('editor')}
+              aria-pressed={mode === 'editor'}
+              title={t('editorModeTitle')}
+              className={`flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-all sm:h-8 sm:px-2.5 ${
+                mode === 'editor'
+                  ? 'bg-surface text-ink shadow-sm'
+                  : 'text-muted hover:text-ink'
+              }`}>
+              <PencilIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">{t('editorMode')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onModeChange('visitor')}
+              aria-pressed={mode === 'visitor'}
+              title={t('visitorModeTitle')}
+              className={`flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-all sm:h-8 sm:px-2.5 ${
+                mode === 'visitor'
+                  ? 'bg-amber-600 text-white shadow-sm dark:bg-amber-500'
+                  : 'text-muted hover:text-ink'
+              }`}>
+              <EyeIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">{t('visitorMode')}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="flex shrink-0 items-center">
+            <button
+              type="button"
+              onClick={openAuthModal}
+              title="Modo Visitante · Inicia sesión para editar este mapa"
+              className="flex h-7 items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/15 px-2.5 text-xs font-semibold text-amber-500 shadow-2xs transition-colors hover:bg-amber-500/25 sm:h-8 sm:px-3">
+              <EyeIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>{t('visitorMode')}</span>
+            </button>
+          </div>
+        )}
 
         <LanguageToggle className="h-8 px-2 sm:h-9 sm:px-2.5" />
         {/* <ThemeToggle className="h-8 w-8 shrink-0 sm:h-10 sm:w-10" /> */}

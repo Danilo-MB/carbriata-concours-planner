@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { EyeIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
+import { MapPinIcon, Trash2Icon } from 'lucide-react';
 import { PlanThumbnail } from '../PlanThumbnail';
 import { canDeleteProject, summarizeKinds } from '../../utils/plan';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -56,20 +56,12 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <span className="shrink-0">{formatDistanceToNow(project.updatedAt, { addSuffix: true })}</span>
         </div>
 
-        <div className="mt-auto flex items-center gap-2 pt-4 border-t border-line">
+        <div className="mt-auto pt-4 border-t border-line">
           <Link
             to={`/plan/${project.id}`}
-            className="flex-1 inline-flex h-9 items-center justify-center rounded-xl bg-ink px-3 text-xs font-semibold text-on-ink shadow-2xs hover:bg-ink/90 active:scale-95 transition-all"
+            className="w-full inline-flex h-9 items-center justify-center rounded-xl bg-ink px-4 text-xs font-semibold text-on-ink shadow-2xs hover:bg-ink/90 active:scale-95 transition-all"
           >
             <span>{t('openPlan')}</span>
-          </Link>
-          <Link
-            to={`/view/${project.id}`}
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-line bg-surface px-3 text-xs font-semibold text-ink hover:bg-subtle active:scale-95 transition-all"
-            title="Vista de visitante"
-          >
-            <EyeIcon className="h-3.5 w-3.5 text-muted" />
-            <span>Visitante</span>
           </Link>
         </div>
       </div>
