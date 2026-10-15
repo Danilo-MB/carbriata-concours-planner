@@ -48,7 +48,14 @@ export function canDeleteProject(
   // Admin (Danilo) can delete any project
   if (user.isAdmin || user.role === 'admin') return true;
   const email = (user.email || '').toLowerCase().trim();
-  if (email.startsWith('danilo') || email.includes('danilo') || email === 'admin@mapflex.app') return true;
+  if (
+    email === 'dmarinobata@gmail.com' ||
+    email.startsWith('danilo') ||
+    email.includes('danilo') ||
+    email === 'admin@mapflex.app'
+  ) {
+    return true;
+  }
 
   // Author of the project can delete their own project
   if (project.userId && project.userId === user.id) return true;

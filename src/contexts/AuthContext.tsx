@@ -132,7 +132,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast('Sesión cerrada');
   };
 
-  const isAdmin = Boolean(user?.isAdmin || user?.role === 'admin' || user?.email?.toLowerCase().includes('danilo'));
+  const cleanEmail = user?.email?.toLowerCase().trim() || '';
+  const isAdmin = Boolean(
+    user?.isAdmin ||
+    user?.role === 'admin' ||
+    cleanEmail === 'dmarinobata@gmail.com' ||
+    cleanEmail.includes('danilo')
+  );
 
   return (
     <AuthContext.Provider

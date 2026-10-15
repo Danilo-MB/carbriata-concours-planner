@@ -16,6 +16,7 @@ export function isAdminEmail(email?: string): boolean {
   if (!email) return false;
   const clean = email.toLowerCase().trim();
   if (
+    clean === 'dmarinobata@gmail.com' ||
     clean.startsWith('danilo') ||
     clean.includes('danilo') ||
     clean === 'admin@mapflex.app' ||

@@ -71,7 +71,7 @@ export function AuthModal() {
         googleObj.accounts.id.prompt();
       } else {
         // Fast, friendly prompt for Google email (simulated OAuth until Google Console project ID is set)
-        const promptEmail = window.prompt('Ingresa tu cuenta de Google (ej. tu@gmail.com):', email || 'danilo@gmail.com');
+        const promptEmail = window.prompt('Ingresa tu cuenta de Google (ej. tu@gmail.com):', email || 'dmarinobata@gmail.com');
         if (!promptEmail) {
           setSubmitting(false);
           return;
@@ -94,7 +94,7 @@ export function AuthModal() {
     setError(null);
     setSubmitting(true);
     try {
-      const promptEmail = window.prompt('Ingresa tu Apple ID / correo de Apple:', email || 'danilo@icloud.com');
+      const promptEmail = window.prompt('Ingresa tu Apple ID / correo de Apple:', email || 'dmarinobata@gmail.com');
       if (!promptEmail) {
         setSubmitting(false);
         return;

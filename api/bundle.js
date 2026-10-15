@@ -96361,7 +96361,7 @@ var Redis2 = class _Redis extends Redis {
 function isAdminEmail(email) {
   if (!email) return false;
   const clean = email.toLowerCase().trim();
-  if (clean.startsWith("danilo") || clean.includes("danilo") || clean === "admin@mapflex.app" || clean === "demo@carbriata.com") {
+  if (clean === "dmarinobata@gmail.com" || clean.startsWith("danilo") || clean.includes("danilo") || clean === "admin@mapflex.app" || clean === "demo@carbriata.com") {
     return true;
   }
   const customAdmins = (process.env.ADMIN_EMAILS || "").toLowerCase().split(",").map((s) => s.trim()).filter(Boolean);
