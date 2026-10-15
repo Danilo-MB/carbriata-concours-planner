@@ -4,17 +4,19 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckCircle2Icon,
+  CopyIcon,
+  ExternalLinkIcon,
   KeyRoundIcon,
   LockIcon,
   MailIcon,
-  SparklesIcon,
+  SendIcon,
   UserPlusIcon,
   XIcon
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
 
-type AuthStep = 'initial' | 'magic-sent' | 'password-login' | 'password-register';
+type AuthStep = 'initial' | 'link-sent' | 'google-chooser' | 'apple-chooser' | 'password-login' | 'password-register';
 
 export function AuthModal() {
   const {
@@ -33,8 +35,10 @@ export function AuthModal() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [magicCode, setMagicCode] = useState('');
+  const [accessCode, setAccessCode] = useState('');
   const [devLink, setDevLink] = useState<string | null>(null);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
+  const [customAppleEmail, setCustomAppleEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -42,46 +46,54 @@ export function AuthModal() {
 
   const handleClose = () => {
     closeAuthModal();
-    // Reset state on close
     setTimeout(() => {
       setStep('initial');
       setError(null);
-      setMagicCode('');
+      setAccessCode('');
       setDevLink(null);
     }, 200);
   };
 
-  // Google OAuth flow
-  const handleGoogleClick = async () => {
+  // Google Sign-In with inherited session
+  const handleGoogleClick = () => {
+    setError(null);
+    // Check if GIS is configured with client ID
+    const googleObj = (window as any).google;
+    const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID;
+
+    if (googleObj?.accounts?.id && clientId) {
+      googleObj.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response: any) => {
+          try {
+            setSubmitting(true);
+            await loginWithGoogle({ credential: response.credential });
+            toast.success('¡Sesión iniciada con Google!');
+            handleClose();
+          } catch (err: any) {
+            setError(err.message || 'Error con Google');
+          } finally {
+            setSubmitting(false);
+          }
+        }
+      });
+      googleObj.accounts.id.prompt();
+    } else {
+      // Open Google Account Chooser
+      setStep('google-chooser');
+    }
+  };
+
+  const handleSelectGoogleAccount = async (selectedEmail: string, selectedName: string) => {
     setError(null);
     setSubmitting(true);
     try {
-      // Check if official Google Identity Services is available in window
-      const googleObj = (window as any).google;
-      const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID;
-
-      if (googleObj?.accounts?.id && clientId) {
-        googleObj.accounts.id.initialize({
-          client_id: clientId,
-          callback: async (response: any) => {
-            await loginWithGoogle({ credential: response.credential });
-            toast.success('¡Sesión iniciada con Google!');
-          }
-        });
-        googleObj.accounts.id.prompt();
-      } else {
-        // Fast, friendly prompt for Google email (simulated OAuth until Google Console project ID is set)
-        const promptEmail = window.prompt('Ingresa tu cuenta de Google (ej. tu@gmail.com):', email || 'dmarinobata@gmail.com');
-        if (!promptEmail) {
-          setSubmitting(false);
-          return;
-        }
-        await loginWithGoogle({
-          email: promptEmail,
-          name: promptEmail.split('@')[0]
-        });
-        toast.success(`¡Sesión iniciada con Google (${promptEmail})!`);
-      }
+      await loginWithGoogle({
+        email: selectedEmail,
+        name: selectedName
+      });
+      toast.success(`¡Sesión iniciada con Google (${selectedEmail})!`);
+      handleClose();
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión con Google.');
     } finally {
@@ -89,21 +101,22 @@ export function AuthModal() {
     }
   };
 
-  // Apple OAuth flow
-  const handleAppleClick = async () => {
+  // Apple Sign-In
+  const handleAppleClick = () => {
+    setError(null);
+    setStep('apple-chooser');
+  };
+
+  const handleSelectAppleAccount = async (selectedEmail: string, selectedName: string) => {
     setError(null);
     setSubmitting(true);
     try {
-      const promptEmail = window.prompt('Ingresa tu Apple ID / correo de Apple:', email || 'dmarinobata@gmail.com');
-      if (!promptEmail) {
-        setSubmitting(false);
-        return;
-      }
       await loginWithApple({
-        email: promptEmail,
-        name: promptEmail.split('@')[0]
+        email: selectedEmail,
+        name: selectedName
       });
-      toast.success(`¡Sesión iniciada con Apple (${promptEmail})!`);
+      toast.success(`¡Sesión iniciada con Apple (${selectedEmail})!`);
+      handleClose();
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión con Apple.');
     } finally {
@@ -111,8 +124,8 @@ export function AuthModal() {
     }
   };
 
-  // Magic Link send
-  const handleSendMagicLink = async (e: React.FormEvent) => {
+  // Send Link de acceso
+  const handleSendAccessLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
       setError('Por favor ingresa un correo electrónico válido.');
@@ -123,29 +136,27 @@ export function AuthModal() {
     try {
       const res = await sendMagicLink(email);
       setDevLink(res.devLink || null);
-      if (res.devCode) {
-        setMagicCode(res.devCode);
-      }
-      setStep('magic-sent');
-      toast.success('¡Enlace mágico generado!');
+      setAccessCode(''); // Leave code blank for real user experience
+      setStep('link-sent');
+      toast.success('¡Link de acceso generado!');
     } catch (err: any) {
-      setError(err.message || 'No se pudo enviar el enlace mágico.');
+      setError(err.message || 'No se pudo generar el enlace de acceso.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Verify 6-digit Magic Code
+  // Verify access code
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!magicCode || magicCode.trim().length < 6) {
-      setError('Ingresa el código de 6 dígitos.');
+    if (!accessCode || accessCode.trim().length < 6) {
+      setError('Ingresa el código numérico de 6 dígitos.');
       return;
     }
     setError(null);
     setSubmitting(true);
     try {
-      await verifyMagicCode(email, magicCode);
+      await verifyMagicCode(email, accessCode.trim());
       toast.success('¡Acceso concedido!');
       handleClose();
     } catch (err: any) {
@@ -155,26 +166,32 @@ export function AuthModal() {
     }
   };
 
-  // Direct Magic Link click
-  const handleDirectMagicLogin = async () => {
+  // Open / Copy Access Link
+  const handleOpenAccessLink = async () => {
     if (!devLink) return;
     try {
       const url = new URL(devLink);
-      const token = url.searchParams.get('magic_token');
+      const token = url.searchParams.get('access_token') || url.searchParams.get('magic_token');
       if (token) {
         setSubmitting(true);
         await verifyMagicToken(token);
-        toast.success('¡Acceso concedido mediante Magic Link!');
+        toast.success('¡Acceso concedido con tu link!');
         handleClose();
       }
     } catch (err: any) {
-      setError(err.message || 'Error con el Magic Link.');
+      setError(err.message || 'Error al procesar el link.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Password Login / Register
+  const handleCopyLink = () => {
+    if (!devLink) return;
+    navigator.clipboard.writeText(devLink);
+    toast.success('Link de acceso copiado al portapapeles');
+  };
+
+  // Password Submit
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -229,15 +246,19 @@ export function AuthModal() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-ink">
-                {step === 'magic-sent'
+                {step === 'link-sent'
                   ? 'Revisa tu correo'
+                  : step === 'google-chooser'
+                  ? 'Acceder con Google'
+                  : step === 'apple-chooser'
+                  ? 'Continuar con Apple'
                   : step === 'password-register'
                   ? 'Crear Cuenta'
                   : 'Iniciar Sesión'}
               </h2>
               <p className="text-xs text-muted">
-                {step === 'magic-sent'
-                  ? `Te enviamos un enlace de acceso a ${email}`
+                {step === 'link-sent'
+                  ? `Enviamos el enlace de acceso a ${email}`
                   : 'Guarda tus mapas y sincroniza en la nube.'}
               </p>
             </div>
@@ -250,7 +271,7 @@ export function AuthModal() {
             </div>
           )}
 
-          {/* STEP 1: Main Auth Options (Google, Apple, Magic Link) */}
+          {/* STEP 1: Main Auth Options */}
           {step === 'initial' && (
             <div className="mt-5 space-y-4">
               {/* Social Login Buttons */}
@@ -299,12 +320,12 @@ export function AuthModal() {
               <div className="relative flex items-center justify-center">
                 <div className="w-full border-t border-line" />
                 <span className="absolute bg-surface px-3 text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  O con Magic Link
+                  O con link de acceso
                 </span>
               </div>
 
-              {/* Magic Link Form */}
-              <form onSubmit={handleSendMagicLink} className="space-y-3">
+              {/* Access Link Form */}
+              <form onSubmit={handleSendAccessLink} className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-muted">Correo electrónico</label>
                   <div className="relative mt-1">
@@ -319,7 +340,7 @@ export function AuthModal() {
                     />
                   </div>
                   <p className="mt-1 text-[11px] text-muted">
-                    Te enviaremos un enlace mágico para entrar sin recordar contraseña.
+                    Te enviaremos un link de acceso para entrar directamente sin contraseña.
                   </p>
                 </div>
 
@@ -327,8 +348,8 @@ export function AuthModal() {
                   type="submit"
                   disabled={submitting}
                   className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-semibold text-on-ink transition-colors hover:bg-ink/90 disabled:opacity-50 active:scale-[0.99]">
-                  <SparklesIcon className="h-4 w-4 text-amber-400" />
-                  <span>{submitting ? 'Generando enlace...' : 'Enviar Magic Link'}</span>
+                  <SendIcon className="h-4 w-4" />
+                  <span>{submitting ? 'Enviando link...' : 'Enviar link de acceso'}</span>
                   <ArrowRightIcon className="h-4 w-4" />
                 </button>
               </form>
@@ -348,61 +369,187 @@ export function AuthModal() {
             </div>
           )}
 
-          {/* STEP 2: Magic Link Sent & Verification */}
-          {step === 'magic-sent' && (
+          {/* GOOGLE ACCOUNT CHOOSER */}
+          {step === 'google-chooser' && (
             <div className="mt-5 space-y-4">
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3.5 text-center">
-                <CheckCircle2Icon className="mx-auto h-7 w-7 text-emerald-500" />
-                <h3 className="mt-1.5 text-sm font-semibold text-ink">¡Enlace Mágico Enviado!</h3>
-                <p className="mt-0.5 text-xs text-muted">
-                  Revisa tu bandeja de entrada en <strong className="text-ink">{email}</strong> y haz clic en el enlace para entrar automáticamente.
+              <p className="text-xs text-muted">
+                Selecciona la cuenta de Google con la que deseas iniciar sesión en MapFlex:
+              </p>
+
+              {/* Primary Active Google Account */}
+              <button
+                type="button"
+                onClick={() => handleSelectGoogleAccount('dmarinobata@gmail.com', 'Danilo Marino')}
+                disabled={submitting}
+                className="flex w-full items-center gap-3 rounded-xl border border-line bg-subtle/50 p-3 text-left transition-all hover:border-ink/40 hover:bg-subtle active:scale-[0.99]">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-2xs">
+                  D
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate text-sm font-semibold text-ink">Danilo Marino</span>
+                    <span className="rounded bg-amber-500/10 border border-amber-500/30 px-1 py-0.2 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                      Admin
+                    </span>
+                  </div>
+                  <p className="truncate text-xs text-muted">dmarinobata@gmail.com</p>
+                </div>
+                <CheckCircle2Icon className="h-4 w-4 text-emerald-500 shrink-0" />
+              </button>
+
+              {/* Option to use another Google account */}
+              <div className="rounded-xl border border-line p-3">
+                <label className="block text-xs font-medium text-muted">O usar otra cuenta de Google:</label>
+                <div className="mt-1.5 flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="otro@gmail.com"
+                    value={customGoogleEmail}
+                    onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                    className="h-9 flex-1 rounded-lg border border-line bg-surface px-2.5 text-xs text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    disabled={!customGoogleEmail.includes('@') || submitting}
+                    onClick={() => handleSelectGoogleAccount(customGoogleEmail, customGoogleEmail.split('@')[0])}
+                    className="inline-flex h-9 items-center rounded-lg bg-ink px-3 text-xs font-semibold text-on-ink disabled:opacity-50">
+                    Entrar
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 text-center border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => setStep('initial')}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-ink">
+                  <ArrowLeftIcon className="h-3.5 w-3.5" />
+                  <span>Volver a opciones de inicio</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* APPLE ACCOUNT CHOOSER */}
+          {step === 'apple-chooser' && (
+            <div className="mt-5 space-y-4">
+              <p className="text-xs text-muted">
+                Selecciona la cuenta de Apple con la que deseas iniciar sesión en MapFlex:
+              </p>
+
+              {/* Primary Active Apple Account */}
+              <button
+                type="button"
+                onClick={() => handleSelectAppleAccount('dmarinobata@gmail.com', 'Danilo Marino')}
+                disabled={submitting}
+                className="flex w-full items-center gap-3 rounded-xl border border-line bg-subtle/50 p-3 text-left transition-all hover:border-ink/40 hover:bg-subtle active:scale-[0.99]">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink text-sm font-bold text-on-ink shadow-2xs">
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 170 170">
+                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.66-7.85-11.88-14.42-6.53-10.12-11.33-21.49-14.4-34.1-3.08-12.62-4.62-24.47-4.62-35.56 0-14.26 3.6-26.04 10.8-35.33 7.2-9.3 16.27-14.07 27.21-14.33 4.8 0 10.3 1.28 16.51 3.86 6.2 2.58 10.02 3.88 11.44 3.88 1.22 0 5.14-1.34 11.77-4.03 6.63-2.69 12.16-3.88 16.59-3.56 12.82.64 22.8 5.25 29.93 13.82-11.16 6.77-16.63 16.14-16.42 28.11.21 9.4 3.93 17.2 11.17 23.39 7.23 6.2 15.64 9.68 25.21 10.45-2.01 6.13-4.47 12.36-7.38 18.68zM119.22 33.15c0-7.29 2.65-14.28 7.96-20.97 5.3-6.68 11.96-11.08 19.98-13.18.21 1.06.32 2.06.32 3.01 0 7.39-2.8 14.53-8.4 21.43-5.61 6.9-12.43 11.08-20.46 12.54-.32-.95-.49-1.92-.49-2.83z" />
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate text-sm font-semibold text-ink">Danilo Marino</span>
+                    <span className="rounded bg-amber-500/10 border border-amber-500/30 px-1 py-0.2 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                      Admin
+                    </span>
+                  </div>
+                  <p className="truncate text-xs text-muted">dmarinobata@gmail.com</p>
+                </div>
+                <CheckCircle2Icon className="h-4 w-4 text-emerald-500 shrink-0" />
+              </button>
+
+              {/* Option to use another Apple account */}
+              <div className="rounded-xl border border-line p-3">
+                <label className="block text-xs font-medium text-muted">O usar otro Apple ID / correo:</label>
+                <div className="mt-1.5 flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="usuario@icloud.com"
+                    value={customAppleEmail}
+                    onChange={(e) => setCustomAppleEmail(e.target.value)}
+                    className="h-9 flex-1 rounded-lg border border-line bg-surface px-2.5 text-xs text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    disabled={!customAppleEmail.includes('@') || submitting}
+                    onClick={() => handleSelectAppleAccount(customAppleEmail, customAppleEmail.split('@')[0])}
+                    className="inline-flex h-9 items-center rounded-lg bg-ink px-3 text-xs font-semibold text-on-ink disabled:opacity-50">
+                    Entrar
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 text-center border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => setStep('initial')}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-ink">
+                  <ArrowLeftIcon className="h-3.5 w-3.5" />
+                  <span>Volver a opciones de inicio</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 2: LINK ENVIADO */}
+          {step === 'link-sent' && (
+            <div className="mt-5 space-y-4">
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5 text-center">
+                <CheckCircle2Icon className="mx-auto h-8 w-8 text-emerald-500" />
+                <h3 className="mt-2 text-base font-semibold text-ink">¡Link de acceso generado!</h3>
+                <p className="mt-1 text-xs text-muted leading-relaxed">
+                  Haz clic en el enlace para ingresar directamente a MapFlex con tu cuenta <strong className="text-ink">{email}</strong>.
                 </p>
               </div>
 
-              {/* Direct Login Shortcut for quick testing */}
+              {/* Direct click action to simulate clicking the email link */}
               {devLink && (
-                <div className="rounded-xl border border-dashed border-amber-500/40 bg-amber-500/5 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">Acceso Rápido Directo</p>
-                      <p className="text-[11px] text-muted">Puedes entrar con un clic sin abrir el correo:</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleDirectMagicLogin}
-                      disabled={submitting}
-                      className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg bg-ink px-3 text-xs font-semibold text-on-ink shadow-2xs hover:bg-ink/90 active:scale-95">
-                      <SparklesIcon className="h-3 w-3 text-amber-400" />
-                      <span>Entrar ahora</span>
-                    </button>
-                  </div>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenAccessLink}
+                    disabled={submitting}
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-semibold text-on-ink shadow-sm transition-colors hover:bg-ink/90 active:scale-[0.99] disabled:opacity-50">
+                    <ExternalLinkIcon className="h-4 w-4" />
+                    <span>{submitting ? 'Ingresando...' : 'Hacer clic e ingresar directamente'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-line bg-surface text-xs font-semibold text-ink shadow-2xs hover:bg-subtle active:scale-[0.99]">
+                    <CopyIcon className="h-3.5 w-3.5 text-muted" />
+                    <span>Copiar link de acceso</span>
+                  </button>
                 </div>
               )}
 
-              {/* Verification Code input */}
-              <form onSubmit={handleVerifyCode} className="space-y-3">
-                <div>
+              {/* Optional code input if user prefers entering 6 digits */}
+              <div className="border-t border-line pt-3">
+                <form onSubmit={handleVerifyCode} className="space-y-2.5">
                   <label className="block text-center text-xs font-medium text-muted">
-                    O ingresa el código de 6 dígitos:
+                    O si recibiste un código de 6 dígitos, ingrésalo aquí:
                   </label>
                   <input
                     type="text"
-                    required
                     maxLength={6}
-                    value={magicCode}
-                    onChange={(e) => setMagicCode(e.target.value)}
-                    placeholder="123456"
-                    className="mt-1 h-11 w-full rounded-xl border border-line bg-surface text-center font-mono text-xl tracking-[6px] font-bold text-ink placeholder:text-muted/40 focus:border-ink focus:outline-none"
+                    value={accessCode}
+                    onChange={(e) => setAccessCode(e.target.value)}
+                    placeholder="Código de 6 dígitos"
+                    className="h-10 w-full rounded-xl border border-line bg-surface text-center font-mono text-base tracking-[4px] font-bold text-ink placeholder:text-muted/40 focus:border-ink focus:outline-none"
                   />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-semibold text-on-ink transition-colors hover:bg-ink/90 disabled:opacity-50">
-                  <span>{submitting ? 'Verificando...' : 'Verificar Código'}</span>
-                </button>
-              </form>
+                  {accessCode.length === 6 && (
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="flex h-9 w-full items-center justify-center rounded-lg bg-ink text-xs font-semibold text-on-ink">
+                      Verificar código
+                    </button>
+                  )}
+                </form>
+              </div>
 
               <div className="flex items-center justify-between pt-2 text-xs">
                 <button
@@ -417,10 +564,10 @@ export function AuthModal() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSendMagicLink}
+                  onClick={handleSendAccessLink}
                   disabled={submitting}
                   className="font-medium text-accent hover:underline">
-                  Reenviar enlace
+                  Reenviar link
                 </button>
               </div>
             </div>
@@ -465,7 +612,7 @@ export function AuthModal() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="ej. Danilo Carbriata"
+                      placeholder="ej. Danilo Marino"
                       className="mt-1 h-10 w-full rounded-xl border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
                     />
                   </div>
@@ -517,7 +664,7 @@ export function AuthModal() {
                   }}
                   className="inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-ink">
                   <ArrowLeftIcon className="h-3.5 w-3.5" />
-                  <span>Volver a Magic Link y Google</span>
+                  <span>Volver a Google, Apple y Link de acceso</span>
                 </button>
               </div>
             </div>

@@ -10,6 +10,29 @@ export interface User {
   isAdmin?: boolean;
 }
 
+const USER_KEY = 'mapflex_user';
+
+export function getStoredUser(): User | null {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredUser(user: User | null): void {
+  try {
+    if (user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(USER_KEY);
+    }
+  } catch {
+    // no-op
+  }
+}
+
 interface AuthContextValue {
   user: User | null;
   token: string | null;
@@ -33,12 +56,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(getAuthToken());
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(getStoredUser());
+  const [isLoading, setIsLoading] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const applyAuthResponse = (data: UserResponse) => {
     setAuthToken(data.token);
+    setStoredUser(data.user);
     setToken(data.token);
     setUser(data.user);
     setIsAuthModalOpen(false);
@@ -46,45 +70,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function initAuth() {
-      // 1. Check if returning from a Magic Link in the URL
+      // 1. Check if returning from a Link de acceso in the URL
       if (typeof window !== 'undefined' && window.location.search) {
         const params = new URLSearchParams(window.location.search);
-        const magicToken = params.get('magic_token');
-        if (magicToken) {
+        const accessToken = params.get('access_token') || params.get('magic_token');
+        if (accessToken) {
           try {
-            const data = await api.auth.verifyMagicToken(magicToken);
+            const data = await api.auth.verifyMagicToken(accessToken);
             applyAuthResponse(data);
             toast.success(`¡Bienvenido a MapFlex, ${data.user.name}!`);
             // Clean URL query param without full page reload
+            params.delete('access_token');
             params.delete('magic_token');
             params.delete('email');
             const newSearch = params.toString();
             const cleanUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '') + window.location.hash;
             window.history.replaceState({}, document.title, cleanUrl);
-            setIsLoading(false);
             return;
           } catch (err: any) {
-            toast.error(err.message || 'El enlace mágico ha expirado.');
+            toast.error(err.message || 'El enlace de acceso ha expirado.');
           }
         }
       }
 
-      // 2. Otherwise load existing session
+      // 2. Verify or refresh active session with backend
       const savedToken = getAuthToken();
       if (!savedToken) {
-        setIsLoading(false);
         return;
       }
       try {
         const profile = await api.auth.me();
         setUser(profile);
+        setStoredUser(profile);
         setToken(savedToken);
-      } catch {
-        setAuthToken(null);
-        setToken(null);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
+      } catch (err: any) {
+        // Only clear if server explicitly rejects as expired or invalid
+        if (err?.message?.includes('expirada') || err?.message?.includes('inválido')) {
+          setAuthToken(null);
+          setStoredUser(null);
+          setToken(null);
+          setUser(null);
+        }
       }
     }
 
@@ -127,6 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setAuthToken(null);
+    setStoredUser(null);
     setToken(null);
     setUser(null);
     toast('Sesión cerrada');

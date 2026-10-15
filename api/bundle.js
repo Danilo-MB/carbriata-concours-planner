@@ -96421,24 +96421,64 @@ var StorageService = class {
     }
   }
   // Users
-  findUserByEmail(email) {
+  async findUserByEmail(email) {
     const clean = email.toLowerCase().trim();
+    if (this.redis) {
+      try {
+        const userId = await this.redis.get(`user:email:${clean}`);
+        if (userId) {
+          const user = await this.findUserById(userId);
+          if (user) return user;
+        }
+      } catch (err) {
+        console.warn("Redis findUserByEmail error:", err);
+      }
+    }
     return Object.values(this.store.users).find((u) => u.email.toLowerCase() === clean);
   }
-  findUserById(id) {
+  async findUserById(id) {
+    if (this.redis) {
+      try {
+        const cloudUser = await this.redis.get(`user:${id}`);
+        if (cloudUser && cloudUser.id) {
+          this.store.users[cloudUser.id] = cloudUser;
+          return cloudUser;
+        }
+      } catch (err) {
+        console.warn(`Redis findUserById(${id}) error:`, err);
+      }
+    }
     return this.store.users[id];
   }
-  createUser(user) {
+  async createUser(user) {
     this.store.users[user.id] = user;
     this.save();
+    if (this.redis) {
+      try {
+        const clean = user.email.toLowerCase().trim();
+        await Promise.all([
+          this.redis.set(`user:${user.id}`, user),
+          this.redis.set(`user:email:${clean}`, user.id)
+        ]);
+      } catch (err) {
+        console.warn("Redis createUser error:", err);
+      }
+    }
     return user;
   }
-  updateUser(id, patch) {
-    const user = this.store.users[id];
+  async updateUser(id, patch) {
+    let user = await this.findUserById(id);
     if (!user) return void 0;
     const updated = { ...user, ...patch };
     this.store.users[id] = updated;
     this.save();
+    if (this.redis) {
+      try {
+        await this.redis.set(`user:${id}`, updated);
+      } catch (err) {
+        console.warn("Redis updateUser error:", err);
+      }
+    }
     return updated;
   }
   // Magic Link Tokens
@@ -96503,8 +96543,7 @@ var StorageService = class {
       }
     }
     const all = Object.values(this.store.projects);
-    if (!userId) return all;
-    return all.filter((p) => !p.userId || p.userId === userId);
+    return all;
   }
   async findProjectById(id) {
     const local = this.store.projects[id] || bundledSeedData.projects[id];
@@ -98506,7 +98545,7 @@ var AuthService = class {
     if (password.length < 6) {
       throw new BadRequestException("La contrase\xF1a debe tener al menos 6 caracteres.");
     }
-    const existing = this.storage.findUserByEmail(cleanEmail);
+    const existing = await this.storage.findUserByEmail(cleanEmail);
     if (existing) {
       throw new BadRequestException("Ya existe una cuenta registrada con este correo electr\xF3nico.");
     }
@@ -98522,7 +98561,7 @@ var AuthService = class {
       role: isAdmin ? "admin" : "user",
       createdAt: Date.now()
     };
-    this.storage.createUser(user);
+    await this.storage.createUser(user);
     const userDto = this.toUserDto(user);
     const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
     return { token, user: userDto };
@@ -98532,7 +98571,7 @@ var AuthService = class {
     if (!cleanEmail || !password) {
       throw new BadRequestException("Ingresa correo electr\xF3nico y contrase\xF1a.");
     }
-    const user = this.storage.findUserByEmail(cleanEmail);
+    const user = await this.storage.findUserByEmail(cleanEmail);
     if (!user || !user.passwordHash) {
       throw new UnauthorizedException("Correo electr\xF3nico o contrase\xF1a incorrectos.");
     }
@@ -98557,10 +98596,10 @@ var AuthService = class {
     if (!cleanEmail) {
       throw new BadRequestException("No se pudo obtener el correo de la cuenta de Google.");
     }
-    let user = this.storage.findUserByEmail(cleanEmail);
+    let user = await this.storage.findUserByEmail(cleanEmail);
     const isAdmin = isAdminEmail(cleanEmail);
     if (!user) {
-      user = this.storage.createUser({
+      user = await this.storage.createUser({
         id: "u_goog_" + Math.random().toString(36).substring(2, 10),
         email: cleanEmail,
         name: name || cleanEmail.split("@")[0],
@@ -98568,7 +98607,7 @@ var AuthService = class {
         createdAt: Date.now()
       });
     } else if (isAdmin && user.role !== "admin") {
-      user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+      user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
     }
     const userDto = this.toUserDto(user);
     const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
@@ -98587,10 +98626,10 @@ var AuthService = class {
     if (!cleanEmail) {
       throw new BadRequestException("No se pudo obtener el correo de la cuenta de Apple.");
     }
-    let user = this.storage.findUserByEmail(cleanEmail);
+    let user = await this.storage.findUserByEmail(cleanEmail);
     const isAdmin = isAdminEmail(cleanEmail);
     if (!user) {
-      user = this.storage.createUser({
+      user = await this.storage.createUser({
         id: "u_appl_" + Math.random().toString(36).substring(2, 10),
         email: cleanEmail,
         name: name || cleanEmail.split("@")[0],
@@ -98598,7 +98637,7 @@ var AuthService = class {
         createdAt: Date.now()
       });
     } else if (isAdmin && user.role !== "admin") {
-      user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+      user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
     }
     const userDto = this.toUserDto(user);
     const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
@@ -98613,7 +98652,7 @@ var AuthService = class {
     const token = this.jwt.sign({ email: cleanEmail, code, type: "magic" }, { expiresIn: "15m" });
     await this.storage.setMagicEntry(cleanEmail, { code, token });
     const baseUrl = origin || process.env.PUBLIC_URL || "https://mapflex.app";
-    const magicLink = `${baseUrl}/?magic_token=${token}&email=${encodeURIComponent(cleanEmail)}`;
+    const magicLink = `${baseUrl}/?access_token=${token}&email=${encodeURIComponent(cleanEmail)}`;
     if (process.env.RESEND_API_KEY) {
       fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -98624,19 +98663,19 @@ var AuthService = class {
         body: JSON.stringify({
           from: "MapFlex <soporte@mapflex.app>",
           to: cleanEmail,
-          subject: "Tu enlace de acceso a MapFlex",
+          subject: "Tu link de acceso a MapFlex",
           html: `
-            <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
-              <h2 style="color: #0f172a; margin-top: 0;">Ingresar a MapFlex</h2>
-              <p style="color: #475569; font-size: 14px; line-height: 1.6;">Usa este enlace m\xE1gico para acceder directamente a tu cuenta sin contrase\xF1a:</p>
-              <div style="margin: 24px 0;">
-                <a href="${magicLink}" style="display: inline-block; background: #0f172a; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">Ingresar a MapFlex</a>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
+              <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Link de acceso a MapFlex</h2>
+              <p style="color: #475569; font-size: 15px; line-height: 1.6;">Haz clic en el bot\xF3n siguiente para ingresar directamente a tu cuenta:</p>
+              <div style="margin: 28px 0;">
+                <a href="${magicLink}" style="display: inline-block; background: #0f172a; color: #ffffff; padding: 12px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">Ingresar a MapFlex</a>
               </div>
-              <p style="color: #64748b; font-size: 13px;">O copia e ingresa este c\xF3digo de 6 d\xEDgitos en la pantalla de inicio:</p>
-              <div style="padding: 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; font-size: 20px; font-weight: 700; letter-spacing: 4px; text-align: center; color: #0f172a;">
+              <p style="color: #64748b; font-size: 13px;">O copia e ingresa este c\xF3digo de 6 d\xEDgitos si lo prefieres:</p>
+              <div style="padding: 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; font-size: 22px; font-weight: 700; letter-spacing: 5px; text-align: center; color: #0f172a;">
                 ${code}
               </div>
-              <p style="color: #94a3b8; font-size: 11px; margin-top: 24px;">Este enlace expira en 15 minutos. Si no solicitaste este acceso, puedes ignorar este correo.</p>
+              <p style="color: #94a3b8; font-size: 11px; margin-top: 28px;">Este enlace expira en 15 minutos.</p>
             </div>
           `
         })
@@ -98657,10 +98696,10 @@ var AuthService = class {
         throw new BadRequestException("Token de acceso no v\xE1lido.");
       }
       const cleanEmail = payload.email.toLowerCase().trim();
-      let user = this.storage.findUserByEmail(cleanEmail);
+      let user = await this.storage.findUserByEmail(cleanEmail);
       const isAdmin = isAdminEmail(cleanEmail);
       if (!user) {
-        user = this.storage.createUser({
+        user = await this.storage.createUser({
           id: "u_" + Math.random().toString(36).substring(2, 10),
           email: cleanEmail,
           name: cleanEmail.split("@")[0],
@@ -98668,14 +98707,14 @@ var AuthService = class {
           createdAt: Date.now()
         });
       } else if (isAdmin && user.role !== "admin") {
-        user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+        user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
       }
       await this.storage.deleteMagicEntry(cleanEmail);
       const userDto = this.toUserDto(user);
       const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
       return { token: authToken, user: userDto };
     } catch {
-      throw new UnauthorizedException("El enlace m\xE1gico ha expirado o ya fue utilizado.");
+      throw new UnauthorizedException("El enlace de acceso ha expirado o ya fue utilizado.");
     }
   }
   async verifyMagicCode(email, code) {
@@ -98686,12 +98725,12 @@ var AuthService = class {
     }
     const entry = await this.storage.getMagicEntry(cleanEmail);
     if (!entry || entry.code !== cleanCode) {
-      throw new UnauthorizedException("El c\xF3digo es incorrecto o ha expirado. Solicita uno nuevo.");
+      throw new UnauthorizedException("El c\xF3digo es incorrecto o ha expirado. Solicita un nuevo enlace.");
     }
-    let user = this.storage.findUserByEmail(cleanEmail);
+    let user = await this.storage.findUserByEmail(cleanEmail);
     const isAdmin = isAdminEmail(cleanEmail);
     if (!user) {
-      user = this.storage.createUser({
+      user = await this.storage.createUser({
         id: "u_" + Math.random().toString(36).substring(2, 10),
         email: cleanEmail,
         name: cleanEmail.split("@")[0],
@@ -98699,7 +98738,7 @@ var AuthService = class {
         createdAt: Date.now()
       });
     } else if (isAdmin && user.role !== "admin") {
-      user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+      user = await this.storage.updateUser(user.id, { role: "admin" }) || user;
     }
     await this.storage.deleteMagicEntry(cleanEmail);
     const userDto = this.toUserDto(user);
@@ -98710,9 +98749,24 @@ var AuthService = class {
     if (!token) throw new UnauthorizedException("Token no proporcionado.");
     try {
       const payload = this.jwt.verify(token);
-      const user = this.storage.findUserById(payload.sub);
-      if (!user) throw new UnauthorizedException("Usuario no encontrado.");
-      return this.toUserDto(user);
+      let user = await this.storage.findUserById(payload.sub);
+      if (!user && payload.email) {
+        user = await this.storage.findUserByEmail(payload.email);
+      }
+      if (user) {
+        return this.toUserDto(user);
+      }
+      const cleanEmail = (payload.email || "").toLowerCase().trim();
+      const isAdmin = payload.isAdmin || payload.role === "admin" || isAdminEmail(cleanEmail);
+      const userObj = {
+        id: payload.sub,
+        email: cleanEmail,
+        name: payload.name || cleanEmail.split("@")[0],
+        role: isAdmin ? "admin" : "user",
+        createdAt: Date.now()
+      };
+      await this.storage.createUser(userObj);
+      return this.toUserDto(userObj);
     } catch {
       throw new UnauthorizedException("Sesi\xF3n expirada o token inv\xE1lido.");
     }

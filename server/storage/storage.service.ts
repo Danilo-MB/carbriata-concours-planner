@@ -159,27 +159,67 @@ export class StorageService implements OnModuleInit {
   }
 
   // Users
-  findUserByEmail(email: string): UserEntity | undefined {
+  async findUserByEmail(email: string): Promise<UserEntity | undefined> {
     const clean = email.toLowerCase().trim();
+    if (this.redis) {
+      try {
+        const userId = await this.redis.get<string>(`user:email:${clean}`);
+        if (userId) {
+          const user = await this.findUserById(userId);
+          if (user) return user;
+        }
+      } catch (err) {
+        console.warn('Redis findUserByEmail error:', err);
+      }
+    }
     return Object.values(this.store.users).find((u) => u.email.toLowerCase() === clean);
   }
 
-  findUserById(id: string): UserEntity | undefined {
+  async findUserById(id: string): Promise<UserEntity | undefined> {
+    if (this.redis) {
+      try {
+        const cloudUser = await this.redis.get<UserEntity>(`user:${id}`);
+        if (cloudUser && cloudUser.id) {
+          this.store.users[cloudUser.id] = cloudUser;
+          return cloudUser;
+        }
+      } catch (err) {
+        console.warn(`Redis findUserById(${id}) error:`, err);
+      }
+    }
     return this.store.users[id];
   }
 
-  createUser(user: UserEntity): UserEntity {
+  async createUser(user: UserEntity): Promise<UserEntity> {
     this.store.users[user.id] = user;
     this.save();
+    if (this.redis) {
+      try {
+        const clean = user.email.toLowerCase().trim();
+        await Promise.all([
+          this.redis.set(`user:${user.id}`, user),
+          this.redis.set(`user:email:${clean}`, user.id)
+        ]);
+      } catch (err) {
+        console.warn('Redis createUser error:', err);
+      }
+    }
     return user;
   }
 
-  updateUser(id: string, patch: Partial<UserEntity>): UserEntity | undefined {
-    const user = this.store.users[id];
+  async updateUser(id: string, patch: Partial<UserEntity>): Promise<UserEntity | undefined> {
+    let user = await this.findUserById(id);
     if (!user) return undefined;
     const updated = { ...user, ...patch };
     this.store.users[id] = updated;
     this.save();
+    if (this.redis) {
+      try {
+        await this.redis.set(`user:${id}`, updated);
+      } catch (err) {
+        console.warn('Redis updateUser error:', err);
+      }
+    }
     return updated;
   }
 
@@ -251,8 +291,7 @@ export class StorageService implements OnModuleInit {
     }
 
     const all = Object.values(this.store.projects);
-    if (!userId) return all;
-    return all.filter((p) => !p.userId || p.userId === userId);
+    return all;
   }
 
   async findProjectById(id: string): Promise<ProjectEntity | undefined> {
