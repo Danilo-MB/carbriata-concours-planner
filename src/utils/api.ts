@@ -132,6 +132,10 @@ export const api = {
       request<{ success: boolean }>(`/api/projects/${id}`, {
         method: 'DELETE'
       }),
+    restore: (id: string) =>
+      request<any>(`/api/projects/${id}/restore`, {
+        method: 'POST'
+      }),
     syncFeatures: (projectId: string, features: any[]) =>
       request<any>(`/api/projects/${projectId}/features`, {
         method: 'PUT',

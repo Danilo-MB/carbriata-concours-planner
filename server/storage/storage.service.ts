@@ -65,6 +65,8 @@ export interface ProjectEntity {
   hiddenCategoryIds: string[];
   createdAt: number;
   updatedAt: number;
+  isDeleted?: boolean;
+  deletedAt?: number;
 }
 
 interface DataStore {
@@ -347,7 +349,7 @@ export class StorageService implements OnModuleInit {
       }
     }
 
-    const all = Object.values(this.store.projects);
+    const all = Object.values(this.store.projects).filter((p) => !p.isDeleted);
     return all;
   }
 
@@ -396,27 +398,68 @@ export class StorageService implements OnModuleInit {
     return record;
   }
 
+  /**
+   * Soft-delete: marks project as deleted and stores deletion timestamp.
+   * Full data remains preserved in the database so it can be restored.
+   */
   async deleteProject(id: string): Promise<boolean> {
-    let existed = false;
-    if (this.store.projects[id]) {
-      delete this.store.projects[id];
-      this.save();
-      existed = true;
-    }
+    const project = await this.findProjectById(id);
+    if (!project) return false;
+
+    const softDeleted: ProjectEntity = {
+      ...project,
+      isDeleted: true,
+      deletedAt: Date.now(),
+      updatedAt: Date.now()
+    };
+
+    this.store.projects[id] = softDeleted;
+    this.save();
 
     if (this.redis) {
       try {
         await Promise.all([
-          this.redis.del(`project:${id}`),
-          this.redis.srem('all_project_ids', id)
+          this.redis.set(`project:${id}`, softDeleted),
+          this.redis.sadd('deleted_project_ids', id)
         ]);
-        existed = true;
       } catch (err) {
         console.warn(`Redis deleteProject(${id}) error:`, err);
       }
     }
 
-    return existed;
+    return true;
+  }
+
+  /**
+   * Restore a previously soft-deleted project.
+   */
+  async restoreProject(id: string): Promise<ProjectEntity | null> {
+    const project = await this.findProjectById(id);
+    if (!project) return null;
+
+    const restored: ProjectEntity = {
+      ...project,
+      isDeleted: false,
+      deletedAt: undefined,
+      updatedAt: Date.now()
+    };
+
+    this.store.projects[id] = restored;
+    this.save();
+
+    if (this.redis) {
+      try {
+        await Promise.all([
+          this.redis.set(`project:${id}`, restored),
+          this.redis.srem('deleted_project_ids', id),
+          this.redis.sadd('all_project_ids', id)
+        ]);
+      } catch (err) {
+        console.warn(`Redis restoreProject(${id}) error:`, err);
+      }
+    }
+
+    return restored;
   }
 
   // Features within project

@@ -16,7 +16,8 @@ const sizeConfig = {
 };
 
 /**
- * Modern MapFlex Mark: Location Pin anchored over a 3D isometric folded map with colored zoned areas
+ * Modern Monochrome MapFlex Mark:
+ * Minimalist Location Pin anchored over a 3D perspective map with architectural zoned areas.
  */
 export function MapFlexMark({ size = 32, className = '' }: { size?: number; className?: string }) {
   return (
@@ -29,54 +30,37 @@ export function MapFlexMark({ size = 32, className = '' }: { size?: number; clas
       className={`shrink-0 ${className}`}
       aria-hidden="true">
       <defs>
-        {/* Map Panel Gradients */}
-        <linearGradient id="mf-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+        {/* Monochrome Map Panel Folds */}
+        <linearGradient id="mf-mono-left" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#1E293B" />
-          <stop offset="100%" stopColor="#0F172A" />
+          <stop offset="100%" stopColor="#0B0F17" />
         </linearGradient>
-        <linearGradient id="mf-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="mf-mono-mid" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#334155" />
-          <stop offset="100%" stopColor="#1E293B" />
+          <stop offset="100%" stopColor="#172033" />
         </linearGradient>
-        <linearGradient id="mf-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="mf-mono-right" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#1E293B" />
-          <stop offset="100%" stopColor="#0F172A" />
+          <stop offset="100%" stopColor="#0B0F17" />
         </linearGradient>
 
-        {/* Zoned Areas Gradients */}
-        <linearGradient id="mf-area-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#34D399" />
-          <stop offset="100%" stopColor="#059669" />
-        </linearGradient>
-        <linearGradient id="mf-area-indigo" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#818CF8" />
-          <stop offset="100%" stopColor="#4F46E5" />
-        </linearGradient>
-        <linearGradient id="mf-area-amber" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="100%" stopColor="#D97706" />
+        {/* Pure Monochrome Pin Gradient */}
+        <linearGradient id="mf-mono-pin" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#E2E8F0" />
         </linearGradient>
 
-        {/* Pin Gradient & Drop Shadow */}
-        <linearGradient id="mf-pin-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FF5E62" />
-          <stop offset="50%" stopColor="#FF9966" />
-          <stop offset="100%" stopColor="#EA580C" />
-        </linearGradient>
-        <filter id="mf-pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000000" floodOpacity="0.55" />
+        {/* High-contrast soft drop shadow */}
+        <filter id="mf-mono-shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="2.5" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.75" />
         </filter>
-        <radialGradient id="mf-beacon-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.65" />
-          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0" />
-        </radialGradient>
       </defs>
 
-      {/* MAP BASE: 3-Fold Perspective Map */}
+      {/* 3-FOLD ISOMETRIC MAP BASE */}
       {/* Left Panel */}
       <path
         d="M6 16.5L18 11.5V37.5L6 42.5V16.5Z"
-        fill="url(#mf-fold-left)"
+        fill="url(#mf-mono-left)"
         stroke="#475569"
         strokeWidth="0.75"
         strokeLinejoin="round"
@@ -84,7 +68,7 @@ export function MapFlexMark({ size = 32, className = '' }: { size?: number; clas
       {/* Center Panel */}
       <path
         d="M18 11.5L30 17.5V43.5L18 37.5V11.5Z"
-        fill="url(#mf-fold-mid)"
+        fill="url(#mf-mono-mid)"
         stroke="#475569"
         strokeWidth="0.75"
         strokeLinejoin="round"
@@ -92,92 +76,89 @@ export function MapFlexMark({ size = 32, className = '' }: { size?: number; clas
       {/* Right Panel */}
       <path
         d="M30 17.5L42 12.5V38.5L30 43.5V17.5Z"
-        fill="url(#mf-fold-right)"
+        fill="url(#mf-mono-right)"
         stroke="#475569"
         strokeWidth="0.75"
         strokeLinejoin="round"
       />
 
-      {/* Map Crease Highlights */}
-      <path d="M18 11.5V37.5" stroke="#FFFFFF" strokeOpacity="0.3" strokeWidth="1" />
-      <path d="M30 17.5V43.5" stroke="#000000" strokeOpacity="0.4" strokeWidth="1" />
+      {/* Architectural Crease Highlights */}
+      <path d="M18 11.5V37.5" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="1" />
+      <path d="M30 17.5V43.5" stroke="#000000" strokeOpacity="0.6" strokeWidth="1" />
 
-      {/* Subtle Map Grid Lines */}
-      <path d="M6 25L18 20 M6 33.5L18 28.5" stroke="#64748B" strokeOpacity="0.25" strokeWidth="0.75" strokeDasharray="2 2" />
-      <path d="M18 20L30 26 M18 28.5L30 34.5" stroke="#64748B" strokeOpacity="0.25" strokeWidth="0.75" strokeDasharray="2 2" />
-      <path d="M30 26L42 21 M30 34.5L42 29.5" stroke="#64748B" strokeOpacity="0.25" strokeWidth="0.75" strokeDasharray="2 2" />
+      {/* Subtle Contour & Grid Lines */}
+      <path d="M6 25L18 20 M6 33.5L18 28.5" stroke="#94A3B8" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="2 2" />
+      <path d="M18 20L30 26 M18 28.5L30 34.5" stroke="#94A3B8" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="2 2" />
+      <path d="M30 26L42 21 M30 34.5L42 29.5" stroke="#94A3B8" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="2 2" />
 
-      {/* ZONED AREA 1: Emerald Parcel (Left Fold) */}
+      {/* ZONED AREA 1: Left Architectural Parcel */}
       <path
         d="M8 22L16 18.5V30.5L8 34V22Z"
-        fill="url(#mf-area-emerald)"
-        fillOpacity="0.85"
-        stroke="#34D399"
+        fill="#FFFFFF"
+        fillOpacity="0.08"
+        stroke="#FFFFFF"
+        strokeOpacity="0.45"
         strokeWidth="0.8"
       />
-      <circle cx="8" cy="22" r="0.9" fill="#A7F3D0" />
-      <circle cx="16" cy="18.5" r="0.9" fill="#A7F3D0" />
-      <circle cx="16" cy="30.5" r="0.9" fill="#A7F3D0" />
-      <circle cx="8" cy="34" r="0.9" fill="#A7F3D0" />
+      <circle cx="8" cy="22" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
+      <circle cx="16" cy="18.5" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
+      <circle cx="16" cy="30.5" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
+      <circle cx="8" cy="34" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
 
-      {/* ZONED AREA 3: Amber Exhibition Parcel (Right Fold) */}
+      {/* ZONED AREA 3: Right Architectural Parcel */}
       <path
         d="M32 23.5L40 20V31.5L32 35V23.5Z"
-        fill="url(#mf-area-amber)"
-        fillOpacity="0.85"
-        stroke="#FBBF24"
+        fill="#FFFFFF"
+        fillOpacity="0.08"
+        stroke="#FFFFFF"
+        strokeOpacity="0.45"
         strokeWidth="0.8"
       />
-      <circle cx="32" cy="23.5" r="0.9" fill="#FDE68A" />
-      <circle cx="40" cy="20" r="0.9" fill="#FDE68A" />
-      <circle cx="40" cy="31.5" r="0.9" fill="#FDE68A" />
-      <circle cx="32" cy="35" r="0.9" fill="#FDE68A" />
+      <circle cx="32" cy="23.5" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
+      <circle cx="40" cy="20" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
+      <circle cx="40" cy="31.5" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
+      <circle cx="32" cy="35" r="0.8" fill="#FFFFFF" fillOpacity="0.6" />
 
-      {/* ZONED AREA 2: Central Staging Venue (Center Fold - Primary) */}
+      {/* ZONED AREA 2: Main Focus Parcel (Center Stage) */}
       <path
         d="M20 20L28 24V35L20 31V20Z"
-        fill="url(#mf-area-indigo)"
-        fillOpacity="0.9"
-        stroke="#818CF8"
+        fill="#FFFFFF"
+        fillOpacity="0.18"
+        stroke="#FFFFFF"
+        strokeOpacity="0.85"
         strokeWidth="0.9"
       />
-      <circle cx="20" cy="20" r="1" fill="#C7D2FE" />
-      <circle cx="28" cy="24" r="1" fill="#C7D2FE" />
-      <circle cx="28" cy="35" r="1" fill="#C7D2FE" />
-      <circle cx="20" cy="31" r="1" fill="#C7D2FE" />
+      <circle cx="20" cy="20" r="1" fill="#FFFFFF" />
+      <circle cx="28" cy="24" r="1" fill="#FFFFFF" />
+      <circle cx="28" cy="35" r="1" fill="#FFFFFF" />
+      <circle cx="20" cy="31" r="1" fill="#FFFFFF" />
 
-      {/* Connecting GPS Trail between areas */}
+      {/* Connecting Dotted Trail */}
       <path
         d="M12 26.5 C 15 25 17 21 21 23 C 24 24.5 26 27 30 25 C 33 23.5 36 25.5 36 25.5"
         stroke="#FFFFFF"
         strokeWidth="1.2"
         strokeLinecap="round"
         strokeDasharray="1.5 1.5"
-        strokeOpacity="0.8"
+        strokeOpacity="0.65"
       />
 
-      {/* PIN BEACON PULSE ON GROUND */}
-      <ellipse cx="24.5" cy="26" rx="5" ry="2" fill="url(#mf-beacon-glow)" />
-      <ellipse cx="24.5" cy="26" rx="4" ry="1.6" fill="none" stroke="#FF9966" strokeWidth="0.8" strokeDasharray="2 1.5" />
+      {/* GROUND TARGET BEACON (Center Area) */}
+      <ellipse cx="24.5" cy="26" rx="5" ry="2" fill="#FFFFFF" fillOpacity="0.14" />
+      <ellipse cx="24.5" cy="26" rx="4" ry="1.6" fill="none" stroke="#FFFFFF" strokeOpacity="0.55" strokeWidth="0.8" strokeDasharray="2 1.5" />
       <circle cx="24.5" cy="26" r="1.2" fill="#FFFFFF" />
 
-      {/* THE LOCATION PIN (Floating above with soft drop shadow) */}
-      <g filter="url(#mf-pin-shadow)">
+      {/* THE PURE MONOCHROME LOCATION PIN */}
+      <g filter="url(#mf-mono-shadow)">
         <path
           d="M24.5 5.5 C 21.46 5.5 19 7.96 19 11 C 19 15.3 23.8 21.6 24.15 22.1 C 24.32 22.3 24.68 22.3 24.85 22.1 C 25.2 21.6 30 15.3 30 11 C 30 7.96 27.54 5.5 24.5 5.5 Z"
-          fill="url(#mf-pin-gradient)"
-          stroke="#FFFFFF"
-          strokeWidth="0.75"
+          fill="url(#mf-mono-pin)"
+          stroke="#0F172A"
+          strokeWidth="0.6"
           strokeLinejoin="round"
         />
-        <circle cx="24.5" cy="11" r="2.4" fill="#FFFFFF" />
-        <path
-          d="M22 8.5 C 22.8 7.6 24 7.2 25.2 7.3"
-          stroke="#FFFFFF"
-          strokeWidth="0.6"
-          strokeLinecap="round"
-          strokeOpacity="0.8"
-        />
+        {/* Inner Aperture Hole */}
+        <circle cx="24.5" cy="11" r="2.4" fill="#0B0F19" />
       </g>
     </svg>
   );
@@ -188,7 +169,7 @@ export function MapFlexBadge({ size = 36, className = '' }: { size?: number; cla
   return (
     <div
       style={{ width: size, height: size }}
-      className={`grid place-items-center rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-white/15 shadow-sm shrink-0 overflow-hidden ${className}`}>
+      className={`grid place-items-center rounded-xl bg-black border border-white/15 shadow-sm shrink-0 overflow-hidden ${className}`}>
       <MapFlexMark size={markSize} />
     </div>
   );
@@ -213,10 +194,7 @@ export function MapFlexLogo({
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
       <MapFlexBadge size={cfg.iconSize} />
       <span className={`font-black tracking-tight leading-none text-ink ${cfg.textSize}`}>
-        Map
-        <span className="bg-gradient-to-r from-sky-400 via-indigo-500 to-emerald-400 bg-clip-text text-transparent">
-          Flex
-        </span>
+        Map<span className="font-semibold text-slate-500 dark:text-slate-400">Flex</span>
       </span>
     </div>
   );

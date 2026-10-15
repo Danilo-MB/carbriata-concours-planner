@@ -96,6 +96,17 @@ export class ProjectsController {
     return this.projectsService.delete(id);
   }
 
+  @Post(':id/restore')
+  async restore(@Param('id') id: string, @Headers('authorization') auth?: string) {
+    const user = await this.getUser(auth);
+    this.checkVerified(user);
+    const project = await this.projectsService.getOne(id);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden restaurarlo.');
+    }
+    return this.projectsService.restore(id);
+  }
+
   // Feature operations for map elements
   @Put(':id/features')
   async syncFeatures(

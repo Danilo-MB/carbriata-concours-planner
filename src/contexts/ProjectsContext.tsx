@@ -260,9 +260,9 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     setProjects((ps) => {
       if (ps.some((p) => p.id === project.id)) return ps;
       const next = [...ps];
-      next.splice(Math.min(index, next.length), 0, project);
+      next.splice(Math.min(index, next.length), 0, { ...project, isDeleted: false });
       if (isAuthenticated && !project.isLocalOnly) {
-        api.projects.create(project).catch(() => undefined);
+        api.projects.restore(project.id).catch(() => api.projects.create(project).catch(() => undefined));
       }
       return next;
     });

@@ -97382,7 +97382,7 @@ var StorageService = class {
         console.warn("Redis findProjects error:", err);
       }
     }
-    const all = Object.values(this.store.projects);
+    const all = Object.values(this.store.projects).filter((p) => !p.isDeleted);
     return all;
   }
   async findProjectById(id) {
@@ -97419,25 +97419,59 @@ var StorageService = class {
     }
     return record;
   }
+  /**
+   * Soft-delete: marks project as deleted and stores deletion timestamp.
+   * Full data remains preserved in the database so it can be restored.
+   */
   async deleteProject(id) {
-    let existed = false;
-    if (this.store.projects[id]) {
-      delete this.store.projects[id];
-      this.save();
-      existed = true;
-    }
+    const project = await this.findProjectById(id);
+    if (!project) return false;
+    const softDeleted = {
+      ...project,
+      isDeleted: true,
+      deletedAt: Date.now(),
+      updatedAt: Date.now()
+    };
+    this.store.projects[id] = softDeleted;
+    this.save();
     if (this.redis) {
       try {
         await Promise.all([
-          this.redis.del(`project:${id}`),
-          this.redis.srem("all_project_ids", id)
+          this.redis.set(`project:${id}`, softDeleted),
+          this.redis.sadd("deleted_project_ids", id)
         ]);
-        existed = true;
       } catch (err) {
         console.warn(`Redis deleteProject(${id}) error:`, err);
       }
     }
-    return existed;
+    return true;
+  }
+  /**
+   * Restore a previously soft-deleted project.
+   */
+  async restoreProject(id) {
+    const project = await this.findProjectById(id);
+    if (!project) return null;
+    const restored = {
+      ...project,
+      isDeleted: false,
+      deletedAt: void 0,
+      updatedAt: Date.now()
+    };
+    this.store.projects[id] = restored;
+    this.save();
+    if (this.redis) {
+      try {
+        await Promise.all([
+          this.redis.set(`project:${id}`, restored),
+          this.redis.srem("deleted_project_ids", id),
+          this.redis.sadd("all_project_ids", id)
+        ]);
+      } catch (err) {
+        console.warn(`Redis restoreProject(${id}) error:`, err);
+      }
+    }
+    return restored;
   }
   // Features within project
   async updateProjectFeatures(projectId, features) {
@@ -105477,6 +105511,11 @@ var ProjectsService = class {
     if (!ok) throw new NotFoundException(`Proyecto "${id}" no encontrado.`);
     return { success: true };
   }
+  async restore(id) {
+    const restored = await this.storage.restoreProject(id);
+    if (!restored) throw new NotFoundException(`Proyecto "${id}" no encontrado.`);
+    return restored;
+  }
   // Feature operations for map elements
   async syncFeatures(projectId, features) {
     const project = await this.storage.updateProjectFeatures(projectId, features);
@@ -105565,6 +105604,15 @@ var ProjectsController = class {
     }
     return this.projectsService.delete(id);
   }
+  async restore(id, auth) {
+    const user = await this.getUser(auth);
+    this.checkVerified(user);
+    const project = await this.projectsService.getOne(id);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden restaurarlo.");
+    }
+    return this.projectsService.restore(id);
+  }
   async syncFeatures(projectId, body, auth) {
     const user = await this.getUser(auth);
     this.checkVerified(user);
@@ -105626,6 +105674,11 @@ __decorateClass([
   __decorateParam(0, Param("id")),
   __decorateParam(1, Headers2("authorization"))
 ], ProjectsController.prototype, "delete", 1);
+__decorateClass([
+  Post(":id/restore"),
+  __decorateParam(0, Param("id")),
+  __decorateParam(1, Headers2("authorization"))
+], ProjectsController.prototype, "restore", 1);
 __decorateClass([
   Put(":id/features"),
   __decorateParam(0, Param("id")),

@@ -93,6 +93,8 @@ export interface Project {
   hiddenCategoryIds: string[];
   createdAt: number;
   updatedAt: number;
+  isDeleted?: boolean;
+  deletedAt?: number;
 }
 
 export interface PlanTemplate {

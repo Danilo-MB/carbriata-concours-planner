@@ -1,103 +1,84 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="mf-fav-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0B1120"/>
+    <linearGradient id="mf-mono-fav-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
       <stop offset="100%" stop-color="#020617"/>
     </linearGradient>
 
-    <linearGradient id="fav-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="fav-mono-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="100%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#0B0F17" />
     </linearGradient>
-    <linearGradient id="fav-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="fav-mono-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#334155" />
-      <stop offset="100%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#172033" />
     </linearGradient>
-    <linearGradient id="fav-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="fav-mono-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="100%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#0B0F17" />
     </linearGradient>
 
-    <linearGradient id="fav-area-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#34D399" />
-      <stop offset="100%" stop-color="#059669" />
-    </linearGradient>
-    <linearGradient id="fav-area-indigo" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#818CF8" />
-      <stop offset="100%" stop-color="#4F46E5" />
-    </linearGradient>
-    <linearGradient id="fav-area-amber" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FBBF24" />
-      <stop offset="100%" stop-color="#D97706" />
+    <linearGradient id="fav-mono-pin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E2E8F0" />
     </linearGradient>
 
-    <linearGradient id="fav-pin-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FF5E62" />
-      <stop offset="50%" stop-color="#FF9966" />
-      <stop offset="100%" stop-color="#EA580C" />
-    </linearGradient>
-    <filter id="fav-pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.6" />
+    <filter id="fav-mono-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.2" flood-color="#000000" flood-opacity="0.8" />
     </filter>
-    <radialGradient id="fav-beacon-glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#FF7A00" stop-opacity="0.7" />
-      <stop offset="100%" stop-color="#FF7A00" stop-opacity="0" />
-    </radialGradient>
   </defs>
 
   <!-- Container Squircle -->
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#mf-fav-bg)"/>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#mf-mono-fav-bg)"/>
   <rect x="2" y="2" width="60" height="60" rx="16" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1.5"/>
 
-  <!-- Logo Mark centered in 64x64 (scaled + translated) -->
+  <!-- Logo Mark centered in 64x64 -->
   <g transform="translate(8, 8)">
-    <!-- Map Base -->
-    <path d="M6 16.5L18 11.5V37.5L6 42.5V16.5Z" fill="url(#fav-fold-left)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
-    <path d="M18 11.5L30 17.5V43.5L18 37.5V11.5Z" fill="url(#fav-fold-mid)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
-    <path d="M30 17.5L42 12.5V38.5L30 43.5V17.5Z" fill="url(#fav-fold-right)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
+    <path d="M6 16.5L18 11.5V37.5L6 42.5V16.5Z" fill="url(#fav-mono-fold-left)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
+    <path d="M18 11.5L30 17.5V43.5L18 37.5V11.5Z" fill="url(#fav-mono-fold-mid)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
+    <path d="M30 17.5L42 12.5V38.5L30 43.5V17.5Z" fill="url(#fav-mono-fold-right)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
 
-    <path d="M18 11.5V37.5" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1" />
-    <path d="M30 17.5V43.5" stroke="#000000" stroke-opacity="0.4" stroke-width="1" />
+    <path d="M18 11.5V37.5" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1" />
+    <path d="M30 17.5V43.5" stroke="#000000" stroke-opacity="0.6" stroke-width="1" />
 
     <!-- Grid lines -->
-    <path d="M6 25L18 20 M6 33.5L18 28.5" stroke="#64748B" stroke-opacity="0.25" stroke-width="0.75" stroke-dasharray="2 2" />
-    <path d="M18 20L30 26 M18 28.5L30 34.5" stroke="#64748B" stroke-opacity="0.25" stroke-width="0.75" stroke-dasharray="2 2" />
-    <path d="M30 26L42 21 M30 34.5L42 29.5" stroke="#64748B" stroke-opacity="0.25" stroke-width="0.75" stroke-dasharray="2 2" />
+    <path d="M6 25L18 20 M6 33.5L18 28.5" stroke="#94A3B8" stroke-opacity="0.2" stroke-width="0.75" stroke-dasharray="2 2" />
+    <path d="M18 20L30 26 M18 28.5L30 34.5" stroke="#94A3B8" stroke-opacity="0.2" stroke-width="0.75" stroke-dasharray="2 2" />
+    <path d="M30 26L42 21 M30 34.5L42 29.5" stroke="#94A3B8" stroke-opacity="0.2" stroke-width="0.75" stroke-dasharray="2 2" />
 
-    <!-- Area 1 (Emerald) -->
-    <path d="M8 22L16 18.5V30.5L8 34V22Z" fill="url(#fav-area-emerald)" fill-opacity="0.85" stroke="#34D399" stroke-width="0.8" />
-    <circle cx="8" cy="22" r="0.9" fill="#A7F3D0" />
-    <circle cx="16" cy="18.5" r="0.9" fill="#A7F3D0" />
-    <circle cx="16" cy="30.5" r="0.9" fill="#A7F3D0" />
-    <circle cx="8" cy="34" r="0.9" fill="#A7F3D0" />
+    <!-- Area 1 -->
+    <path d="M8 22L16 18.5V30.5L8 34V22Z" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.8" />
+    <circle cx="8" cy="22" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
+    <circle cx="16" cy="18.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
+    <circle cx="16" cy="30.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
+    <circle cx="8" cy="34" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
 
-    <!-- Area 3 (Amber) -->
-    <path d="M32 23.5L40 20V31.5L32 35V23.5Z" fill="url(#fav-area-amber)" fill-opacity="0.85" stroke="#FBBF24" stroke-width="0.8" />
-    <circle cx="32" cy="23.5" r="0.9" fill="#FDE68A" />
-    <circle cx="40" cy="20" r="0.9" fill="#FDE68A" />
-    <circle cx="40" cy="31.5" r="0.9" fill="#FDE68A" />
-    <circle cx="32" cy="35" r="0.9" fill="#FDE68A" />
+    <!-- Area 3 -->
+    <path d="M32 23.5L40 20V31.5L32 35V23.5Z" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.8" />
+    <circle cx="32" cy="23.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
+    <circle cx="40" cy="20" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
+    <circle cx="40" cy="31.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
+    <circle cx="32" cy="35" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
 
-    <!-- Area 2 (Indigo) -->
-    <path d="M20 20L28 24V35L20 31V20Z" fill="url(#fav-area-indigo)" fill-opacity="0.9" stroke="#818CF8" stroke-width="0.9" />
-    <circle cx="20" cy="20" r="1" fill="#C7D2FE" />
-    <circle cx="28" cy="24" r="1" fill="#C7D2FE" />
-    <circle cx="28" cy="35" r="1" fill="#C7D2FE" />
-    <circle cx="20" cy="31" r="1" fill="#C7D2FE" />
+    <!-- Area 2 (Center) -->
+    <path d="M20 20L28 24V35L20 31V20Z" fill="#FFFFFF" fill-opacity="0.18" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="0.9" />
+    <circle cx="20" cy="20" r="1" fill="#FFFFFF" />
+    <circle cx="28" cy="24" r="1" fill="#FFFFFF" />
+    <circle cx="28" cy="35" r="1" fill="#FFFFFF" />
+    <circle cx="20" cy="31" r="1" fill="#FFFFFF" />
 
-    <!-- Trail -->
-    <path d="M12 26.5 C 15 25 17 21 21 23 C 24 24.5 26 27 30 25 C 33 23.5 36 25.5 36 25.5" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.5 1.5" stroke-opacity="0.8" />
+    <!-- Dotted Trail -->
+    <path d="M12 26.5 C 15 25 17 21 21 23 C 24 24.5 26 27 30 25 C 33 23.5 36 25.5 36 25.5" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.5 1.5" stroke-opacity="0.65" />
 
-    <!-- Beacon -->
-    <ellipse cx="24.5" cy="26" rx="5" ry="2" fill="url(#fav-beacon-glow)" />
-    <ellipse cx="24.5" cy="26" rx="4" ry="1.6" fill="none" stroke="#FF9966" stroke-width="0.8" stroke-dasharray="2 1.5" />
+    <!-- Target Ground Pulse -->
+    <ellipse cx="24.5" cy="26" rx="5" ry="2" fill="#FFFFFF" fill-opacity="0.14" />
+    <ellipse cx="24.5" cy="26" rx="4" ry="1.6" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="0.8" stroke-dasharray="2 1.5" />
     <circle cx="24.5" cy="26" r="1.2" fill="#FFFFFF" />
 
-    <!-- Location Pin -->
-    <g filter="url(#fav-pin-shadow)">
-      <path d="M24.5 5.5 C 21.46 5.5 19 7.96 19 11 C 19 15.3 23.8 21.6 24.15 22.1 C 24.32 22.3 24.68 22.3 24.85 22.1 C 25.2 21.6 30 15.3 30 11 C 30 7.96 27.54 5.5 24.5 5.5 Z" fill="url(#fav-pin-gradient)" stroke="#FFFFFF" stroke-width="0.75" stroke-linejoin="round" />
-      <circle cx="24.5" cy="11" r="2.4" fill="#FFFFFF" />
-      <path d="M22 8.5 C 22.8 7.6 24 7.2 25.2 7.3" stroke="#FFFFFF" stroke-width="0.6" stroke-linecap="round" stroke-opacity="0.8" />
+    <!-- Pin -->
+    <g filter="url(#fav-mono-shadow)">
+      <path d="M24.5 5.5 C 21.46 5.5 19 7.96 19 11 C 19 15.3 23.8 21.6 24.15 22.1 C 24.32 22.3 24.68 22.3 24.85 22.1 C 25.2 21.6 30 15.3 30 11 C 30 7.96 27.54 5.5 24.5 5.5 Z" fill="url(#fav-mono-pin)" stroke="#0F172A" stroke-width="0.6" stroke-linejoin="round" />
+      <circle cx="24.5" cy="11" r="2.4" fill="#0B0F19" />
     </g>
   </g>
 </svg>

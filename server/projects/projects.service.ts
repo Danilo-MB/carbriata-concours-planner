@@ -59,6 +59,12 @@ export class ProjectsService {
     return { success: true };
   }
 
+  async restore(id: string): Promise<ProjectEntity> {
+    const restored = await this.storage.restoreProject(id);
+    if (!restored) throw new NotFoundException(`Proyecto "${id}" no encontrado.`);
+    return restored;
+  }
+
   // Feature operations for map elements
   async syncFeatures(projectId: string, features: FeatureEntity[]): Promise<ProjectEntity> {
     const project = await this.storage.updateProjectFeatures(projectId, features);
