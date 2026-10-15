@@ -19,7 +19,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
   ];
 
   return (
-    <section className="relative overflow-hidden py-12 sm:py-16 bg-surface/50 border-y border-line">
+    <section id="recorrido" className="scroll-mt-16 relative overflow-hidden py-12 sm:py-16 bg-surface/50 border-y border-line">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           {/* Left Column: Text & Benefits */}

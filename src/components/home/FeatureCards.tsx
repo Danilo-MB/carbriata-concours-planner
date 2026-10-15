@@ -16,7 +16,7 @@ export function FeatureCards() {
     {
       icon: FootprintsIcon,
       color: 'from-orange-500/20 to-amber-500/10 text-orange-500',
-      badge: 'Street View 360',
+      badge: 'Recorrido 360°',
       title: t('feature2Title'),
       desc: t('feature2Desc')
     },
@@ -51,7 +51,7 @@ export function FeatureCards() {
   ];
 
   return (
-    <section className="relative py-12 sm:py-16">
+    <section id="funciones" className="scroll-mt-16 relative py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">

@@ -45,6 +45,13 @@ export const translations = {
     embedFeature4: 'Geolocalización GPS en vivo y fichas con fotos de alta resolución descargables',
     embedCtaDemo: 'Probar demo de Recorrido Virtual',
 
+    // Navigation
+    navHome: 'Inicio',
+    navFeatures: 'Funciones',
+    navVirtualTour: 'Recorrido 360°',
+    navMyMaps: 'Mis Mapas',
+    navTemplates: 'Plantillas',
+
     // Common / General
     backToPlans: 'Volver a los planos',
     visitWebsite: 'Sitio web',
@@ -257,6 +264,13 @@ export const translations = {
     embedFeature3: '1-click iFrame integration into WordPress, Wix, Webflow, or custom code',
     embedFeature4: 'Live GPS geolocation and cards with downloadable high-res photos',
     embedCtaDemo: 'Test Virtual Tour demo',
+
+    // Navigation
+    navHome: 'Home',
+    navFeatures: 'Features',
+    navVirtualTour: '360° Tour',
+    navMyMaps: 'My Maps',
+    navTemplates: 'Templates',
 
     // Common / General
     backToPlans: 'Back to plans',

@@ -1,8 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { AlertCircleIcon, CloudIcon, CompassIcon, PlusIcon, SparklesIcon, Trash2Icon } from 'lucide-react';
+import {
+  AlertCircleIcon,
+  CloudIcon,
+  CompassIcon,
+  FootprintsIcon,
+  LayersIcon,
+  MenuIcon,
+  PlusIcon,
+  SparklesIcon,
+  Trash2Icon,
+  XIcon,
+} from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { LanguageToggle } from '../components/LanguageToggle';
 import { FeaturedPlan } from '../components/projects/FeaturedPlan';
@@ -30,8 +41,46 @@ export function ProjectsPage() {
   const [dialogTemplate, setDialogTemplate] = useState<TemplateId | null>(null);
   const [isAiWizardOpen, setIsAiWizardOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [activeSection, setActiveSection] = useState<string>('inicio');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const sorted = useMemo(() => [...projects].sort((a, b) => b.updatedAt - a.updatedAt), [projects]);
   const [featured, ...others] = sorted;
+
+  const navSections = useMemo(
+    () => [
+      { id: 'inicio', label: t('navHome'), icon: SparklesIcon },
+      { id: 'funciones', label: t('navFeatures'), icon: LayersIcon },
+      { id: 'recorrido', label: t('navVirtualTour'), icon: FootprintsIcon },
+      { id: 'mis-planos', label: t('navMyMaps'), icon: CompassIcon },
+      { id: 'plantillas', label: t('navTemplates'), icon: PlusIcon },
+    ],
+    [t]
+  );
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 120;
+      for (let i = navSections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(navSections[i].id);
+        if (el && el.offsetTop <= scrollPosition) {
+          setActiveSection(navSections[i].id);
+          return;
+        }
+      }
+      setActiveSection('inicio');
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [navSections]);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+    setMobileMenuOpen(false);
+  };
 
   const confirmDelete = () => {
     if (!projectToDelete) return;
@@ -66,14 +115,88 @@ export function ProjectsPage() {
       <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <MapFlexLogo variant="full" size="md" />
+            <button
+              type="button"
+              onClick={() => scrollToSection('inicio')}
+              className="text-left focus:outline-hidden hover:opacity-85 transition-opacity"
+              title="MapFlex - Ir al inicio"
+            >
+              <MapFlexLogo variant="full" size="md" />
+            </button>
           </div>
+
+          {/* Center Navigation Links for vertical sections */}
+          <nav aria-label="Navegación principal" className="hidden md:flex items-center gap-1 lg:gap-2">
+            {navSections.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => scrollToSection(item.id)}
+                  className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all duration-150 lg:text-sm ${
+                    isActive
+                      ? 'bg-ink/10 text-ink shadow-2xs font-bold'
+                      : 'text-muted hover:bg-subtle hover:text-ink'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
             {/* <ThemeToggle className="h-9 w-9" /> */}
             <UserMenu />
+
+            {/* Mobile Menu Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              className="grid h-9 w-9 place-items-center rounded-xl border border-line bg-surface text-ink md:hidden hover:bg-subtle active:scale-95 transition-all"
+            >
+              {mobileMenuOpen ? <XIcon className="h-4 w-4" /> : <MenuIcon className="h-4 w-4" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Nav Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className="border-t border-line bg-surface/95 backdrop-blur-md md:hidden overflow-hidden"
+            >
+              <div className="flex flex-col p-3 space-y-1">
+                {navSections.map((item) => {
+                  const isActive = activeSection === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => scrollToSection(item.id)}
+                      className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-colors ${
+                        isActive
+                          ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold'
+                          : 'text-muted hover:bg-subtle hover:text-ink'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* 1. Marketing Hero at the Top */}
@@ -90,7 +213,7 @@ export function ProjectsPage() {
       <EmbedShowcase demoProjectId={demoId} />
 
       {/* 4. Plans Workspace Section */}
-      <main id="mis-planos" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+      <main id="mis-planos" className="scroll-mt-16 mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-line pb-6">
           <div>
             <div className="flex items-center gap-2">
@@ -165,7 +288,7 @@ export function ProjectsPage() {
           </section>
         )}
 
-        <section aria-labelledby="start-new" className="mt-12 border-t border-line pt-8">
+        <section id="plantillas" aria-labelledby="start-new" className="scroll-mt-16 mt-12 border-t border-line pt-8">
           <h3 id="start-new" className="text-sm font-semibold text-ink">
             {t('whatPlanning')}
           </h3>

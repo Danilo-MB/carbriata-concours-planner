@@ -12,7 +12,7 @@ export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-14 sm:pt-14 sm:pb-20">
+    <section id="inicio" className="scroll-mt-16 relative overflow-hidden pt-8 pb-14 sm:pt-14 sm:pb-20">
       {/* Background glow effects */}
       <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-96 w-[700px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-amber-500/15 via-orange-500/10 to-emerald-500/15 blur-3xl" aria-hidden="true" />
 
