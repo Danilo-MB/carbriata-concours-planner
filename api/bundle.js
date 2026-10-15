@@ -86286,6 +86286,437 @@ var require_carbriata_data = __commonJS({
           hiddenCategoryIds: [],
           createdAt: 1792011e6,
           updatedAt: 1792015e6
+        },
+        w3xini1mv8zaemz: {
+          id: "w3xini1mv8zaemz",
+          name: "Carbriata",
+          description: "",
+          location: "Aut\xF3dromo Miguel Angel Atauri, Circuito Aer\xF3bico",
+          template: "event",
+          center: {
+            lat: -36.326183,
+            lng: -57.698238,
+            zoom: 17
+          },
+          basemap: "satellite",
+          categories: [
+            {
+              id: "zones",
+              name: "Zones",
+              color: "#E8590C",
+              icon: "tent",
+              kindHint: "area"
+            },
+            {
+              id: "stages",
+              name: "Stages & shows",
+              color: "#AE3EC9",
+              icon: "music"
+            },
+            {
+              id: "food",
+              name: "Food & drinks",
+              color: "#F59F00",
+              icon: "food"
+            },
+            {
+              id: "parking",
+              name: "Parking",
+              color: "#1C7ED6",
+              icon: "parking"
+            },
+            {
+              id: "access",
+              name: "Access & paths",
+              color: "#F06595",
+              icon: "door",
+              kindHint: "line"
+            },
+            {
+              id: "safety",
+              name: "Safety & services",
+              color: "#0CA678",
+              icon: "ambulance",
+              kindHint: "point"
+            }
+          ],
+          features: [
+            {
+              id: "6h03x2dmv8zcwj1",
+              kind: "area",
+              coords: [
+                [
+                  -36.323378044480044,
+                  -57.700529004546084
+                ],
+                [
+                  -36.32303575562014,
+                  -57.700529004546084
+                ],
+                [
+                  -36.322654574803856,
+                  -57.70033478736878
+                ],
+                [
+                  -36.32251626811581,
+                  -57.70008802413941
+                ],
+                [
+                  -36.32240007232037,
+                  -57.699724842676495
+                ],
+                [
+                  -36.32280348732332,
+                  -57.69916344665432
+                ],
+                [
+                  -36.323121327976075,
+                  -57.698784125017724
+                ]
+              ],
+              name: "\xC1rea del evento",
+              categoryId: "zones",
+              notes: "Predio principal del Carbriata Concours d'Elegance. Gran prado parquizado con sectores de exhibici\xF3n libre sin vallado, boxes hist\xF3ricos y circulaci\xF3n de p\xFAblico.",
+              images: [
+                "/streetview/carbriata/concours_lawn.jpg"
+              ],
+              createdAt: 1792034970396
+            },
+            {
+              id: "5nuqnj3mv8zd3u0",
+              kind: "point",
+              coords: [
+                [
+                  -36.32294847570098,
+                  -57.70014166831971
+                ]
+              ],
+              name: "Escenario Principal y Rampa de Premiaci\xF3n",
+              categoryId: "zones",
+              notes: "Podio oficial con rampa de desfile de elegancia para la coronaci\xF3n Best of Show. Pantalla LED gigante, locuci\xF3n en vivo y entrega de trofeos.",
+              images: [
+                "/streetview/carbriata/podium_stage.jpg"
+              ],
+              createdAt: 1792034989992
+            },
+            {
+              id: "3ajmptbmv8zdy6u",
+              kind: "area",
+              coords: [
+                [
+                  -36.32344983349687,
+                  -57.700495719909675
+                ],
+                [
+                  -36.32332881639316,
+                  -57.69965887069703
+                ],
+                [
+                  -36.3238042396481,
+                  -57.699497938156135
+                ],
+                [
+                  -36.323907967972836,
+                  -57.70043134689332
+                ]
+              ],
+              name: "Paddock Cl\xE1sicos & Sport Hist\xF3ricos",
+              categoryId: "zones",
+              notes: "Exhibici\xF3n de coup\xE9s y roadsters cl\xE1sicos de los a\xF1os 50 a 70: Ferrari, Porsche 356, Jaguar E-Type, Alfa Romeo y Maserati sobre c\xE9sped.",
+              images: [
+                "/streetview/carbriata/classics_paddock.jpg"
+              ],
+              createdAt: 1792035029334,
+              color: "#D4AF37"
+            },
+            {
+              id: "sxualrcmv8ze3l7",
+              kind: "point",
+              coords: [
+                [
+                  -36.323562206353465,
+                  -57.70004510879517
+                ]
+              ],
+              name: "Patio Gastron\xF3mico & Lounge",
+              categoryId: "food",
+              notes: "Sector gastron\xF3mico gourmet con food trucks de autor, caf\xE9 de especialidad, bebidas artesanales y carpa lounge para expositores y visitantes.",
+              images: [
+                "/streetview/carbriata/foodcourt.jpg"
+              ],
+              createdAt: 1792035036331
+            },
+            {
+              id: "m2npaegmv8zenhj",
+              kind: "area",
+              coords: [
+                [
+                  -36.32398927084774,
+                  -57.70033175729505
+                ],
+                [
+                  -36.32385480145818,
+                  -57.699482076829064
+                ],
+                [
+                  -36.32446602408657,
+                  -57.69934552103989
+                ],
+                [
+                  -36.32460049242149,
+                  -57.70021037437134
+                ],
+                [
+                  -36.324296947960946,
+                  -57.70034551620484
+                ]
+              ],
+              name: "Paddock Supercars & Hypercars",
+              categoryId: "zones",
+              notes: "Sector exclusivo para superdeportivos modernos y prototipos de alta performance: Pagani, Koenigsegg, McLaren, Lamborghini y Ferrari.",
+              images: [
+                "/streetview/carbriata/supercars_paddock.jpg"
+              ],
+              createdAt: 1792035062119,
+              color: "#10B981"
+            },
+            {
+              id: "glkorlamv8zex1v",
+              kind: "point",
+              coords: [
+                [
+                  -36.32417263782322,
+                  -57.699846225600204
+                ]
+              ],
+              name: "Puesto de Primeros Auxilios y Seguridad",
+              categoryId: "safety",
+              notes: "Base de asistencia m\xE9dica y control de emergencias del predio con ambulancia de alta complejidad, param\xE9dicos y bomberos de servicio.",
+              images: [
+                "/streetview/carbriata/safety_medical.jpg"
+              ],
+              createdAt: 1792035074515
+            },
+            {
+              id: "zwhwtgnmv8zfnda",
+              kind: "area",
+              coords: [
+                [
+                  -36.32334137074555,
+                  -57.69952759542546
+                ],
+                [
+                  -36.32449047289199,
+                  -57.699193792385245
+                ],
+                [
+                  -36.32427043336706,
+                  -57.697464085722366
+                ],
+                [
+                  -36.32321912483921,
+                  -57.69875377928678
+                ]
+              ],
+              name: "Aldea de Marcas & Sponsor Village",
+              categoryId: "zones",
+              notes: "Pabellones oficiales de automotrices, carpas de sponsors, demostraciones de producto, indumentaria de motorsport y simuladores de carrera.",
+              images: [
+                "/streetview/carbriata/stands_village.jpg"
+              ],
+              createdAt: 1792035108622,
+              color: "#0284C7"
+            },
+            {
+              id: "e0exod0mv8zftpj",
+              kind: "point",
+              coords: [
+                [
+                  -36.32392814842672,
+                  -57.698693087824935
+                ]
+              ],
+              name: "Acreditaciones & Parking Expositores",
+              categoryId: "parking",
+              notes: "M\xF3dulo de acreditaci\xF3n y entrega de pulseras para pilotos y expositores. Ingreso reservado y estacionamiento custodiado.",
+              images: [
+                "/streetview/carbriata/checkin_accreditation.jpg"
+              ],
+              createdAt: 1792035116839
+            },
+            {
+              id: "ulgml7nmv8zgizt",
+              kind: "line",
+              coords: [
+                [
+                  -36.32996681200926,
+                  -57.69656888665999
+                ],
+                [
+                  -36.329282290667884,
+                  -57.69615921929246
+                ],
+                [
+                  -36.328756671984685,
+                  -57.69625025648524
+                ],
+                [
+                  -36.32815770683714,
+                  -57.695946799175985
+                ],
+                [
+                  -36.32721646658844,
+                  -57.696128873561534
+                ],
+                [
+                  -36.32459948660938,
+                  -57.69654750823975
+                ],
+                [
+                  -36.32434016783978,
+                  -57.69731998443604
+                ]
+              ],
+              name: "Ingreso al evento",
+              categoryId: "access",
+              notes: "Avenida principal de acceso al Carbriata. Conecta el p\xF3rtico exterior con el bulevar arbolado y el paddock central de exhibici\xF3n.",
+              images: [
+                "/streetview/carbriata/entrance_gate.jpg"
+              ],
+              createdAt: 1792035149609,
+              color: "#D4AF37",
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Portal de Acceso y Arco de Bienvenida",
+                  caption: "Arco oficial de entrada sobre el boulevard exterior con banderines y control vehicular.",
+                  image: "/streetview/carbriata/ingreso_wp1.jpg"
+                },
+                {
+                  index: 1,
+                  title: "Paseo Central Arbolado",
+                  caption: "Calzada principal pavimentada con arboleda y carteler\xEDa de orientaci\xF3n hacia los paddocks.",
+                  image: "/streetview/carbriata/promenade.jpg"
+                },
+                {
+                  index: 2,
+                  title: "Avenida de Banderas de Fabricantes",
+                  caption: "Bulevar decorado con banderas de escuder\xEDas y carpas de patrocinadores oficiales.",
+                  image: "/streetview/carbriata/ingreso_wp2.jpg"
+                },
+                {
+                  index: 3,
+                  title: "P\xF3rtico Central de Entrada al Paddock",
+                  caption: "Punto de recepci\xF3n peatonal y acceso directo a la exhibici\xF3n de autos sobre c\xE9sped.",
+                  image: "/streetview/carbriata/entrance_gate.jpg"
+                }
+              ]
+            },
+            {
+              id: "fr7w8d0mv8zh0m6",
+              kind: "area",
+              coords: [
+                [
+                  -36.32472273616095,
+                  -57.70010416431309
+                ],
+                [
+                  -36.32434377994441,
+                  -57.69747925858783
+                ],
+                [
+                  -36.32510169053467,
+                  -57.69761581437701
+                ],
+                [
+                  -36.32533395198191,
+                  -57.699876571331124
+                ]
+              ],
+              name: "Estacionamiento General y P\xFAblico VIP",
+              categoryId: "access",
+              notes: "Playa de estacionamiento consolidada y organizada sobre c\xE9sped para visitantes y asistentes VIP con transfers continuos en carritos.",
+              images: [
+                "/streetview/carbriata/parking_visitors.jpg"
+              ],
+              createdAt: 1792035172446
+            },
+            {
+              id: "vjfryf0mv8zh4ik",
+              kind: "point",
+              coords: [
+                [
+                  -36.324942774408775,
+                  -57.699254483847106
+                ]
+              ],
+              name: "P\xF3rtico Central de Acceso Peatonal",
+              categoryId: "access",
+              notes: "Acceso peatonal principal con molinetes de lectura QR, entrega de revistas del evento y mapas de mano para el p\xFAblico.",
+              images: [
+                "/streetview/carbriata/entrance_gate.jpg"
+              ],
+              createdAt: 1792035177500
+            },
+            {
+              id: "26eeshzmv8zr8vr",
+              kind: "line",
+              coords: [
+                [
+                  -36.327321909353756,
+                  -57.70012488660401
+                ],
+                [
+                  -36.328134405987896,
+                  -57.69954552945679
+                ],
+                [
+                  -36.32803068348506,
+                  -57.699202206702886
+                ],
+                [
+                  -36.32640567958149,
+                  -57.69911637601441
+                ]
+              ],
+              name: "Zona din\xE1mica",
+              categoryId: "access",
+              notes: "Trazado din\xE1mico de pista para pruebas de aceleraci\xF3n, salidas de autos en marcha, desfiles y demostraciones de sonido de motores en vivo.",
+              images: [
+                "/streetview/carbriata/dynamic_track_1.jpg"
+              ],
+              createdAt: 1792035649719,
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Salida de Boxes a Pista",
+                  caption: "Salida del pit lane hacia el circuito din\xE1mico para tandas de demostraci\xF3n.",
+                  image: "/streetview/carbriata/dynamic_track_1.jpg"
+                },
+                {
+                  index: 1,
+                  title: "Curva de Aceleraci\xF3n Ferrari 250 GT",
+                  caption: "Curva de salida con aceleraci\xF3n a fondo de coup\xE9s cl\xE1sicas y sonido V12.",
+                  image: "/streetview/carbriata/dynamic_track_2.jpg"
+                },
+                {
+                  index: 2,
+                  title: "Recta de Demostraci\xF3n de Velocidad",
+                  caption: "Tramo recto donde superdeportivos modernos demuestran potencia ante el p\xFAblico.",
+                  image: "/streetview/carbriata/dynamic_track_3.jpg"
+                },
+                {
+                  index: 3,
+                  title: "Chicana y Retorno al Paddock",
+                  caption: "Chicana de desaceleraci\xF3n y calle de rodaje para el regreso seguro de los autos a boxes.",
+                  image: "/streetview/carbriata/dynamic_track_4.jpg"
+                }
+              ]
+            }
+          ],
+          hiddenCategoryIds: [],
+          createdAt: 1792034864027,
+          updatedAt: 1792036056172
         }
       }
     };

@@ -31,8 +31,8 @@ function ensureStreetViewSeed(projs: Project[]): Project[] {
         const existing = existingFeatureMap.get(sf.id);
         if (!existing) return sf;
 
-        // If it's Barrio Carlina or industrial project, always ensure the curated waypoints and images
-        if (p.id === 'ijdhormmv8a4760' || p.id === 'i6666hqmv8mdpge') {
+        // If it's Barrio Carlina, industrial project, or Carbriata, always ensure the curated waypoints and images
+        if (p.id === 'ijdhormmv8a4760' || p.id === 'i6666hqmv8mdpge' || p.id === 'w3xini1mv8zaemz') {
           return {
             ...existing,
             name: sf.name || existing.name,
