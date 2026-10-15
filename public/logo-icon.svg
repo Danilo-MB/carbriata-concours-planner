@@ -1,47 +1,94 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
   <defs>
-    <linearGradient id="icon-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366F1"/>
-      <stop offset="100%" stop-color="#4338CA"/>
+    <linearGradient id="mf-pub-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="mf-pub-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+    <linearGradient id="mf-pub-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
     </linearGradient>
 
-    <linearGradient id="icon-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#0284C7"/>
+    <linearGradient id="mf-pub-area-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="mf-pub-area-indigo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="mf-pub-area-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
     </linearGradient>
 
-    <linearGradient id="icon-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#047857"/>
+    <linearGradient id="mf-pub-pin-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5E62" />
+      <stop offset="50%" stop-color="#FF9966" />
+      <stop offset="100%" stop-color="#EA580C" />
     </linearGradient>
-
-    <filter id="icon-route-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#38BDF8" flood-opacity="0.7"/>
+    <filter id="mf-pub-pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.55" />
     </filter>
+    <radialGradient id="mf-pub-beacon-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF7A00" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#FF7A00" stop-opacity="0" />
+    </radialGradient>
   </defs>
 
-  <!-- Fold 1 (Left panel) -->
-  <path d="M6 14.5L18 9V35.5L6 41V14.5Z" fill="url(#icon-fold-left)"/>
+  <!-- Left Panel -->
+  <path d="M6 16.5L18 11.5V37.5L6 42.5V16.5Z" fill="url(#mf-pub-fold-left)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
+  <!-- Center Panel -->
+  <path d="M18 11.5L30 17.5V43.5L18 37.5V11.5Z" fill="url(#mf-pub-fold-mid)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
+  <!-- Right Panel -->
+  <path d="M30 17.5L42 12.5V38.5L30 43.5V17.5Z" fill="url(#mf-pub-fold-right)" stroke="#475569" stroke-width="0.75" stroke-linejoin="round" />
 
-  <!-- Fold 2 (Center panel) -->
-  <path d="M18 9L30 16V42.5L18 35.5V9Z" fill="url(#icon-fold-mid)"/>
+  <!-- Map Creases -->
+  <path d="M18 11.5V37.5" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1" />
+  <path d="M30 17.5V43.5" stroke="#000000" stroke-opacity="0.4" stroke-width="1" />
 
-  <!-- Fold 3 (Right panel) -->
-  <path d="M30 16L42 10.5V37L30 42.5V16Z" fill="url(#icon-fold-right)"/>
+  <!-- Grid lines -->
+  <path d="M6 25L18 20 M6 33.5L18 28.5" stroke="#64748B" stroke-opacity="0.25" stroke-width="0.75" stroke-dasharray="2 2" />
+  <path d="M18 20L30 26 M18 28.5L30 34.5" stroke="#64748B" stroke-opacity="0.25" stroke-width="0.75" stroke-dasharray="2 2" />
+  <path d="M30 26L42 21 M30 34.5L42 29.5" stroke="#64748B" stroke-opacity="0.25" stroke-width="0.75" stroke-dasharray="2 2" />
 
-  <!-- Folds separation highlights -->
-  <path d="M18 9V35.5" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1"/>
-  <path d="M30 16V42.5" stroke="#000000" stroke-opacity="0.25" stroke-width="1"/>
+  <!-- Area 1 (Emerald) -->
+  <path d="M8 22L16 18.5V30.5L8 34V22Z" fill="url(#mf-pub-area-emerald)" fill-opacity="0.85" stroke="#34D399" stroke-width="0.8" />
+  <circle cx="8" cy="22" r="0.9" fill="#A7F3D0" />
+  <circle cx="16" cy="18.5" r="0.9" fill="#A7F3D0" />
+  <circle cx="16" cy="30.5" r="0.9" fill="#A7F3D0" />
+  <circle cx="8" cy="34" r="0.9" fill="#A7F3D0" />
 
-  <!-- Dynamic flex path -->
-  <path d="M9 27C13 25.5 15 19.5 21 21C26 22.5 28 29.5 34 26.5C37 25 39 21.5 39 21.5" 
-        stroke="#FFFFFF" 
-        stroke-width="2.5" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"
-        filter="url(#icon-route-glow)"/>
+  <!-- Area 3 (Amber) -->
+  <path d="M32 23.5L40 20V31.5L32 35V23.5Z" fill="url(#mf-pub-area-amber)" fill-opacity="0.85" stroke="#FBBF24" stroke-width="0.8" />
+  <circle cx="32" cy="23.5" r="0.9" fill="#FDE68A" />
+  <circle cx="40" cy="20" r="0.9" fill="#FDE68A" />
+  <circle cx="40" cy="31.5" r="0.9" fill="#FDE68A" />
+  <circle cx="32" cy="35" r="0.9" fill="#FDE68A" />
 
-  <circle cx="9" cy="27" r="2" fill="#FFFFFF"/>
-  <circle cx="39" cy="21.5" r="3.5" fill="#FFFFFF"/>
-  <circle cx="39" cy="21.5" r="2" fill="#0284C7"/>
+  <!-- Area 2 (Indigo) -->
+  <path d="M20 20L28 24V35L20 31V20Z" fill="url(#mf-pub-area-indigo)" fill-opacity="0.9" stroke="#818CF8" stroke-width="0.9" />
+  <circle cx="20" cy="20" r="1" fill="#C7D2FE" />
+  <circle cx="28" cy="24" r="1" fill="#C7D2FE" />
+  <circle cx="28" cy="35" r="1" fill="#C7D2FE" />
+  <circle cx="20" cy="31" r="1" fill="#C7D2FE" />
+
+  <!-- Trail -->
+  <path d="M12 26.5 C 15 25 17 21 21 23 C 24 24.5 26 27 30 25 C 33 23.5 36 25.5 36 25.5" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.5 1.5" stroke-opacity="0.8" />
+
+  <!-- Beacon -->
+  <ellipse cx="24.5" cy="26" rx="5" ry="2" fill="url(#mf-pub-beacon-glow)" />
+  <ellipse cx="24.5" cy="26" rx="4" ry="1.6" fill="none" stroke="#FF9966" stroke-width="0.8" stroke-dasharray="2 1.5" />
+  <circle cx="24.5" cy="26" r="1.2" fill="#FFFFFF" />
+
+  <!-- Location Pin -->
+  <g filter="url(#mf-pub-pin-shadow)">
+    <path d="M24.5 5.5 C 21.46 5.5 19 7.96 19 11 C 19 15.3 23.8 21.6 24.15 22.1 C 24.32 22.3 24.68 22.3 24.85 22.1 C 25.2 21.6 30 15.3 30 11 C 30 7.96 27.54 5.5 24.5 5.5 Z" fill="url(#mf-pub-pin-gradient)" stroke="#FFFFFF" stroke-width="0.75" stroke-linejoin="round" />
+    <circle cx="24.5" cy="11" r="2.4" fill="#FFFFFF" />
+    <path d="M22 8.5 C 22.8 7.6 24 7.2 25.2 7.3" stroke="#FFFFFF" stroke-width="0.6" stroke-linecap="round" stroke-opacity="0.8" />
+  </g>
 </svg>

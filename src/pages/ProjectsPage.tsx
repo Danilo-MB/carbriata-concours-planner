@@ -51,7 +51,7 @@ export function ProjectsPage() {
       <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <MapFlexLogo variant="full" size="md" showDomain />
+            <MapFlexLogo variant="full" size="md" />
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
@@ -159,7 +159,7 @@ export function ProjectsPage() {
       <footer className="border-t border-line bg-surface py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-center text-xs text-muted sm:flex-row sm:px-6 sm:text-left">
           <div className="flex items-center gap-3">
-            <MapFlexLogo variant="full" size="sm" showDomain />
+            <MapFlexLogo variant="full" size="sm" />
             <span className="hidden sm:inline text-muted/50">|</span>
             <span className="hidden sm:inline">{t('brandTagline')}</span>
           </div>

@@ -1,61 +1,76 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" fill="none">
   <defs>
-    <linearGradient id="full-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366F1"/>
-      <stop offset="100%" stop-color="#4338CA"/>
+    <!-- Map fold gradients -->
+    <linearGradient id="full-mf-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="full-mf-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+    <linearGradient id="full-mf-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
     </linearGradient>
 
-    <linearGradient id="full-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#0284C7"/>
+    <!-- Zoned Areas Gradients -->
+    <linearGradient id="full-mf-area-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="full-mf-area-indigo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="full-mf-area-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
     </linearGradient>
 
-    <linearGradient id="full-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#047857"/>
+    <!-- Pin Gradient -->
+    <linearGradient id="full-mf-pin-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5E62" />
+      <stop offset="50%" stop-color="#FF9966" />
+      <stop offset="100%" stop-color="#EA580C" />
     </linearGradient>
+    <filter id="full-mf-pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
 
+    <!-- Typography Gradient -->
     <linearGradient id="full-flex-grad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#38BDF8"/>
       <stop offset="50%" stop-color="#6366F1"/>
-      <stop offset="100%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#34D399"/>
     </linearGradient>
-
-    <filter id="full-route-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#38BDF8" flood-opacity="0.6"/>
-    </filter>
   </defs>
 
-  <!-- Logo Mark on the left (40x40 scale) -->
-  <g transform="translate(4, 4)">
-    <path d="M4 12L15 7.5V30L4 34.5V12Z" fill="url(#full-fold-left)"/>
-    <path d="M15 7.5L26 13.5V36L15 30V7.5Z" fill="url(#full-fold-mid)"/>
-    <path d="M26 13.5L37 9V31.5L26 36V13.5Z" fill="url(#full-fold-right)"/>
-    
-    <path d="M15 7.5V30" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="0.9"/>
-    <path d="M26 13.5V36" stroke="#000000" stroke-opacity="0.25" stroke-width="0.9"/>
+  <!-- Logo Mark on the left (scaled down to 38x38 inside 48 height) -->
+  <g transform="translate(4, 5) scale(0.8)">
+    <path d="M6 16.5L18 11.5V37.5L6 42.5V16.5Z" fill="url(#full-mf-fold-left)" stroke="#475569" stroke-width="0.75" />
+    <path d="M18 11.5L30 17.5V43.5L18 37.5V11.5Z" fill="url(#full-mf-fold-mid)" stroke="#475569" stroke-width="0.75" />
+    <path d="M30 17.5L42 12.5V38.5L30 43.5V17.5Z" fill="url(#full-mf-fold-right)" stroke="#475569" stroke-width="0.75" />
 
-    <path d="M7 23C11 21.5 12 16.5 17 18C22 19.5 24 25.5 29 23C32 21.5 34 18.5 34 18.5" 
-          stroke="#FFFFFF" 
-          stroke-width="2.2" 
-          stroke-linecap="round" 
-          filter="url(#full-route-glow)"/>
+    <path d="M18 11.5V37.5" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1" />
+    <path d="M30 17.5V43.5" stroke="#000000" stroke-opacity="0.4" stroke-width="1" />
 
-    <circle cx="7" cy="23" r="1.6" fill="#FFFFFF"/>
-    <circle cx="34" cy="18.5" r="3" fill="#FFFFFF"/>
-    <circle cx="34" cy="18.5" r="1.6" fill="#0284C7"/>
+    <!-- Areas -->
+    <path d="M8 22L16 18.5V30.5L8 34V22Z" fill="url(#full-mf-area-emerald)" fill-opacity="0.85" stroke="#34D399" stroke-width="0.8" />
+    <path d="M32 23.5L40 20V31.5L32 35V23.5Z" fill="url(#full-mf-area-amber)" fill-opacity="0.85" stroke="#FBBF24" stroke-width="0.8" />
+    <path d="M20 20L28 24V35L20 31V20Z" fill="url(#full-mf-area-indigo)" fill-opacity="0.9" stroke="#818CF8" stroke-width="0.9" />
+
+    <!-- Pin -->
+    <g filter="url(#full-mf-pin-shadow)">
+      <path d="M24.5 5.5 C 21.46 5.5 19 7.96 19 11 C 19 15.3 23.8 21.6 24.15 22.1 C 24.32 22.3 24.68 22.3 24.85 22.1 C 25.2 21.6 30 15.3 30 11 C 30 7.96 27.54 5.5 24.5 5.5 Z" fill="url(#full-mf-pin-gradient)" stroke="#FFFFFF" stroke-width="0.75" />
+      <circle cx="24.5" cy="11" r="2.4" fill="#FFFFFF" />
+    </g>
   </g>
 
-  <!-- Typography: MapFlex -->
-  <g transform="translate(54, 32)">
-    <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="25" font-weight="900" letter-spacing="-0.03em" fill="currentColor">
+  <!-- Typography: MapFlex (WITHOUT .APP) -->
+  <g transform="translate(48, 31)">
+    <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" letter-spacing="-0.03em" fill="#0F172A">
       Map<tspan fill="url(#full-flex-grad)">Flex</tspan>
     </text>
-  </g>
-
-  <!-- Minimalist .app pill badge -->
-  <g transform="translate(156, 15)">
-    <rect width="36" height="18" rx="5" fill="#38BDF8" fill-opacity="0.12" stroke="#38BDF8" stroke-opacity="0.3" stroke-width="1"/>
-    <text x="18" y="12.5" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="800" fill="#0284C7" text-anchor="middle" letter-spacing="0.04em">.APP</text>
   </g>
 </svg>
