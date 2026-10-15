@@ -1,45 +1,195 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { KeyRoundIcon, LogInIcon, SparklesIcon, UserPlusIcon, XIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckCircle2Icon,
+  KeyRoundIcon,
+  LockIcon,
+  MailIcon,
+  SparklesIcon,
+  UserPlusIcon,
+  XIcon
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { toast } from 'sonner';
+
+type AuthStep = 'initial' | 'magic-sent' | 'password-login' | 'password-register';
 
 export function AuthModal() {
-  const { isAuthModalOpen, closeAuthModal, login, register } = useAuth();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const {
+    isAuthModalOpen,
+    closeAuthModal,
+    login,
+    register,
+    loginWithGoogle,
+    loginWithApple,
+    sendMagicLink,
+    verifyMagicCode,
+    verifyMagicToken
+  } = useAuth();
+
+  const [step, setStep] = useState<AuthStep>('initial');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [magicCode, setMagicCode] = useState('');
+  const [devLink, setDevLink] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   if (!isAuthModalOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleClose = () => {
+    closeAuthModal();
+    // Reset state on close
+    setTimeout(() => {
+      setStep('initial');
+      setError(null);
+      setMagicCode('');
+      setDevLink(null);
+    }, 200);
+  };
+
+  // Google OAuth flow
+  const handleGoogleClick = async () => {
     setError(null);
     setSubmitting(true);
     try {
-      if (mode === 'login') {
-        await login(email, password);
+      // Check if official Google Identity Services is available in window
+      const googleObj = (window as any).google;
+      const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID;
+
+      if (googleObj?.accounts?.id && clientId) {
+        googleObj.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (response: any) => {
+            await loginWithGoogle({ credential: response.credential });
+            toast.success('¡Sesión iniciada con Google!');
+          }
+        });
+        googleObj.accounts.id.prompt();
       } else {
-        await register(email, password, name);
+        // Fast, friendly prompt for Google email (simulated OAuth until Google Console project ID is set)
+        const promptEmail = window.prompt('Ingresa tu cuenta de Google (ej. tu@gmail.com):', email || 'danilo@gmail.com');
+        if (!promptEmail) {
+          setSubmitting(false);
+          return;
+        }
+        await loginWithGoogle({
+          email: promptEmail,
+          name: promptEmail.split('@')[0]
+        });
+        toast.success(`¡Sesión iniciada con Google (${promptEmail})!`);
       }
     } catch (err: any) {
-      setError(err.message || 'Ocurrió un error');
+      setError(err.message || 'Error al iniciar sesión con Google.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDemoLogin = async () => {
-    setEmail('demo@carbriata.com');
-    setPassword('carbriata2027');
+  // Apple OAuth flow
+  const handleAppleClick = async () => {
     setError(null);
     setSubmitting(true);
     try {
-      await login('demo@carbriata.com', 'carbriata2027');
+      const promptEmail = window.prompt('Ingresa tu Apple ID / correo de Apple:', email || 'danilo@icloud.com');
+      if (!promptEmail) {
+        setSubmitting(false);
+        return;
+      }
+      await loginWithApple({
+        email: promptEmail,
+        name: promptEmail.split('@')[0]
+      });
+      toast.success(`¡Sesión iniciada con Apple (${promptEmail})!`);
     } catch (err: any) {
-      setError(err.message || 'Error con cuenta demo');
+      setError(err.message || 'Error al iniciar sesión con Apple.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Magic Link send
+  const handleSendMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) {
+      setError('Por favor ingresa un correo electrónico válido.');
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    try {
+      const res = await sendMagicLink(email);
+      setDevLink(res.devLink || null);
+      if (res.devCode) {
+        setMagicCode(res.devCode);
+      }
+      setStep('magic-sent');
+      toast.success('¡Enlace mágico generado!');
+    } catch (err: any) {
+      setError(err.message || 'No se pudo enviar el enlace mágico.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Verify 6-digit Magic Code
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!magicCode || magicCode.trim().length < 6) {
+      setError('Ingresa el código de 6 dígitos.');
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    try {
+      await verifyMagicCode(email, magicCode);
+      toast.success('¡Acceso concedido!');
+      handleClose();
+    } catch (err: any) {
+      setError(err.message || 'Código incorrecto o expirado.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Direct Magic Link click
+  const handleDirectMagicLogin = async () => {
+    if (!devLink) return;
+    try {
+      const url = new URL(devLink);
+      const token = url.searchParams.get('magic_token');
+      if (token) {
+        setSubmitting(true);
+        await verifyMagicToken(token);
+        toast.success('¡Acceso concedido mediante Magic Link!');
+        handleClose();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Error con el Magic Link.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Password Login / Register
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      if (step === 'password-login') {
+        await login(email, password);
+        toast.success('¡Bienvenido!');
+      } else {
+        await register(email, password, name);
+        toast.success('¡Cuenta creada con éxito!');
+      }
+      handleClose();
+    } catch (err: any) {
+      setError(err.message || 'Ocurrió un error');
     } finally {
       setSubmitting(false);
     }
@@ -53,137 +203,325 @@ export function AuthModal() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={closeAuthModal}
+          onClick={handleClose}
           className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         />
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          exit={{ opacity: 0, scale: 0.96, y: 8 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface p-6 shadow-float">
           {/* Close button */}
           <button
             type="button"
-            onClick={closeAuthModal}
+            onClick={handleClose}
             className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-subtle hover:text-ink">
             <XIcon className="h-4 w-4" />
           </button>
 
           {/* Header */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-ink text-on-ink shadow-sm">
               <KeyRoundIcon className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-ink">
-                {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                {step === 'magic-sent'
+                  ? 'Revisa tu correo'
+                  : step === 'password-register'
+                  ? 'Crear Cuenta'
+                  : 'Iniciar Sesión'}
               </h2>
               <p className="text-xs text-muted">
-                {mode === 'login'
-                  ? 'Guarda y sincroniza tus planos y elementos en la nube.'
-                  : 'Empieza a trazar y colaborar en tus proyectos.'}
+                {step === 'magic-sent'
+                  ? `Te enviamos un enlace de acceso a ${email}`
+                  : 'Guarda tus mapas y sincroniza en la nube.'}
               </p>
             </div>
           </div>
 
-          {/* Mode Switch Tabs */}
-          <div className="mt-5 grid grid-cols-2 gap-1 rounded-lg border border-line bg-subtle p-1 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('login');
-                setError(null);
-              }}
-              className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors ${
-                mode === 'login' ? 'bg-surface text-ink shadow-2xs' : 'text-muted hover:text-ink'
-              }`}>
-              <LogInIcon className="h-3.5 w-3.5" />
-              Ingresar
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('register');
-                setError(null);
-              }}
-              className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors ${
-                mode === 'register' ? 'bg-surface text-ink shadow-2xs' : 'text-muted hover:text-ink'
-              }`}>
-              <UserPlusIcon className="h-3.5 w-3.5" />
-              Registrarse
-            </button>
-          </div>
-
           {/* Error Message */}
           {error && (
-            <div className="mt-3 rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-xs font-medium text-danger">
+            <div className="mt-4 rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-xs font-medium text-danger">
               {error}
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-            {mode === 'register' && (
-              <div>
-                <label className="block text-xs font-medium text-muted">Nombre completo</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="ej. Danilo Marino"
-                  className="mt-1 h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
-                />
+          {/* STEP 1: Main Auth Options (Google, Apple, Magic Link) */}
+          {step === 'initial' && (
+            <div className="mt-5 space-y-4">
+              {/* Social Login Buttons */}
+              <div className="space-y-2.5">
+                {/* Google Button */}
+                <button
+                  type="button"
+                  onClick={handleGoogleClick}
+                  disabled={submitting}
+                  className="flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-surface px-4 text-sm font-semibold text-ink shadow-2xs transition-all hover:bg-subtle hover:border-ink/20 active:scale-[0.99] disabled:opacity-50">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="#4285F4"
+                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.27 21.43 7.35 24 12 24z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.13z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.57 1.25 6.58l4.03 3.13c.95-2.83 3.6-4.96 6.72-4.96z"
+                    />
+                  </svg>
+                  <span>Continuar con Google</span>
+                </button>
+
+                {/* Apple Button */}
+                <button
+                  type="button"
+                  onClick={handleAppleClick}
+                  disabled={submitting}
+                  className="flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-surface px-4 text-sm font-semibold text-ink shadow-2xs transition-all hover:bg-subtle hover:border-ink/20 active:scale-[0.99] disabled:opacity-50">
+                  <svg className="h-4 w-4 fill-current text-ink" viewBox="0 0 170 170" aria-hidden="true">
+                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.66-7.85-11.88-14.42-6.53-10.12-11.33-21.49-14.4-34.1-3.08-12.62-4.62-24.47-4.62-35.56 0-14.26 3.6-26.04 10.8-35.33 7.2-9.3 16.27-14.07 27.21-14.33 4.8 0 10.3 1.28 16.51 3.86 6.2 2.58 10.02 3.88 11.44 3.88 1.22 0 5.14-1.34 11.77-4.03 6.63-2.69 12.16-3.88 16.59-3.56 12.82.64 22.8 5.25 29.93 13.82-11.16 6.77-16.63 16.14-16.42 28.11.21 9.4 3.93 17.2 11.17 23.39 7.23 6.2 15.64 9.68 25.21 10.45-2.01 6.13-4.47 12.36-7.38 18.68zM119.22 33.15c0-7.29 2.65-14.28 7.96-20.97 5.3-6.68 11.96-11.08 19.98-13.18.21 1.06.32 2.06.32 3.01 0 7.39-2.8 14.53-8.4 21.43-5.61 6.9-12.43 11.08-20.46 12.54-.32-.95-.49-1.92-.49-2.83z" />
+                  </svg>
+                  <span>Continuar con Apple</span>
+                </button>
               </div>
-            )}
 
-            <div>
-              <label className="block text-xs font-medium text-muted">Correo electrónico</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
-                className="mt-1 h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
-              />
+              {/* Divider */}
+              <div className="relative flex items-center justify-center">
+                <div className="w-full border-t border-line" />
+                <span className="absolute bg-surface px-3 text-[11px] font-semibold text-muted uppercase tracking-wider">
+                  O con Magic Link
+                </span>
+              </div>
+
+              {/* Magic Link Form */}
+              <form onSubmit={handleSendMagicLink} className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-muted">Correo electrónico</label>
+                  <div className="relative mt-1">
+                    <MailIcon className="absolute left-3 top-3 h-4 w-4 text-muted" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="tu@email.com"
+                      className="h-10 w-full rounded-xl border border-line bg-surface pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-muted">
+                    Te enviaremos un enlace mágico para entrar sin recordar contraseña.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-semibold text-on-ink transition-colors hover:bg-ink/90 disabled:opacity-50 active:scale-[0.99]">
+                  <SparklesIcon className="h-4 w-4 text-amber-400" />
+                  <span>{submitting ? 'Generando enlace...' : 'Enviar Magic Link'}</span>
+                  <ArrowRightIcon className="h-4 w-4" />
+                </button>
+              </form>
+
+              {/* Toggle to password login */}
+              <div className="pt-2 text-center border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setStep('password-login');
+                  }}
+                  className="text-xs font-medium text-muted hover:text-ink transition-colors">
+                  ¿Prefieres ingresar con contraseña? <span className="underline">Haz clic aquí</span>
+                </button>
+              </div>
             </div>
+          )}
 
-            <div>
-              <label className="block text-xs font-medium text-muted">Contraseña</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                className="mt-1 h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
-              />
+          {/* STEP 2: Magic Link Sent & Verification */}
+          {step === 'magic-sent' && (
+            <div className="mt-5 space-y-4">
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3.5 text-center">
+                <CheckCircle2Icon className="mx-auto h-7 w-7 text-emerald-500" />
+                <h3 className="mt-1.5 text-sm font-semibold text-ink">¡Enlace Mágico Enviado!</h3>
+                <p className="mt-0.5 text-xs text-muted">
+                  Revisa tu bandeja de entrada en <strong className="text-ink">{email}</strong> y haz clic en el enlace para entrar automáticamente.
+                </p>
+              </div>
+
+              {/* Direct Login Shortcut for quick testing */}
+              {devLink && (
+                <div className="rounded-xl border border-dashed border-amber-500/40 bg-amber-500/5 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">Acceso Rápido Directo</p>
+                      <p className="text-[11px] text-muted">Puedes entrar con un clic sin abrir el correo:</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDirectMagicLogin}
+                      disabled={submitting}
+                      className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg bg-ink px-3 text-xs font-semibold text-on-ink shadow-2xs hover:bg-ink/90 active:scale-95">
+                      <SparklesIcon className="h-3 w-3 text-amber-400" />
+                      <span>Entrar ahora</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Verification Code input */}
+              <form onSubmit={handleVerifyCode} className="space-y-3">
+                <div>
+                  <label className="block text-center text-xs font-medium text-muted">
+                    O ingresa el código de 6 dígitos:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={magicCode}
+                    onChange={(e) => setMagicCode(e.target.value)}
+                    placeholder="123456"
+                    className="mt-1 h-11 w-full rounded-xl border border-line bg-surface text-center font-mono text-xl tracking-[6px] font-bold text-ink placeholder:text-muted/40 focus:border-ink focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-semibold text-on-ink transition-colors hover:bg-ink/90 disabled:opacity-50">
+                  <span>{submitting ? 'Verificando...' : 'Verificar Código'}</span>
+                </button>
+              </form>
+
+              <div className="flex items-center justify-between pt-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setStep('initial');
+                  }}
+                  className="inline-flex items-center gap-1 text-muted hover:text-ink">
+                  <ArrowLeftIcon className="h-3.5 w-3.5" />
+                  <span>Cambiar correo</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendMagicLink}
+                  disabled={submitting}
+                  className="font-medium text-accent hover:underline">
+                  Reenviar enlace
+                </button>
+              </div>
             </div>
+          )}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-ink text-sm font-semibold text-on-ink transition-colors hover:bg-ink/90 disabled:opacity-50">
-              {submitting ? 'Procesando...' : mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
-            </button>
-          </form>
+          {/* STEP 3 & 4: Traditional Password Login / Register */}
+          {(step === 'password-login' || step === 'password-register') && (
+            <div className="mt-5 space-y-4">
+              <div className="grid grid-cols-2 gap-1 rounded-lg border border-line bg-subtle p-1 text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep('password-login');
+                    setError(null);
+                  }}
+                  className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors ${
+                    step === 'password-login' ? 'bg-surface text-ink shadow-2xs' : 'text-muted hover:text-ink'
+                  }`}>
+                  <LockIcon className="h-3.5 w-3.5" />
+                  Ingresar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep('password-register');
+                    setError(null);
+                  }}
+                  className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors ${
+                    step === 'password-register' ? 'bg-surface text-ink shadow-2xs' : 'text-muted hover:text-ink'
+                  }`}>
+                  <UserPlusIcon className="h-3.5 w-3.5" />
+                  Registrarse
+                </button>
+              </div>
 
-          {/* Demo account quick button */}
-          <div className="mt-4 border-t border-line pt-3">
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              disabled={submitting}
-              className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-amber-500/50 bg-amber-500/5 text-xs font-semibold text-amber-600 transition-colors hover:bg-amber-500/10 dark:text-amber-400">
-              <SparklesIcon className="h-3.5 w-3.5" />
-              Probar con cuenta Demo (Danilo Carbriata)
-            </button>
-          </div>
+              <form onSubmit={handlePasswordSubmit} className="space-y-3">
+                {step === 'password-register' && (
+                  <div>
+                    <label className="block text-xs font-medium text-muted">Nombre completo</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="ej. Danilo Carbriata"
+                      className="mt-1 h-10 w-full rounded-xl border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-medium text-muted">Correo electrónico</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="tu@email.com"
+                    className="mt-1 h-10 w-full rounded-xl border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-muted">Contraseña</label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    className="mt-1 h-10 w-full rounded-xl border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-semibold text-on-ink transition-colors hover:bg-ink/90 disabled:opacity-50">
+                  {submitting
+                    ? 'Procesando...'
+                    : step === 'password-login'
+                    ? 'Iniciar Sesión'
+                    : 'Crear Cuenta'}
+                </button>
+              </form>
+
+              <div className="pt-2 text-center border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setStep('initial');
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-ink">
+                  <ArrowLeftIcon className="h-3.5 w-3.5" />
+                  <span>Volver a Magic Link y Google</span>
+                </button>
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

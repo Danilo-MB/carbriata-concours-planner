@@ -6,7 +6,8 @@ import { getFeaturesBounds, getFeaturesGeometricCenter, getOptimalZoomForBounds 
 import { loadProjects, loadProjectsFromIdb, saveProjects } from '../utils/storage';
 import { api } from '../utils/api';
 import { useAuth } from './AuthContext';
-import type { NewPlanInput, Project } from '../types/plan';
+import { toast } from 'sonner';
+import type { NewPlanInput, Project, MapView } from '../types/plan';
 
 interface ProjectsContextValue {
   projects: Project[];
@@ -15,6 +16,7 @@ interface ProjectsContextValue {
   updateProject: (id: string, fn: (p: Project) => Project) => void;
   deleteProject: (id: string) => void;
   restoreProject: (project: Project, index: number) => void;
+  saveLocalToCloud: (id: string) => Promise<void>;
 }
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
@@ -198,14 +200,20 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       categories: Array.from(categoryMap.values()),
       features,
       hiddenCategoryIds: [],
+      userId: isAuthenticated ? user?.id : undefined,
+      authorEmail: isAuthenticated ? user?.email : undefined,
+      authorName: isAuthenticated ? user?.name : undefined,
+      isLocalOnly: !isAuthenticated,
       createdAt: now,
       updatedAt: now
     };
 
     setProjects((ps) => [project, ...ps]);
-    api.projects.create(project).catch(() => undefined);
+    if (isAuthenticated) {
+      api.projects.create(project).catch(() => undefined);
+    }
     return project;
-  }, []);
+  }, [isAuthenticated, user]);
 
   const importProject = useCallback((project: Project): Project => {
     setProjects((ps) => {
@@ -217,40 +225,72 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       }
       return [project, ...ps];
     });
-    api.projects.create(project).catch(() => undefined);
+    if (isAuthenticated) {
+      api.projects.create(project).catch(() => undefined);
+    }
     return project;
-  }, []);
+  }, [isAuthenticated]);
 
   const updateProject = useCallback((id: string, fn: (p: Project) => Project) => {
     setProjects((ps) => {
       const next = ps.map((p) => {
         if (p.id !== id) return p;
         const updated = { ...fn(p), updatedAt: Date.now() };
-        api.projects.update(id, updated).catch(() => undefined);
+        // Only sync to cloud if user is logged in and it's not a local-only guest draft
+        if (isAuthenticated && !p.isLocalOnly) {
+          api.projects.update(id, updated).catch(() => undefined);
+        }
         return updated;
       });
       return next;
     });
-  }, []);
+  }, [isAuthenticated]);
 
   const deleteProject = useCallback((id: string) => {
-    setProjects((ps) => ps.filter((p) => p.id !== id));
-    api.projects.delete(id).catch(() => undefined);
-  }, []);
+    setProjects((ps) => {
+      const target = ps.find((p) => p.id === id);
+      if (target && !target.isLocalOnly && isAuthenticated) {
+        api.projects.delete(id).catch(() => undefined);
+      }
+      return ps.filter((p) => p.id !== id);
+    });
+  }, [isAuthenticated]);
 
   const restoreProject = useCallback((project: Project, index: number) => {
     setProjects((ps) => {
       if (ps.some((p) => p.id === project.id)) return ps;
       const next = [...ps];
       next.splice(Math.min(index, next.length), 0, project);
-      api.projects.create(project).catch(() => undefined);
+      if (isAuthenticated && !project.isLocalOnly) {
+        api.projects.create(project).catch(() => undefined);
+      }
       return next;
     });
-  }, []);
+  }, [isAuthenticated]);
+
+  const saveLocalToCloud = useCallback(async (id: string) => {
+    if (!isAuthenticated || !user) {
+      toast.error('Inicia sesión para guardar tu plano en la nube.');
+      return;
+    }
+    const proj = projects.find((p) => p.id === id);
+    if (!proj) return;
+    const cloudVersion: Project = {
+      ...proj,
+      userId: user.id,
+      authorEmail: user.email,
+      authorName: user.name,
+      isLocalOnly: false,
+      updatedAt: Date.now()
+    };
+    await api.projects.create(cloudVersion);
+    setProjects((ps) => ps.map((p) => (p.id === id ? cloudVersion : p)));
+    toast.success('¡Plano guardado y sincronizado en la nube!');
+  }, [isAuthenticated, user, projects]);
 
   const value = useMemo(
-    () => ({ projects, createProject, importProject, updateProject, deleteProject, restoreProject }),
-    [projects, createProject, importProject, updateProject, deleteProject, restoreProject]
+    () => ({ projects, createProject, importProject, updateProject, deleteProject, restoreProject, saveLocalToCloud }),
+    [projects, createProject, importProject, updateProject, deleteProject, restoreProject, saveLocalToCloud]
   );
 
   return <ProjectsContext.Provider value={value}>{children}</ProjectsContext.Provider>;

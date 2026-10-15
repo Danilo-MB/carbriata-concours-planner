@@ -77,6 +77,10 @@ export interface MapView {
 
 export interface Project {
   id: string;
+  userId?: string;
+  authorEmail?: string;
+  authorName?: string;
+  isLocalOnly?: boolean;
   name: string;
   description: string;
   location: string;

@@ -96358,6 +96358,15 @@ var Redis2 = class _Redis extends Redis {
 };
 
 // server/storage/storage.service.ts
+function isAdminEmail(email) {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  if (clean.startsWith("danilo") || clean.includes("danilo") || clean === "admin@mapflex.app" || clean === "demo@carbriata.com") {
+    return true;
+  }
+  const customAdmins = (process.env.ADMIN_EMAILS || "").toLowerCase().split(",").map((s) => s.trim()).filter(Boolean);
+  return customAdmins.includes(clean);
+}
 var bundledSeedData = { users: {}, projects: {} };
 try {
   bundledSeedData = require_carbriata_data();
@@ -96423,6 +96432,57 @@ var StorageService = class {
     this.store.users[user.id] = user;
     this.save();
     return user;
+  }
+  updateUser(id, patch) {
+    const user = this.store.users[id];
+    if (!user) return void 0;
+    const updated = { ...user, ...patch };
+    this.store.users[id] = updated;
+    this.save();
+    return updated;
+  }
+  // Magic Link Tokens
+  magicTokens = {};
+  async setMagicEntry(email, entry) {
+    const clean = email.toLowerCase().trim();
+    const expiresAt = Date.now() + 15 * 60 * 1e3;
+    this.magicTokens[clean] = { ...entry, expiresAt };
+    if (this.redis) {
+      try {
+        await this.redis.set(`magic:${clean}`, JSON.stringify(entry), { ex: 900 });
+      } catch (err) {
+        console.warn("Redis setMagicEntry error:", err);
+      }
+    }
+  }
+  async getMagicEntry(email) {
+    const clean = email.toLowerCase().trim();
+    if (this.redis) {
+      try {
+        const raw = await this.redis.get(`magic:${clean}`);
+        if (raw) {
+          return typeof raw === "string" ? JSON.parse(raw) : raw;
+        }
+      } catch (err) {
+        console.warn("Redis getMagicEntry error:", err);
+      }
+    }
+    const mem = this.magicTokens[clean];
+    if (mem && mem.expiresAt > Date.now()) {
+      return { code: mem.code, token: mem.token };
+    }
+    return null;
+  }
+  async deleteMagicEntry(email) {
+    const clean = email.toLowerCase().trim();
+    delete this.magicTokens[clean];
+    if (this.redis) {
+      try {
+        await this.redis.del(`magic:${clean}`);
+      } catch (err) {
+        console.warn("Redis deleteMagicEntry error:", err);
+      }
+    }
   }
   // Projects
   async findProjects(userId) {
@@ -98411,10 +98471,32 @@ function _hash(password, salt, callback, progressCallback) {
 }
 
 // server/auth/auth.service.ts
+function parseJwtPayload(token) {
+  try {
+    const parts = token.split(".");
+    if (parts.length >= 2) {
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const json = Buffer.from(base64, "base64").toString("utf-8");
+      return JSON.parse(json);
+    }
+  } catch {
+  }
+  return null;
+}
 var AuthService = class {
   constructor(storage, jwt) {
     this.storage = storage;
     this.jwt = jwt;
+  }
+  toUserDto(user) {
+    const isAdmin = user.role === "admin" || isAdminEmail(user.email);
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: isAdmin ? "admin" : user.role || "user",
+      isAdmin
+    };
   }
   async register(email, password, name) {
     const cleanEmail = email?.toLowerCase().trim();
@@ -98431,57 +98513,198 @@ var AuthService = class {
     const salt = await genSalt(10);
     const passwordHash = await hash(password, salt);
     const id = "u_" + Math.random().toString(36).substring(2, 10);
+    const isAdmin = isAdminEmail(cleanEmail);
     const user = {
       id,
       email: cleanEmail,
       passwordHash,
       name: name.trim(),
+      role: isAdmin ? "admin" : "user",
       createdAt: Date.now()
     };
     this.storage.createUser(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name });
-    return {
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      }
-    };
+    const userDto = this.toUserDto(user);
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    return { token, user: userDto };
   }
   async login(email, password) {
     const cleanEmail = email?.toLowerCase().trim();
     if (!cleanEmail || !password) {
       throw new BadRequestException("Ingresa correo electr\xF3nico y contrase\xF1a.");
     }
-    let user = this.storage.findUserByEmail(cleanEmail);
-    if (!user && cleanEmail === "demo@carbriata.com") {
-      const salt = await genSalt(10);
-      const hash2 = await hash("carbriata2027", salt);
-      user = this.storage.createUser({
-        id: "u_demo",
-        email: "demo@carbriata.com",
-        name: "Danilo Carbriata",
-        passwordHash: hash2,
-        createdAt: Date.now()
-      });
-    }
-    if (!user) {
+    const user = this.storage.findUserByEmail(cleanEmail);
+    if (!user || !user.passwordHash) {
       throw new UnauthorizedException("Correo electr\xF3nico o contrase\xF1a incorrectos.");
     }
     const valid = await compare(password, user.passwordHash);
     if (!valid) {
       throw new UnauthorizedException("Correo electr\xF3nico o contrase\xF1a incorrectos.");
     }
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name });
-    return {
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
+    const userDto = this.toUserDto(user);
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    return { token, user: userDto };
+  }
+  async loginWithGoogle(payload) {
+    let cleanEmail = payload.email?.toLowerCase().trim();
+    let name = payload.name?.trim();
+    if (payload.credential) {
+      const decoded = parseJwtPayload(payload.credential);
+      if (decoded) {
+        if (!cleanEmail && decoded.email) cleanEmail = decoded.email.toLowerCase().trim();
+        if (!name && (decoded.name || decoded.given_name)) name = (decoded.name || decoded.given_name).trim();
       }
+    }
+    if (!cleanEmail) {
+      throw new BadRequestException("No se pudo obtener el correo de la cuenta de Google.");
+    }
+    let user = this.storage.findUserByEmail(cleanEmail);
+    const isAdmin = isAdminEmail(cleanEmail);
+    if (!user) {
+      user = this.storage.createUser({
+        id: "u_goog_" + Math.random().toString(36).substring(2, 10),
+        email: cleanEmail,
+        name: name || cleanEmail.split("@")[0],
+        role: isAdmin ? "admin" : "user",
+        createdAt: Date.now()
+      });
+    } else if (isAdmin && user.role !== "admin") {
+      user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+    }
+    const userDto = this.toUserDto(user);
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    return { token, user: userDto };
+  }
+  async loginWithApple(payload) {
+    let cleanEmail = payload.email?.toLowerCase().trim();
+    let name = payload.name?.trim();
+    if (payload.credential) {
+      const decoded = parseJwtPayload(payload.credential);
+      if (decoded) {
+        if (!cleanEmail && decoded.email) cleanEmail = decoded.email.toLowerCase().trim();
+        if (!name && (decoded.name || decoded.email)) name = (decoded.name || decoded.email).trim();
+      }
+    }
+    if (!cleanEmail) {
+      throw new BadRequestException("No se pudo obtener el correo de la cuenta de Apple.");
+    }
+    let user = this.storage.findUserByEmail(cleanEmail);
+    const isAdmin = isAdminEmail(cleanEmail);
+    if (!user) {
+      user = this.storage.createUser({
+        id: "u_appl_" + Math.random().toString(36).substring(2, 10),
+        email: cleanEmail,
+        name: name || cleanEmail.split("@")[0],
+        role: isAdmin ? "admin" : "user",
+        createdAt: Date.now()
+      });
+    } else if (isAdmin && user.role !== "admin") {
+      user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+    }
+    const userDto = this.toUserDto(user);
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    return { token, user: userDto };
+  }
+  async sendMagicLink(email, origin) {
+    const cleanEmail = email?.toLowerCase().trim();
+    if (!cleanEmail || !cleanEmail.includes("@")) {
+      throw new BadRequestException("Ingresa un correo electr\xF3nico v\xE1lido.");
+    }
+    const code = Math.floor(1e5 + Math.random() * 9e5).toString();
+    const token = this.jwt.sign({ email: cleanEmail, code, type: "magic" }, { expiresIn: "15m" });
+    await this.storage.setMagicEntry(cleanEmail, { code, token });
+    const baseUrl = origin || process.env.PUBLIC_URL || "https://mapflex.app";
+    const magicLink = `${baseUrl}/?magic_token=${token}&email=${encodeURIComponent(cleanEmail)}`;
+    if (process.env.RESEND_API_KEY) {
+      fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          from: "MapFlex <soporte@mapflex.app>",
+          to: cleanEmail,
+          subject: "Tu enlace de acceso a MapFlex",
+          html: `
+            <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px;">
+              <h2 style="color: #0f172a; margin-top: 0;">Ingresar a MapFlex</h2>
+              <p style="color: #475569; font-size: 14px; line-height: 1.6;">Usa este enlace m\xE1gico para acceder directamente a tu cuenta sin contrase\xF1a:</p>
+              <div style="margin: 24px 0;">
+                <a href="${magicLink}" style="display: inline-block; background: #0f172a; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">Ingresar a MapFlex</a>
+              </div>
+              <p style="color: #64748b; font-size: 13px;">O copia e ingresa este c\xF3digo de 6 d\xEDgitos en la pantalla de inicio:</p>
+              <div style="padding: 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; font-size: 20px; font-weight: 700; letter-spacing: 4px; text-align: center; color: #0f172a;">
+                ${code}
+              </div>
+              <p style="color: #94a3b8; font-size: 11px; margin-top: 24px;">Este enlace expira en 15 minutos. Si no solicitaste este acceso, puedes ignorar este correo.</p>
+            </div>
+          `
+        })
+      }).catch((err) => console.warn("Could not dispatch Resend email:", err));
+    }
+    return {
+      success: true,
+      email: cleanEmail,
+      devCode: code,
+      devLink: magicLink
     };
+  }
+  async verifyMagicToken(token) {
+    if (!token) throw new BadRequestException("Token de acceso no proporcionado.");
+    try {
+      const payload = this.jwt.verify(token);
+      if (payload.type !== "magic" || !payload.email) {
+        throw new BadRequestException("Token de acceso no v\xE1lido.");
+      }
+      const cleanEmail = payload.email.toLowerCase().trim();
+      let user = this.storage.findUserByEmail(cleanEmail);
+      const isAdmin = isAdminEmail(cleanEmail);
+      if (!user) {
+        user = this.storage.createUser({
+          id: "u_" + Math.random().toString(36).substring(2, 10),
+          email: cleanEmail,
+          name: cleanEmail.split("@")[0],
+          role: isAdmin ? "admin" : "user",
+          createdAt: Date.now()
+        });
+      } else if (isAdmin && user.role !== "admin") {
+        user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+      }
+      await this.storage.deleteMagicEntry(cleanEmail);
+      const userDto = this.toUserDto(user);
+      const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+      return { token: authToken, user: userDto };
+    } catch {
+      throw new UnauthorizedException("El enlace m\xE1gico ha expirado o ya fue utilizado.");
+    }
+  }
+  async verifyMagicCode(email, code) {
+    const cleanEmail = email?.toLowerCase().trim();
+    const cleanCode = code?.trim();
+    if (!cleanEmail || !cleanCode) {
+      throw new BadRequestException("Ingresa el correo y el c\xF3digo de 6 d\xEDgitos.");
+    }
+    const entry = await this.storage.getMagicEntry(cleanEmail);
+    if (!entry || entry.code !== cleanCode) {
+      throw new UnauthorizedException("El c\xF3digo es incorrecto o ha expirado. Solicita uno nuevo.");
+    }
+    let user = this.storage.findUserByEmail(cleanEmail);
+    const isAdmin = isAdminEmail(cleanEmail);
+    if (!user) {
+      user = this.storage.createUser({
+        id: "u_" + Math.random().toString(36).substring(2, 10),
+        email: cleanEmail,
+        name: cleanEmail.split("@")[0],
+        role: isAdmin ? "admin" : "user",
+        createdAt: Date.now()
+      });
+    } else if (isAdmin && user.role !== "admin") {
+      user = this.storage.updateUser(user.id, { role: "admin" }) || user;
+    }
+    await this.storage.deleteMagicEntry(cleanEmail);
+    const userDto = this.toUserDto(user);
+    const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    return { token: authToken, user: userDto };
   }
   async getProfile(token) {
     if (!token) throw new UnauthorizedException("Token no proporcionado.");
@@ -98489,11 +98712,7 @@ var AuthService = class {
       const payload = this.jwt.verify(token);
       const user = this.storage.findUserById(payload.sub);
       if (!user) throw new UnauthorizedException("Usuario no encontrado.");
-      return {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      };
+      return this.toUserDto(user);
     } catch {
       throw new UnauthorizedException("Sesi\xF3n expirada o token inv\xE1lido.");
     }
@@ -98516,6 +98735,22 @@ var AuthController = class {
   async login(body) {
     return this.authService.login(body.email, body.password);
   }
+  async googleLogin(body) {
+    return this.authService.loginWithGoogle(body);
+  }
+  async appleLogin(body) {
+    return this.authService.loginWithApple(body);
+  }
+  async sendMagicLink(body, headerOrigin) {
+    const origin = body.origin || headerOrigin;
+    return this.authService.sendMagicLink(body.email, origin);
+  }
+  async verifyMagicToken(body) {
+    return this.authService.verifyMagicToken(body.token);
+  }
+  async verifyMagicCode(body) {
+    return this.authService.verifyMagicCode(body.email, body.code);
+  }
   async me(authHeader) {
     const token = authHeader?.replace(/^Bearer\s+/i, "") || "";
     return this.authService.getProfile(token);
@@ -98529,6 +98764,27 @@ __decorateClass([
   Post("login"),
   __decorateParam(0, Body())
 ], AuthController.prototype, "login", 1);
+__decorateClass([
+  Post("google"),
+  __decorateParam(0, Body())
+], AuthController.prototype, "googleLogin", 1);
+__decorateClass([
+  Post("apple"),
+  __decorateParam(0, Body())
+], AuthController.prototype, "appleLogin", 1);
+__decorateClass([
+  Post("magic-link/send"),
+  __decorateParam(0, Body()),
+  __decorateParam(1, Headers("origin"))
+], AuthController.prototype, "sendMagicLink", 1);
+__decorateClass([
+  Post("magic-link/verify"),
+  __decorateParam(0, Body())
+], AuthController.prototype, "verifyMagicToken", 1);
+__decorateClass([
+  Post("magic-link/verify-code"),
+  __decorateParam(0, Body())
+], AuthController.prototype, "verifyMagicCode", 1);
 __decorateClass([
   Get("me"),
   __decorateParam(0, Headers("authorization"))
@@ -98581,6 +98837,9 @@ var ProjectsService = class {
     const project = {
       id,
       userId,
+      authorEmail: data.authorEmail,
+      authorName: data.authorName,
+      websiteUrl: data.websiteUrl,
       name: data.name || "Nuevo Proyecto",
       description: data.description || "",
       location: data.location || "",
@@ -98637,43 +98896,103 @@ var ProjectsController = class {
     this.projectsService = projectsService;
     this.authService = authService;
   }
-  async getUserId(authHeader) {
-    if (!authHeader) return void 0;
+  async getUser(authHeader) {
+    if (!authHeader) return null;
     try {
       const token = authHeader.replace(/^Bearer\s+/i, "");
       const profile = await this.authService.getProfile(token);
-      return profile.id;
+      return profile;
     } catch {
-      return void 0;
+      return null;
     }
   }
+  checkCanEditOrDelete(project, user) {
+    if (!user) return false;
+    if (user.isAdmin) return true;
+    if (project.userId && project.userId === user.id) return true;
+    if (project.authorEmail && project.authorEmail.toLowerCase() === user.email.toLowerCase()) return true;
+    return false;
+  }
   async getAll(auth) {
-    const userId = await this.getUserId(auth);
-    return this.projectsService.getAll(userId);
+    const user = await this.getUser(auth);
+    return this.projectsService.getAll(user?.id);
   }
   async getOne(id) {
     return this.projectsService.getOne(id);
   }
   async create(body, auth) {
-    const userId = await this.getUserId(auth);
-    return this.projectsService.create(body, userId);
+    const user = await this.getUser(auth);
+    return this.projectsService.create({
+      ...body,
+      userId: user?.id,
+      authorEmail: user?.email,
+      authorName: user?.name
+    }, user?.id);
   }
-  async update(id, body) {
+  async update(id, body, auth) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException("Debes iniciar sesi\xF3n para guardar cambios en la nube.");
+    }
+    const project = await this.projectsService.getOne(id);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden modificarlo.");
+    }
     return this.projectsService.update(id, body);
   }
-  async delete(id) {
+  async delete(id, auth) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException("Debes iniciar sesi\xF3n para eliminar planos.");
+    }
+    const project = await this.projectsService.getOne(id);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden eliminarlo.");
+    }
     return this.projectsService.delete(id);
   }
-  async syncFeatures(projectId, body) {
+  async syncFeatures(projectId, body, auth) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException("Debes iniciar sesi\xF3n para guardar cambios en la nube.");
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden modificarlo.");
+    }
     return this.projectsService.syncFeatures(projectId, body.features || []);
   }
-  async addFeature(projectId, feature) {
+  async addFeature(projectId, feature, auth) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException("Debes iniciar sesi\xF3n para modificar elementos en la nube.");
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden modificarlo.");
+    }
     return this.projectsService.saveFeature(projectId, feature);
   }
-  async updateFeature(projectId, featureId, feature) {
+  async updateFeature(projectId, featureId, feature, auth) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException("Debes iniciar sesi\xF3n para modificar elementos en la nube.");
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden modificarlo.");
+    }
     return this.projectsService.saveFeature(projectId, { ...feature, id: featureId });
   }
-  async deleteFeature(projectId, featureId) {
+  async deleteFeature(projectId, featureId, auth) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException("Debes iniciar sesi\xF3n para eliminar elementos en la nube.");
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException("Solo el administrador o el autor del plano pueden modificarlo.");
+    }
     return this.projectsService.deleteFeature(projectId, featureId);
   }
 };
@@ -98693,32 +99012,38 @@ __decorateClass([
 __decorateClass([
   Put(":id"),
   __decorateParam(0, Param("id")),
-  __decorateParam(1, Body())
+  __decorateParam(1, Body()),
+  __decorateParam(2, Headers("authorization"))
 ], ProjectsController.prototype, "update", 1);
 __decorateClass([
   Delete(":id"),
-  __decorateParam(0, Param("id"))
+  __decorateParam(0, Param("id")),
+  __decorateParam(1, Headers("authorization"))
 ], ProjectsController.prototype, "delete", 1);
 __decorateClass([
   Put(":id/features"),
   __decorateParam(0, Param("id")),
-  __decorateParam(1, Body())
+  __decorateParam(1, Body()),
+  __decorateParam(2, Headers("authorization"))
 ], ProjectsController.prototype, "syncFeatures", 1);
 __decorateClass([
   Post(":id/features"),
   __decorateParam(0, Param("id")),
-  __decorateParam(1, Body())
+  __decorateParam(1, Body()),
+  __decorateParam(2, Headers("authorization"))
 ], ProjectsController.prototype, "addFeature", 1);
 __decorateClass([
   Put(":id/features/:featureId"),
   __decorateParam(0, Param("id")),
   __decorateParam(1, Param("featureId")),
-  __decorateParam(2, Body())
+  __decorateParam(2, Body()),
+  __decorateParam(3, Headers("authorization"))
 ], ProjectsController.prototype, "updateFeature", 1);
 __decorateClass([
   Delete(":id/features/:featureId"),
   __decorateParam(0, Param("id")),
-  __decorateParam(1, Param("featureId"))
+  __decorateParam(1, Param("featureId")),
+  __decorateParam(2, Headers("authorization"))
 ], ProjectsController.prototype, "deleteFeature", 1);
 ProjectsController = __decorateClass([
   Controller("projects"),

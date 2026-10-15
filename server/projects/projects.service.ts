@@ -24,6 +24,9 @@ export class ProjectsService {
     const project: ProjectEntity = {
       id,
       userId,
+      authorEmail: data.authorEmail,
+      authorName: data.authorName,
+      websiteUrl: data.websiteUrl,
       name: data.name || 'Nuevo Proyecto',
       description: data.description || '',
       location: data.location || '',

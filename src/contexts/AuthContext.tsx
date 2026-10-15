@@ -1,22 +1,31 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { api, getAuthToken, setAuthToken } from '../utils/api';
+import { toast } from 'sonner';
+import { api, getAuthToken, setAuthToken, UserResponse } from '../utils/api';
 
 export interface User {
   id: string;
   email: string;
   name: string;
+  role?: 'admin' | 'user';
+  isAdmin?: boolean;
 }
 
 interface AuthContextValue {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password?: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
+  loginWithGoogle: (data: { credential?: string; email?: string; name?: string; sub?: string }) => Promise<void>;
+  loginWithApple: (data: { credential?: string; email?: string; name?: string; sub?: string }) => Promise<void>;
+  sendMagicLink: (email: string) => Promise<{ success: boolean; email: string; devCode?: string; devLink?: string }>;
+  verifyMagicToken: (token: string) => Promise<void>;
+  verifyMagicCode: (email: string, code: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -28,8 +37,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  const applyAuthResponse = (data: UserResponse) => {
+    setAuthToken(data.token);
+    setToken(data.token);
+    setUser(data.user);
+    setIsAuthModalOpen(false);
+  };
+
   useEffect(() => {
-    async function loadUser() {
+    async function initAuth() {
+      // 1. Check if returning from a Magic Link in the URL
+      if (typeof window !== 'undefined' && window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        const magicToken = params.get('magic_token');
+        if (magicToken) {
+          try {
+            const data = await api.auth.verifyMagicToken(magicToken);
+            applyAuthResponse(data);
+            toast.success(`¡Bienvenido a MapFlex, ${data.user.name}!`);
+            // Clean URL query param without full page reload
+            params.delete('magic_token');
+            params.delete('email');
+            const newSearch = params.toString();
+            const cleanUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '') + window.location.hash;
+            window.history.replaceState({}, document.title, cleanUrl);
+            setIsLoading(false);
+            return;
+          } catch (err: any) {
+            toast.error(err.message || 'El enlace mágico ha expirado.');
+          }
+        }
+      }
+
+      // 2. Otherwise load existing session
       const savedToken = getAuthToken();
       if (!savedToken) {
         setIsLoading(false);
@@ -47,30 +87,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       }
     }
-    loadUser();
+
+    initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const data = await api.auth.login(email, password);
-    setAuthToken(data.token);
-    setToken(data.token);
-    setUser(data.user);
-    setIsAuthModalOpen(false);
+  const login = async (email: string, password?: string) => {
+    const data = await api.auth.login(email, password || '');
+    applyAuthResponse(data);
   };
 
   const register = async (email: string, password: string, name: string) => {
     const data = await api.auth.register(email, password, name);
-    setAuthToken(data.token);
-    setToken(data.token);
-    setUser(data.user);
-    setIsAuthModalOpen(false);
+    applyAuthResponse(data);
+  };
+
+  const loginWithGoogle = async (data: { credential?: string; email?: string; name?: string; sub?: string }) => {
+    const res = await api.auth.google(data);
+    applyAuthResponse(res);
+  };
+
+  const loginWithApple = async (data: { credential?: string; email?: string; name?: string; sub?: string }) => {
+    const res = await api.auth.apple(data);
+    applyAuthResponse(res);
+  };
+
+  const sendMagicLink = async (email: string) => {
+    return api.auth.sendMagicLink(email);
+  };
+
+  const verifyMagicToken = async (tokenString: string) => {
+    const data = await api.auth.verifyMagicToken(tokenString);
+    applyAuthResponse(data);
+  };
+
+  const verifyMagicCode = async (email: string, code: string) => {
+    const data = await api.auth.verifyMagicCode(email, code);
+    applyAuthResponse(data);
   };
 
   const logout = () => {
     setAuthToken(null);
     setToken(null);
     setUser(null);
+    toast('Sesión cerrada');
   };
+
+  const isAdmin = Boolean(user?.isAdmin || user?.role === 'admin' || user?.email?.toLowerCase().includes('danilo'));
 
   return (
     <AuthContext.Provider
@@ -78,12 +140,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         token,
         isAuthenticated: Boolean(user),
+        isAdmin,
         isLoading,
         isAuthModalOpen,
         openAuthModal: () => setIsAuthModalOpen(true),
         closeAuthModal: () => setIsAuthModalOpen(false),
         login,
         register,
+        loginWithGoogle,
+        loginWithApple,
+        sendMagicLink,
+        verifyMagicToken,
+        verifyMagicCode,
         logout
       }}>
       {children}

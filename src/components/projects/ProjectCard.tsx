@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { Trash2Icon } from 'lucide-react';
 import { PlanThumbnail } from '../PlanThumbnail';
-import { summarizeKinds } from '../../utils/plan';
+import { canDeleteProject, summarizeKinds } from '../../utils/plan';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Project } from '../../types/plan';
 
 interface ProjectCardProps {
@@ -12,6 +13,9 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
+  const { user } = useAuth();
+  const showDelete = canDeleteProject(project, user);
+
   return (
     <article className="group relative isolate z-0 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[border-color,box-shadow] duration-200 hover:border-ink/25 hover:shadow-float">
       <PlanThumbnail project={project} className="aspect-[16/10] w-full" />
@@ -27,14 +31,15 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <span className="shrink-0">{formatDistanceToNow(project.updatedAt, { addSuffix: true })}</span>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={onDelete}
-        aria-label={`Delete ${project.name}`}
-        className="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-lg bg-surface text-muted shadow-sm transition-colors duration-150 hover:text-danger">
-        
-        <Trash2Icon className="h-4 w-4" aria-hidden />
-      </button>
-    </article>);
-
+      {showDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label={`Delete ${project.name}`}
+          className="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-lg bg-surface text-muted shadow-sm transition-colors duration-150 hover:text-danger">
+          <Trash2Icon className="h-4 w-4" aria-hidden />
+        </button>
+      )}
+    </article>
+  );
 }

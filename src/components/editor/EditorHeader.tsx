@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeftIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, PencilIcon, SearchIcon, Share2Icon, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, CloudIcon, CloudOffIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, PencilIcon, SearchIcon, Share2Icon, XIcon } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { PlaceSearch } from '../PlaceSearch';
 import { UserMenu } from '../auth/UserMenu';
@@ -8,6 +8,8 @@ import { LanguageToggle } from '../LanguageToggle';
 import { ShareModal } from './ShareModal';
 import { MapFlexBadge } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useProjects } from '../../contexts/ProjectsContext';
 import type { PlaceResult, Project, ViewMode } from '../../types/plan';
 
 interface EditorHeaderProps {
@@ -19,6 +21,8 @@ interface EditorHeaderProps {
 
 export function EditorHeader({ project, mode, onModeChange, onPickPlace }: EditorHeaderProps) {
   const { t } = useLanguage();
+  const { isAuthenticated, openAuthModal } = useAuth();
+  const { saveLocalToCloud } = useProjects();
   const [searchOpen, setSearchOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
@@ -39,9 +43,30 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
 
         {/* Project Title & Location */}
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xs font-semibold text-ink sm:text-sm">
-            {project.name || t('untitled')}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="truncate text-xs font-semibold text-ink sm:text-sm">
+              {project.name || t('untitled')}
+            </h1>
+            {!isAuthenticated ? (
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="hidden sm:inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors"
+                title="Modo Local: Tus cambios se guardan solo en este navegador. Haz clic para iniciar sesión y sincronizar en la nube.">
+                <CloudOffIcon className="h-2.5 w-2.5" />
+                <span>Modo Local</span>
+              </button>
+            ) : project.isLocalOnly ? (
+              <button
+                type="button"
+                onClick={() => saveLocalToCloud(project.id)}
+                className="hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                title="Este plano solo está en tu navegador. Haz clic para guardarlo en la nube.">
+                <CloudIcon className="h-2.5 w-2.5" />
+                <span>Guardar en nube</span>
+              </button>
+            ) : null}
+          </div>
           <p className="truncate text-[11px] text-muted sm:text-xs">
             {project.location}
           </p>

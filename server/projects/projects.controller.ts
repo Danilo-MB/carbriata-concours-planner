@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Headers } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Headers,
+  Inject,
+  Param,
+  Post,
+  Put,
+  UnauthorizedException
+} from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { AuthService } from '../auth/auth.service';
 import type { FeatureEntity, ProjectEntity } from '../storage/storage.service';
@@ -10,21 +23,29 @@ export class ProjectsController {
     @Inject(AuthService) private readonly authService: AuthService
   ) {}
 
-  private async getUserId(authHeader?: string): Promise<string | undefined> {
-    if (!authHeader) return undefined;
+  private async getUser(authHeader?: string): Promise<{ id: string; email: string; name: string; role: string; isAdmin: boolean } | null> {
+    if (!authHeader) return null;
     try {
       const token = authHeader.replace(/^Bearer\s+/i, '');
       const profile = await this.authService.getProfile(token);
-      return profile.id;
+      return profile;
     } catch {
-      return undefined;
+      return null;
     }
+  }
+
+  private checkCanEditOrDelete(project: ProjectEntity, user: { id: string; email: string; isAdmin: boolean } | null): boolean {
+    if (!user) return false;
+    if (user.isAdmin) return true;
+    if (project.userId && project.userId === user.id) return true;
+    if (project.authorEmail && project.authorEmail.toLowerCase() === user.email.toLowerCase()) return true;
+    return false;
   }
 
   @Get()
   async getAll(@Headers('authorization') auth?: string) {
-    const userId = await this.getUserId(auth);
-    return this.projectsService.getAll(userId);
+    const user = await this.getUser(auth);
+    return this.projectsService.getAll(user?.id);
   }
 
   @Get(':id')
@@ -34,28 +55,73 @@ export class ProjectsController {
 
   @Post()
   async create(@Body() body: Partial<ProjectEntity>, @Headers('authorization') auth?: string) {
-    const userId = await this.getUserId(auth);
-    return this.projectsService.create(body, userId);
+    const user = await this.getUser(auth);
+    return this.projectsService.create({
+      ...body,
+      userId: user?.id,
+      authorEmail: user?.email,
+      authorName: user?.name
+    }, user?.id);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() body: Partial<ProjectEntity>) {
+  async update(@Param('id') id: string, @Body() body: Partial<ProjectEntity>, @Headers('authorization') auth?: string) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para guardar cambios en la nube.');
+    }
+    const project = await this.projectsService.getOne(id);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
+    }
     return this.projectsService.update(id, body);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string, @Headers('authorization') auth?: string) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para eliminar planos.');
+    }
+    const project = await this.projectsService.getOne(id);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden eliminarlo.');
+    }
     return this.projectsService.delete(id);
   }
 
-  // Map elements / features endpoints
+  // Feature operations for map elements
   @Put(':id/features')
-  async syncFeatures(@Param('id') projectId: string, @Body() body: { features: any[] }) {
+  async syncFeatures(
+    @Param('id') projectId: string,
+    @Body() body: { features: any[] },
+    @Headers('authorization') auth?: string
+  ) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para guardar cambios en la nube.');
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
+    }
     return this.projectsService.syncFeatures(projectId, (body.features || []) as FeatureEntity[]);
   }
 
   @Post(':id/features')
-  async addFeature(@Param('id') projectId: string, @Body() feature: Record<string, any>) {
+  async addFeature(
+    @Param('id') projectId: string,
+    @Body() feature: Record<string, any>,
+    @Headers('authorization') auth?: string
+  ) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para modificar elementos en la nube.');
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
+    }
     return this.projectsService.saveFeature(projectId, feature as FeatureEntity);
   }
 
@@ -63,13 +129,34 @@ export class ProjectsController {
   async updateFeature(
     @Param('id') projectId: string,
     @Param('featureId') featureId: string,
-    @Body() feature: Record<string, any>
+    @Body() feature: Record<string, any>,
+    @Headers('authorization') auth?: string
   ) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para modificar elementos en la nube.');
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
+    }
     return this.projectsService.saveFeature(projectId, { ...feature, id: featureId } as FeatureEntity);
   }
 
   @Delete(':id/features/:featureId')
-  async deleteFeature(@Param('id') projectId: string, @Param('featureId') featureId: string) {
+  async deleteFeature(
+    @Param('id') projectId: string,
+    @Param('featureId') featureId: string,
+    @Headers('authorization') auth?: string
+  ) {
+    const user = await this.getUser(auth);
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para eliminar elementos en la nube.');
+    }
+    const project = await this.projectsService.getOne(projectId);
+    if (!this.checkCanEditOrDelete(project, user)) {
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
+    }
     return this.projectsService.deleteFeature(projectId, featureId);
   }
 }

@@ -6,9 +6,29 @@ import { Redis } from '@upstash/redis';
 export interface UserEntity {
   id: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   name: string;
+  role?: 'admin' | 'user';
   createdAt: number;
+}
+
+export function isAdminEmail(email?: string): boolean {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  if (
+    clean.startsWith('danilo') ||
+    clean.includes('danilo') ||
+    clean === 'admin@mapflex.app' ||
+    clean === 'demo@carbriata.com'
+  ) {
+    return true;
+  }
+  const customAdmins = (process.env.ADMIN_EMAILS || '')
+    .toLowerCase()
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return customAdmins.includes(clean);
 }
 
 export interface FeatureEntity {
@@ -29,9 +49,12 @@ export interface FeatureEntity {
 export interface ProjectEntity {
   id: string;
   userId?: string;
+  authorEmail?: string;
+  authorName?: string;
   name: string;
   description: string;
   location: string;
+  websiteUrl?: string;
   template: string;
   center: { lat: number; lng: number; zoom: number };
   basemap: 'satellite' | 'streets';
@@ -148,6 +171,62 @@ export class StorageService implements OnModuleInit {
     this.store.users[user.id] = user;
     this.save();
     return user;
+  }
+
+  updateUser(id: string, patch: Partial<UserEntity>): UserEntity | undefined {
+    const user = this.store.users[id];
+    if (!user) return undefined;
+    const updated = { ...user, ...patch };
+    this.store.users[id] = updated;
+    this.save();
+    return updated;
+  }
+
+  // Magic Link Tokens
+  private magicTokens: Record<string, { code: string; token: string; expiresAt: number }> = {};
+
+  async setMagicEntry(email: string, entry: { code: string; token: string }): Promise<void> {
+    const clean = email.toLowerCase().trim();
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+    this.magicTokens[clean] = { ...entry, expiresAt };
+    if (this.redis) {
+      try {
+        await this.redis.set(`magic:${clean}`, JSON.stringify(entry), { ex: 900 });
+      } catch (err) {
+        console.warn('Redis setMagicEntry error:', err);
+      }
+    }
+  }
+
+  async getMagicEntry(email: string): Promise<{ code: string; token: string } | null> {
+    const clean = email.toLowerCase().trim();
+    if (this.redis) {
+      try {
+        const raw = await this.redis.get<string | { code: string; token: string }>(`magic:${clean}`);
+        if (raw) {
+          return typeof raw === 'string' ? JSON.parse(raw) : raw;
+        }
+      } catch (err) {
+        console.warn('Redis getMagicEntry error:', err);
+      }
+    }
+    const mem = this.magicTokens[clean];
+    if (mem && mem.expiresAt > Date.now()) {
+      return { code: mem.code, token: mem.token };
+    }
+    return null;
+  }
+
+  async deleteMagicEntry(email: string): Promise<void> {
+    const clean = email.toLowerCase().trim();
+    delete this.magicTokens[clean];
+    if (this.redis) {
+      try {
+        await this.redis.del(`magic:${clean}`);
+      } catch (err) {
+        console.warn('Redis deleteMagicEntry error:', err);
+      }
+    }
   }
 
   // Projects

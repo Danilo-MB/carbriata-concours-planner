@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { ArrowRightIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
 import { PlanThumbnail } from '../PlanThumbnail';
-import { summarizeKinds } from '../../utils/plan';
+import { canDeleteProject, summarizeKinds } from '../../utils/plan';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Project } from '../../types/plan';
 
 interface FeaturedPlanProps {
@@ -14,6 +15,8 @@ interface FeaturedPlanProps {
 
 export function FeaturedPlan({ project, onDelete }: FeaturedPlanProps) {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const showDelete = canDeleteProject(project, user);
 
   return (
     <article className="relative isolate z-0 grid overflow-hidden rounded-2xl border border-line bg-surface lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -65,13 +68,16 @@ export function FeaturedPlan({ project, onDelete }: FeaturedPlanProps) {
             <span>{t('visitorMode')}</span>
           </Link>
 
-          <button
-            type="button"
-            onClick={onDelete}
-            aria-label={`${t('deletePlan')} ${project.name}`}
-            className="grid h-10 w-10 place-items-center rounded-lg text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger active:scale-95">
-            <Trash2Icon className="h-4 w-4" aria-hidden="true" />
-          </button>
+          {showDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label={`${t('deletePlan')} ${project.name}`}
+              className="grid h-10 w-10 place-items-center rounded-lg text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger active:scale-95">
+              <Trash2Icon className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
+
           <span className="ml-auto text-xs text-muted">
             {t('edited')} {formatDistanceToNow(project.updatedAt, { addSuffix: true })}
           </span>
