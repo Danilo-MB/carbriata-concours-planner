@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable, UnauthorizedException } from '
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { isAdminEmail, StorageService, UserEntity } from '../storage/storage.service';
+import { MailService } from './mail.service';
 
 function parseJwtPayload(token: string): any {
   try {
@@ -21,17 +22,20 @@ function parseJwtPayload(token: string): any {
 export class AuthService {
   constructor(
     @Inject(StorageService) private readonly storage: StorageService,
-    @Inject(JwtService) private readonly jwt: JwtService
+    @Inject(JwtService) private readonly jwt: JwtService,
+    @Inject(MailService) private readonly mailService: MailService
   ) {}
 
   private toUserDto(user: UserEntity) {
     const isAdmin = user.role === 'admin' || isAdminEmail(user.email);
+    const emailVerified = Boolean(isAdmin || user.emailVerified);
     return {
       id: user.id,
       email: user.email,
       name: user.name,
       role: (isAdmin ? 'admin' : user.role || 'user') as 'admin' | 'user',
-      isAdmin
+      isAdmin,
+      emailVerified
     };
   }
 
@@ -42,6 +46,12 @@ export class AuthService {
     }
     if (password.length < 6) {
       throw new BadRequestException('La contraseña debe tener al menos 6 caracteres.');
+    }
+
+    // Validate domain existence via DNS MX & disposable block
+    const domainCheck = await this.mailService.validateEmail(cleanEmail);
+    if (!domainCheck.valid) {
+      throw new BadRequestException(domainCheck.reason || 'El correo ingresado no es válido o no existe.');
     }
 
     const existing = await this.storage.findUserByEmail(cleanEmail);
@@ -56,11 +66,19 @@ export class AuthService {
       const updated = await this.storage.updateUser(existing.id, {
         passwordHash,
         name: name.trim() || existing.name,
-        role: isAdmin ? 'admin' : (existing.role || 'user')
+        role: isAdmin ? 'admin' : (existing.role || 'user'),
+        emailVerified: Boolean(isAdmin || existing.emailVerified)
       });
       const userDto = this.toUserDto(updated || existing);
-      const token = this.jwt.sign({ sub: existing.id, email: existing.email, name: userDto.name, role: userDto.role, isAdmin: userDto.isAdmin });
-      return { token, user: userDto };
+      const token = this.jwt.sign({ sub: existing.id, email: existing.email, name: userDto.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
+
+      if (!userDto.emailVerified) {
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        await this.storage.setVerificationCode(cleanEmail, code);
+        await this.mailService.sendVerificationCode(cleanEmail, code, userDto.name);
+      }
+
+      return { token, user: userDto, needsVerification: !userDto.emailVerified };
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -74,15 +92,23 @@ export class AuthService {
       passwordHash,
       name: name.trim(),
       role: isAdmin ? 'admin' : 'user',
+      emailVerified: isAdmin,
       createdAt: Date.now()
     };
 
     await this.storage.createUser(user);
 
     const userDto = this.toUserDto(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
 
-    return { token, user: userDto };
+    // Send 6-digit OTP code via Resend if not admin
+    if (!userDto.emailVerified) {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      await this.storage.setVerificationCode(cleanEmail, code);
+      await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
+    }
+
+    return { token, user: userDto, needsVerification: !userDto.emailVerified };
   }
 
   async login(email: string, password: string) {
@@ -105,9 +131,64 @@ export class AuthService {
     }
 
     const userDto = this.toUserDto(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
+
+    return { token, user: userDto, needsVerification: !userDto.emailVerified };
+  }
+
+  async verifyEmail(email: string, code: string) {
+    const cleanEmail = email?.toLowerCase().trim();
+    if (!cleanEmail || !code) {
+      throw new BadRequestException('Ingresa el correo y el código de 6 dígitos.');
+    }
+
+    const savedCode = await this.storage.getVerificationCode(cleanEmail);
+    if (!savedCode || savedCode.trim() !== code.trim()) {
+      throw new BadRequestException('Código incorrecto o expirado. Revisa tu correo o solicita uno nuevo.');
+    }
+
+    await this.storage.deleteVerificationCode(cleanEmail);
+
+    let user = await this.storage.findUserByEmail(cleanEmail);
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado.');
+    }
+
+    user = (await this.storage.updateUser(user.id, { emailVerified: true })) || user;
+
+    const userDto = this.toUserDto(user);
+    const token = this.jwt.sign({
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      role: userDto.role,
+      isAdmin: userDto.isAdmin,
+      emailVerified: true
+    });
 
     return { token, user: userDto };
+  }
+
+  async resendVerificationCode(email: string) {
+    const cleanEmail = email?.toLowerCase().trim();
+    if (!cleanEmail) {
+      throw new BadRequestException('Ingresa tu correo electrónico.');
+    }
+
+    const user = await this.storage.findUserByEmail(cleanEmail);
+    if (!user) {
+      throw new BadRequestException('No encontramos un usuario con este correo.');
+    }
+
+    if (user.emailVerified || isAdminEmail(cleanEmail)) {
+      return { success: true, message: 'Esta cuenta ya está verificada.' };
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.storage.setVerificationCode(cleanEmail, code);
+    await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
+
+    return { success: true, message: 'Código reenviado con éxito.' };
   }
 
   async loginWithGoogle(payload: { credential?: string; email?: string; name?: string; sub?: string }) {

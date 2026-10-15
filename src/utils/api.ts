@@ -60,7 +60,9 @@ export interface UserResponse {
     name: string;
     role?: 'admin' | 'user';
     isAdmin?: boolean;
+    emailVerified?: boolean;
   };
+  needsVerification?: boolean;
 }
 
 export const api = {
@@ -74,6 +76,16 @@ export const api = {
       request<UserResponse>('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify({ email, password, name })
+      }),
+    verifyEmail: (email: string, code: string) =>
+      request<UserResponse>('/api/auth/verify-email', {
+        method: 'POST',
+        body: JSON.stringify({ email, code })
+      }),
+    resendCode: (email: string) =>
+      request<{ success: boolean; message: string }>('/api/auth/resend-code', {
+        method: 'POST',
+        body: JSON.stringify({ email })
       }),
     google: (data: { credential?: string; email?: string; name?: string; sub?: string }) =>
       request<UserResponse>('/api/auth/google', {
@@ -101,7 +113,7 @@ export const api = {
         body: JSON.stringify({ email, code })
       }),
     me: () =>
-      request<{ id: string; email: string; name: string; role?: 'admin' | 'user'; isAdmin?: boolean }>('/api/auth/me')
+      request<{ id: string; email: string; name: string; role?: 'admin' | 'user'; isAdmin?: boolean; emailVerified?: boolean }>('/api/auth/me')
   },
   projects: {
     list: () => request<any[]>('/api/projects'),

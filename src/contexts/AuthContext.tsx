@@ -8,6 +8,7 @@ export interface User {
   name: string;
   role?: 'admin' | 'user';
   isAdmin?: boolean;
+  emailVerified?: boolean;
 }
 
 const USER_KEY = 'mapflex_user';
@@ -42,8 +43,10 @@ interface AuthContextValue {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  login: (email: string, password?: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  login: (email: string, password?: string) => Promise<UserResponse>;
+  register: (email: string, password: string, name: string) => Promise<UserResponse>;
+  verifyEmail: (email: string, code: string) => Promise<UserResponse>;
+  resendCode: (email: string) => Promise<{ success: boolean; message: string }>;
   loginWithGoogle: (data: { credential?: string; email?: string; name?: string; sub?: string }) => Promise<void>;
   loginWithApple: (data: { credential?: string; email?: string; name?: string; sub?: string }) => Promise<void>;
   sendMagicLink: (email: string) => Promise<{ success: boolean; email: string; devCode?: string; devLink?: string }>;
@@ -119,12 +122,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password?: string) => {
     const data = await api.auth.login(email, password || '');
-    applyAuthResponse(data);
+    if (!data.needsVerification) {
+      applyAuthResponse(data);
+    }
+    return data;
   };
 
   const register = async (email: string, password: string, name: string) => {
     const data = await api.auth.register(email, password, name);
+    if (!data.needsVerification) {
+      applyAuthResponse(data);
+    }
+    return data;
+  };
+
+  const verifyEmail = async (email: string, code: string) => {
+    const data = await api.auth.verifyEmail(email, code);
     applyAuthResponse(data);
+    return data;
+  };
+
+  const resendCode = async (email: string) => {
+    return api.auth.resendCode(email);
   };
 
   const loginWithGoogle = async (data: { credential?: string; email?: string; name?: string; sub?: string }) => {
@@ -180,6 +199,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         closeAuthModal: () => setIsAuthModalOpen(false),
         login,
         register,
+        verifyEmail,
+        resendCode,
         loginWithGoogle,
         loginWithApple,
         sendMagicLink,

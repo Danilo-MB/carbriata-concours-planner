@@ -17,6 +17,16 @@ export class AuthController {
     return this.authService.login(body.email, body.password);
   }
 
+  @Post('verify-email')
+  async verifyEmail(@Body() body: { email: string; code: string }) {
+    return this.authService.verifyEmail(body.email, body.code);
+  }
+
+  @Post('resend-code')
+  async resendCode(@Body() body: { email: string }) {
+    return this.authService.resendVerificationCode(body.email);
+  }
+
   @Post('google')
   async googleLogin(@Body() body: { credential?: string; email?: string; name?: string; sub?: string }) {
     return this.authService.loginWithGoogle(body);

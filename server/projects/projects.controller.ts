@@ -42,6 +42,15 @@ export class ProjectsController {
     return false;
   }
 
+  private checkVerified(user: { id: string; email: string; isAdmin: boolean; emailVerified?: boolean } | null) {
+    if (!user) {
+      throw new UnauthorizedException('Debes iniciar sesión para guardar cambios en la nube.');
+    }
+    if (!user.isAdmin && !user.emailVerified) {
+      throw new ForbiddenException('Debes verificar tu correo electrónico para crear o guardar elementos en la nube.');
+    }
+  }
+
   @Get()
   async getAll(@Headers('authorization') auth?: string) {
     const user = await this.getUser(auth);
@@ -56,6 +65,7 @@ export class ProjectsController {
   @Post()
   async create(@Body() body: Partial<ProjectEntity>, @Headers('authorization') auth?: string) {
     const user = await this.getUser(auth);
+    this.checkVerified(user);
     return this.projectsService.create({
       ...body,
       userId: user?.id,
@@ -67,9 +77,7 @@ export class ProjectsController {
   @Put(':id')
   async update(@Param('id') id: string, @Body() body: Partial<ProjectEntity>, @Headers('authorization') auth?: string) {
     const user = await this.getUser(auth);
-    if (!user) {
-      throw new UnauthorizedException('Debes iniciar sesión para guardar cambios en la nube.');
-    }
+    this.checkVerified(user);
     const project = await this.projectsService.getOne(id);
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
@@ -80,9 +88,7 @@ export class ProjectsController {
   @Delete(':id')
   async delete(@Param('id') id: string, @Headers('authorization') auth?: string) {
     const user = await this.getUser(auth);
-    if (!user) {
-      throw new UnauthorizedException('Debes iniciar sesión para eliminar planos.');
-    }
+    this.checkVerified(user);
     const project = await this.projectsService.getOne(id);
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException('Solo el administrador o el autor del plano pueden eliminarlo.');
@@ -98,9 +104,7 @@ export class ProjectsController {
     @Headers('authorization') auth?: string
   ) {
     const user = await this.getUser(auth);
-    if (!user) {
-      throw new UnauthorizedException('Debes iniciar sesión para guardar cambios en la nube.');
-    }
+    this.checkVerified(user);
     const project = await this.projectsService.getOne(projectId);
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
@@ -115,9 +119,7 @@ export class ProjectsController {
     @Headers('authorization') auth?: string
   ) {
     const user = await this.getUser(auth);
-    if (!user) {
-      throw new UnauthorizedException('Debes iniciar sesión para modificar elementos en la nube.');
-    }
+    this.checkVerified(user);
     const project = await this.projectsService.getOne(projectId);
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
@@ -133,9 +135,7 @@ export class ProjectsController {
     @Headers('authorization') auth?: string
   ) {
     const user = await this.getUser(auth);
-    if (!user) {
-      throw new UnauthorizedException('Debes iniciar sesión para modificar elementos en la nube.');
-    }
+    this.checkVerified(user);
     const project = await this.projectsService.getOne(projectId);
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
@@ -150,12 +150,10 @@ export class ProjectsController {
     @Headers('authorization') auth?: string
   ) {
     const user = await this.getUser(auth);
-    if (!user) {
-      throw new UnauthorizedException('Debes iniciar sesión para eliminar elementos en la nube.');
-    }
+    this.checkVerified(user);
     const project = await this.projectsService.getOne(projectId);
     if (!this.checkCanEditOrDelete(project, user)) {
-      throw new ForbiddenException('Solo el administrador o el autor del plano pueden modificarlo.');
+      throw new ForbiddenException('Solo el administrador o el autor del plano pueden eliminarlo.');
     }
     return this.projectsService.deleteFeature(projectId, featureId);
   }

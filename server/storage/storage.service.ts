@@ -9,6 +9,7 @@ export interface UserEntity {
   passwordHash?: string;
   name: string;
   role?: 'admin' | 'user';
+  emailVerified?: boolean;
   createdAt: number;
 }
 
@@ -266,6 +267,51 @@ export class StorageService implements OnModuleInit {
         await this.redis.del(`magic:${clean}`);
       } catch (err) {
         console.warn('Redis deleteMagicEntry error:', err);
+      }
+    }
+  }
+
+  // Email OTP Verification Codes
+  private verifyCodes: Record<string, { code: string; expiresAt: number }> = {};
+
+  async setVerificationCode(email: string, code: string): Promise<void> {
+    const clean = email.toLowerCase().trim();
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+    this.verifyCodes[clean] = { code, expiresAt };
+    if (this.redis) {
+      try {
+        await this.redis.set(`verify_otp:${clean}`, code, { ex: 900 });
+      } catch (err) {
+        console.warn('Redis setVerificationCode error:', err);
+      }
+    }
+  }
+
+  async getVerificationCode(email: string): Promise<string | null> {
+    const clean = email.toLowerCase().trim();
+    if (this.redis) {
+      try {
+        const code = await this.redis.get<string>(`verify_otp:${clean}`);
+        if (code) return String(code);
+      } catch (err) {
+        console.warn('Redis getVerificationCode error:', err);
+      }
+    }
+    const entry = this.verifyCodes[clean];
+    if (entry && entry.expiresAt > Date.now()) {
+      return entry.code;
+    }
+    return null;
+  }
+
+  async deleteVerificationCode(email: string): Promise<void> {
+    const clean = email.toLowerCase().trim();
+    delete this.verifyCodes[clean];
+    if (this.redis) {
+      try {
+        await this.redis.del(`verify_otp:${clean}`);
+      } catch (err) {
+        console.warn('Redis deleteVerificationCode error:', err);
       }
     }
   }
