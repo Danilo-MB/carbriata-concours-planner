@@ -24,26 +24,45 @@ function ensureStreetViewSeed(projs: Project[]): Project[] {
     let current = p;
     const seedProj = seedProjects.find((s) => s.id === p.id);
     if (seedProj) {
-      // Merge any routeWaypoints from seed if missing or empty in local copy
+      // Merge all features from seed: update existing and add missing ones
+      const existingFeatureMap = new Map(current.features.map((f) => [f.id, f]));
+      
+      const mergedFeatures = seedProj.features.map((sf) => {
+        const existing = existingFeatureMap.get(sf.id);
+        if (!existing) return sf;
+
+        // If it's Barrio Carlina or industrial project, always ensure the curated waypoints and images
+        if (p.id === 'ijdhormmv8a4760' || p.id === 'i6666hqmv8mdpge') {
+          return {
+            ...existing,
+            name: sf.name || existing.name,
+            notes: sf.notes || existing.notes,
+            images: sf.images && sf.images.length > 0 ? sf.images : existing.images,
+            routeWaypoints: sf.routeWaypoints && sf.routeWaypoints.length > 0 ? sf.routeWaypoints : existing.routeWaypoints
+          };
+        }
+
+        return {
+          ...existing,
+          routeWaypoints: sf.routeWaypoints && sf.routeWaypoints.length > 0 && (!existing.routeWaypoints || existing.routeWaypoints.length === 0)
+            ? sf.routeWaypoints
+            : existing.routeWaypoints,
+          images: sf.images && sf.images.length > 0 && (!existing.images || existing.images.length === 0)
+            ? sf.images
+            : existing.images,
+          notes: sf.notes && (!existing.notes || existing.notes.trim() === '')
+            ? sf.notes
+            : existing.notes
+        };
+      });
+
+      // Keep any user-added custom features that weren't in seed
+      const seedFeatureIds = new Set(seedProj.features.map((sf) => sf.id));
+      const extraFeatures = current.features.filter((f) => !seedFeatureIds.has(f.id));
+
       current = {
         ...current,
-        features: current.features.map((f) => {
-          const sf = seedProj.features.find((feat) => feat.id === f.id);
-          if (sf) {
-            let updated = f;
-            if (sf.routeWaypoints && sf.routeWaypoints.length > 0 && (!f.routeWaypoints || f.routeWaypoints.length === 0)) {
-              updated = { ...updated, routeWaypoints: sf.routeWaypoints };
-            }
-            if (sf.images && sf.images.length > 0 && (!f.images || f.images.length === 0)) {
-              updated = { ...updated, images: sf.images };
-            }
-            if (sf.notes && (!f.notes || f.notes.trim() === '')) {
-              updated = { ...updated, notes: sf.notes };
-            }
-            return updated;
-          }
-          return f;
-        })
+        features: [...mergedFeatures, ...extraFeatures]
       };
 
       if (p.id === 'carbriata-2027') {

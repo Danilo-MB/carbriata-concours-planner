@@ -85189,8 +85189,8 @@ var require_carbriata_data = __commonJS({
           location: "Alto Los Cardales, Partido de Campana",
           template: "realEstate",
           center: {
-            lat: -34.304266,
-            lng: -58.941935,
+            lat: -34.301438,
+            lng: -58.942922,
             zoom: 16.5
           },
           basemap: "satellite",
@@ -85296,34 +85296,36 @@ var require_carbriata_data = __commonJS({
                   -58.94281183532002
                 ]
               ],
-              name: "Path 1",
+              name: "Traza Principal de Obra",
               categoryId: "streets",
-              notes: "",
-              images: [],
+              notes: "Avenida principal del desarrollo en obra. Calzada de tosca consolidada, zanjeo perimetral para redes de servicios y tr\xE1nsito continuo de camiones y maquinaria pesada.",
+              images: [
+                "/streetview/carlina/point1.jpg"
+              ],
               createdAt: 1791992869963,
               routeWaypoints: [
                 {
                   index: 0,
-                  title: "Acceso y Entrada Principal",
-                  caption: "Entrada principal",
+                  title: "Acceso Principal y Portal de Obra",
+                  caption: "Entrada provisoria al loteo con cerco de obra, cartel reglamentario y control de ingreso de camiones.",
                   image: "/streetview/carlina/point1.jpg"
                 },
                 {
                   index: 1,
-                  title: "Paseo Central Arbolado",
-                  caption: "Avenida principal con jardines florales, carteler\uFFFDa digital y circulaci\uFFFDn fluida.",
+                  title: "Avenida Central - Movimiento de Suelos",
+                  caption: "Apertura y nivelaci\xF3n de traza vial mediante motoniveladora y compactaci\xF3n de suelo tosca para futuras calzadas.",
                   image: "/streetview/carlina/point2.jpg"
                 },
                 {
                   index: 2,
-                  title: "Zona Lotes 1",
-                  caption: "",
+                  title: "Sector Lotes y Zanjeo de Redes",
+                  caption: "Trazado de cordones cuneta y zanjas de distribuci\xF3n subterr\xE1nea de agua corriente, tendido el\xE9ctrico y pluviales.",
                   image: "/streetview/carlina/point3.jpg"
                 },
                 {
                   index: 3,
-                  title: "Zona Lotes 2",
-                  caption: "",
+                  title: "Cul-de-sac y Primeras Obras",
+                  caption: "Rotonda final de la calle en apertura con plateas de fundaci\xF3n y replanteo de parcelas residenciales.",
                   image: "/streetview/carlina/point4.jpg"
                 }
               ]
@@ -85350,8 +85352,8 @@ var require_carbriata_data = __commonJS({
                 ]
               ],
               name: "Lote 23422",
-              categoryId: "parking",
-              notes: "",
+              categoryId: "lots",
+              notes: "Parcela residencial desmalezada y nivelada. Delimitaci\xF3n con estacas de agrimensura y amojonamiento topogr\xE1fico lista para excavaci\xF3n de cimientos.",
               images: [
                 "/streetview/carlina/lote_23422_1.jpg"
               ],
@@ -85380,7 +85382,7 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Lote 12321",
               categoryId: "lots",
-              notes: "",
+              notes: "Etapa de movimiento de suelo y zanjeo de cimientos. Replanteo de ejes de obra, excavaci\xF3n para vigas de fundaci\xF3n y acopio de \xE1ridos.",
               images: [
                 "/streetview/carlina/lote_12321_1.jpg"
               ],
@@ -85409,7 +85411,7 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Lote 23211",
               categoryId: "lots",
-              notes: "",
+              notes: "Llenado de platea de hormig\xF3n armado H-21. Encofrados perimetrales de madera, malla electrosoldada y ca\xF1er\xEDas sanitarias bajo losa.",
               images: [
                 "/streetview/carlina/lote_23211_1.jpg"
               ],
@@ -85438,7 +85440,7 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Lote 4567",
               categoryId: "lots",
-              notes: "",
+              notes: "Obra gruesa en avance. Levantamiento de muros de ladrillo cer\xE1mico portante, columnas de hormig\xF3n armado y andamios tubulares de fachada.",
               images: [
                 "/streetview/carlina/lote_4567_1.jpg"
               ],
@@ -85468,7 +85470,7 @@ var require_carbriata_data = __commonJS({
               ],
               name: "Lote 1234",
               categoryId: "lots",
-              notes: "",
+              notes: "Vivienda unifamiliar moderna con estructura avanzada. Losas de hormig\xF3n visto, cubierta estanca, tabiquer\xEDa perimetral y contrapisos.",
               images: [
                 "/streetview/carlina/lote_1234_1.jpg"
               ],
@@ -85484,10 +85486,12 @@ var require_carbriata_data = __commonJS({
                   -58.94308805465699
                 ]
               ],
-              name: "Marker 1",
+              name: "Obrador Central y Showroom de Ventas",
               categoryId: "parking",
-              notes: "",
-              images: [],
+              notes: "Contenedores modulares de jefatura de obra, vestuarios de personal, cartel con render del m\xE1ster plan y oficina de atenci\xF3n comercial.",
+              images: [
+                "/streetview/carlina/marker_showroom.jpg"
+              ],
               createdAt: 1791993208440
             },
             {
@@ -85511,18 +85515,280 @@ var require_carbriata_data = __commonJS({
                   -58.94305586814881
                 ]
               ],
-              name: "\xC1rea de estacionamiento",
+              name: "Playa de Estacionamiento de Obra y Visitas",
               categoryId: "parking",
-              notes: "",
+              notes: "Sector consolidado con piedra partida para estacionamiento de veh\xEDculos del personal t\xE9cnico, camionetas de contratistas y visitas.",
               images: [
                 "/streetview/carlina/estacionamiento_1.jpg"
               ],
               createdAt: 1791993221410
+            },
+            {
+              id: "l2fykzjmv8rgzyc",
+              kind: "area",
+              coords: [
+                [
+                  -34.30445413699435,
+                  -58.94315823691853
+                ],
+                [
+                  -34.30409066605307,
+                  -58.94346928066054
+                ],
+                [
+                  -34.30390892999248,
+                  -58.94296857610022
+                ],
+                [
+                  -34.30428493520017,
+                  -58.942665118790934
+                ]
+              ],
+              name: "Lote 23212",
+              categoryId: "lots",
+              notes: "Montaje de estructura de techo, cabriadas de madera/acero galvanizado y aislaci\xF3n hidr\xF3fuga en vivienda en construcci\xF3n.",
+              images: [
+                "/streetview/carlina/lote_roof_framing.jpg"
+              ],
+              createdAt: 1792021734660
+            },
+            {
+              id: "ylgyz8umv8rh90u",
+              kind: "point",
+              coords: [
+                [
+                  -34.30418466706002,
+                  -58.943057716684834
+                ]
+              ],
+              name: "Pilar El\xE9ctrico y Acometida Provisoria",
+              categoryId: "lots",
+              notes: "Tablero general de obra con disyuntores y tomas trif\xE1sicas/monof\xE1sicas para alimentaci\xF3n de hormigoneras, amoladoras y herramientas.",
+              images: [
+                "/streetview/carlina/marker_electric.jpg"
+              ],
+              createdAt: 1792021746414
+            },
+            {
+              id: "3vtssy9mv8rhee1",
+              kind: "point",
+              coords: [
+                [
+                  -34.30460454341157,
+                  -58.942739086510095
+                ]
+              ],
+              name: "Punto Geod\xE9sico y Esquina de Replanteo",
+              categoryId: "poi",
+              notes: "Hito de agrimensura y verificaci\xF3n de niveles con estaci\xF3n total l\xE1ser para cotas de nivelaci\xF3n de parcelas.",
+              images: [
+                "/streetview/carlina/lote_slab_corner.jpg"
+              ],
+              createdAt: 1792021753369,
+              color: "#10B981"
+            },
+            {
+              id: "anvc25hmv8rhjvl",
+              kind: "point",
+              coords: [
+                [
+                  -34.30504321795435,
+                  -58.94226114124799
+                ]
+              ],
+              name: "Tendido de Redes Subterr\xE1neas",
+              categoryId: "poi",
+              notes: "Zanja madre para cruce de ca\xF1er\xEDas de agua corriente, bitubos de fibra \xF3ptica y tritubo el\xE9ctrico de media tensi\xF3n.",
+              images: [
+                "/streetview/carlina/marker_utility.jpg"
+              ],
+              createdAt: 1792021760481,
+              color: "#D4AF37"
+            },
+            {
+              id: "3x4tffnmv8rhpun",
+              kind: "point",
+              coords: [
+                [
+                  -34.30543802308362,
+                  -58.94204113469875
+                ]
+              ],
+              name: "Acopio de Materiales y \xC1ridos",
+              categoryId: "zones",
+              notes: "Sector de descarga y estiba de pallets de ladrillos cer\xE1micos, bolsas de cemento bajo lona y silos de arena gruesa.",
+              images: [
+                "/streetview/carlina/marker_bricks.jpg"
+              ],
+              createdAt: 1792021768223
+            },
+            {
+              id: "afz7a7pmv8ri5nu",
+              kind: "area",
+              coords: [
+                [
+                  -34.3033506979737,
+                  -58.94114613533021
+                ],
+                [
+                  -34.30225171355496,
+                  -58.941972255706794
+                ],
+                [
+                  -34.302739168096046,
+                  -58.94290566444398
+                ]
+              ],
+              name: "Futuro Parque Central (Nivelaci\xF3n)",
+              categoryId: "green",
+              notes: "\xC1rea verde de uso com\xFAn en etapa de desmonte, perfilado de pendientes pluviales y preparaci\xF3n de suelo para siembra de c\xE9sped.",
+              images: [
+                "/streetview/carlina/area_green_prep.jpg"
+              ],
+              createdAt: 1792021788714
+            },
+            {
+              id: "quog0femv8ri8y0",
+              kind: "point",
+              coords: [
+                [
+                  -34.302836658664745,
+                  -58.941972255706794
+                ]
+              ],
+              name: "Perforaci\xF3n y Pozo de Agua de Obra",
+              categoryId: "green",
+              notes: "Bomba sumergible a segunda napa con tanque cisterna m\xF3vil para abastecimiento de agua a camiones regadores y hormig\xF3n.",
+              images: [
+                "/streetview/carlina/marker_water_well.jpg"
+              ],
+              createdAt: 1792021792968
+            },
+            {
+              id: "vniabx6mv8rir3c",
+              kind: "line",
+              coords: [
+                [
+                  -34.29718201861496,
+                  -58.94428968429566
+                ],
+                [
+                  -34.29774927241289,
+                  -58.94418239593506
+                ],
+                [
+                  -34.29815698371405,
+                  -58.9447832107544
+                ],
+                [
+                  -34.29845833427342,
+                  -58.94484758377076
+                ],
+                [
+                  -34.298972400379526,
+                  -58.94527673721314
+                ],
+                [
+                  -34.29961054703085,
+                  -58.945212364196784
+                ],
+                [
+                  -34.299947344697735,
+                  -58.94501924514771
+                ],
+                [
+                  -34.300567757917264,
+                  -58.945941925048835
+                ],
+                [
+                  -34.30315571791653,
+                  -58.94413948059083
+                ]
+              ],
+              name: "Boulevard Secundario en Apertura",
+              categoryId: "streets",
+              notes: "Traza secundaria de circulaci\xF3n interna. Apertura de caja de calle, tendido de desag\xFCes y conexi\xF3n entre manzanas del barrio.",
+              images: [
+                "/streetview/carlina/path2_pt1.jpg"
+              ],
+              createdAt: 1792021816488,
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Boulevard Secundario - Acceso Norte",
+                  caption: "Apertura de calzada secundaria con tosca seleccionada y cunetas laterales.",
+                  image: "/streetview/carlina/path2_pt1.jpg"
+                },
+                {
+                  index: 1,
+                  title: "Corte y Nivelaci\xF3n de Traza",
+                  caption: "Operaci\xF3n de bulldozer perfilando taludes y desniveles del terreno natural.",
+                  image: "/streetview/carlina/path2_pt2.jpg"
+                },
+                {
+                  index: 2,
+                  title: "Frente de Obras y Manzanas",
+                  caption: "Vista hacia las primeras viviendas unifamiliares con entramados de madera y hormig\xF3n.",
+                  image: "/streetview/carlina/path2_pt3.jpg"
+                },
+                {
+                  index: 3,
+                  title: "Empalme con Red Troncal",
+                  caption: "Cruce de calzada con ca\xF1er\xEDas subterr\xE1neas y amojonamiento de esquinas.",
+                  image: "/streetview/carlina/path2_pt4.jpg"
+                }
+              ]
+            },
+            {
+              id: "x0ddklgmv8rj2qj",
+              kind: "area",
+              coords: [
+                [
+                  -34.302047651903464,
+                  -58.94191216534231
+                ],
+                [
+                  -34.30125800791119,
+                  -58.94244321563355
+                ],
+                [
+                  -34.30084438190469,
+                  -58.94148732510932
+                ],
+                [
+                  -34.30165909785093,
+                  -58.94101696627993
+                ]
+              ],
+              name: "Comedor y Vestuario de Cuadrillas",
+              categoryId: "food",
+              notes: "M\xF3dulo de descanso y comedor para operarios de obra, sanitarios qu\xEDmicos y sector techado para pausas de cuadrilla.",
+              images: [
+                "/streetview/carlina/area_canteen.jpg"
+              ],
+              createdAt: 1792021831579
+            },
+            {
+              id: "hv1waflmv8rj7lr",
+              kind: "point",
+              coords: [
+                [
+                  -34.301608961713214,
+                  -58.94183630101499
+                ]
+              ],
+              name: "Puesto de Seguridad e Hidrataci\xF3n",
+              categoryId: "food",
+              notes: "Puesto de hidrataci\xF3n con dispenser de agua fresca, botiqu\xEDn de primeros auxilios y entrega de elementos de protecci\xF3n personal (EPP).",
+              images: [
+                "/streetview/carlina/marker_firstaid.jpg"
+              ],
+              createdAt: 1792021837887
             }
           ],
           hiddenCategoryIds: [],
           createdAt: 1791992584008,
-          updatedAt: 1791994258267
+          updatedAt: 1792033561349
         },
         i6666hqmv8mdpge: {
           id: "i6666hqmv8mdpge",
