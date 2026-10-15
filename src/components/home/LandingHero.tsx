@@ -17,20 +17,9 @@ export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
       <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-96 w-[700px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-amber-500/15 via-orange-500/10 to-emerald-500/15 blur-3xl" aria-hidden="true" />
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-10">
           {/* Left Column: Headline, Description & CTAs */}
           <div className="flex flex-col items-start text-left lg:col-span-7">
-            {/* Top Value Pill */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 px-3.5 py-1 text-xs font-semibold text-ink shadow-2xs backdrop-blur-sm">
-              <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-              <span className="text-amber-700 dark:text-amber-400 font-bold">{t('heroTopBadgeTitle')}</span>
-              <span className="text-muted/60">·</span>
-              <span className="text-muted flex items-center gap-1">
-                <FootprintsIcon className="h-3.5 w-3.5 text-amber-500" />
-                {t('heroTopBadgeSub')}
-              </span>
-            </div>
-
             {/* Headline */}
             <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-[38px] xl:text-[42px] leading-tight sm:leading-[1.18]">
               {t('heroTitlePart1')}{' '}
@@ -70,9 +59,20 @@ export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
             </div>
           </div>
 
-          {/* Right Column: Hero Visual Graphic */}
-          <div className="relative mt-8 lg:mt-0 lg:col-span-5">
-            <div className="relative overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
+          {/* Right Column: Pill Badge & Hero Visual Graphic */}
+          <div className="flex flex-col items-start lg:col-span-5 mt-4 lg:mt-0">
+            {/* Top Value Pill aligned with headline */}
+            <div className="mb-3.5 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 px-3.5 py-1 text-xs font-semibold text-ink shadow-2xs backdrop-blur-sm self-start">
+              <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-amber-700 dark:text-amber-400 font-bold">{t('heroTopBadgeTitle')}</span>
+              <span className="text-muted/60">·</span>
+              <span className="text-muted flex items-center gap-1">
+                <FootprintsIcon className="h-3.5 w-3.5 text-amber-500" />
+                {t('heroTopBadgeSub')}
+              </span>
+            </div>
+
+            <div className="relative w-full overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
               <img
                 src="/images/hero-map-showcase.jpg"
                 alt="MapFlex - Plataforma de trazado satelital interactivo"
