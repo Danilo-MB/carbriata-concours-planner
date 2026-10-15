@@ -144,3 +144,26 @@ export function measureFeature(feature: PlanFeature): {primary: string;secondary
   }
   return { primary: formatCoords(feature.coords[0]) };
 }
+
+/**
+ * Calculates the geographic point located at 50% along a polyline's total distance.
+ */
+export function polylineMidpoint(coords: LatLng[]): LatLng {
+  if (!coords || coords.length === 0) return [0, 0];
+  if (coords.length === 1) return coords[0];
+  const total = pathLength(coords);
+  if (total === 0) return coords[0];
+  const target = total / 2;
+  let acc = 0;
+  for (let i = 1; i < coords.length; i++) {
+    const segLen = distance(coords[i - 1], coords[i]);
+    if (acc + segLen >= target) {
+      const ratio = segLen > 0 ? (target - acc) / segLen : 0;
+      const lat = coords[i - 1][0] + (coords[i][0] - coords[i - 1][0]) * ratio;
+      const lng = coords[i - 1][1] + (coords[i][1] - coords[i - 1][1]) * ratio;
+      return [round6(lat), round6(lng)];
+    }
+    acc += segLen;
+  }
+  return coords[Math.floor(coords.length / 2)];
+}

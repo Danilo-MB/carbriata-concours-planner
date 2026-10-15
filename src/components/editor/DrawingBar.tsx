@@ -35,7 +35,7 @@ export function DrawingBar({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -8 }}
         transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-        className="pointer-events-auto flex w-full max-w-sm flex-col gap-1.5 rounded-2xl bg-ink/95 p-2.5 text-on-ink shadow-float backdrop-blur-md sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-2 sm:rounded-xl sm:bg-ink sm:py-1.5 sm:pl-3.5 sm:pr-1.5">
+        className="pointer-events-auto flex w-full max-w-sm flex-col gap-1.5 rounded-2xl border border-white/20 bg-zinc-900/95 p-2.5 text-white shadow-float backdrop-blur-md dark:border-zinc-700/80 dark:bg-zinc-950/95 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-2 sm:rounded-xl sm:py-1.5 sm:pl-3.5 sm:pr-1.5">
         
         {/* Mobile Info Row / Desktop Inline Text */}
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:justify-start">
@@ -44,7 +44,7 @@ export function DrawingBar({
             <p className="truncate text-xs leading-snug text-white/95 sm:text-sm sm:overflow-visible sm:whitespace-normal">
               {getInstruction(tool, pointCount, t)}
               {multiPoint && pointCount > 0 && (
-                <span className="hidden tabular-nums text-on-ink/80 sm:inline">
+                <span className="hidden tabular-nums text-zinc-300 sm:inline">
                   {' '}· {pointCount} {pointCount === 1 ? t('vertex') : t('vertices')}
                   {draftMetrics && (
                     <span className="ml-1.5 font-semibold text-amber-400">· {draftMetrics}</span>
@@ -72,7 +72,7 @@ export function DrawingBar({
               disabled={pointCount === 0}
               aria-label={t('undo')}
               title={`${t('undo')} (Backspace)`}
-              className="flex h-7 items-center gap-1 rounded-lg px-2 text-xs font-medium text-white/90 transition-colors hover:bg-on-ink/10 disabled:opacity-30 disabled:hover:bg-transparent sm:grid sm:h-9 sm:w-9 sm:p-0 sm:place-items-center">
+              className="flex h-7 items-center gap-1 rounded-lg px-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/15 disabled:opacity-30 disabled:hover:bg-transparent sm:grid sm:h-9 sm:w-9 sm:p-0 sm:place-items-center">
               <Undo2Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
               <span className="sm:hidden">{t('undo')}</span>
             </button>
@@ -81,7 +81,7 @@ export function DrawingBar({
           <button
             type="button"
             onClick={onCancel}
-            className="h-7 shrink-0 whitespace-nowrap rounded-lg px-2.5 text-xs font-medium text-white/90 transition-colors duration-150 hover:bg-on-ink/10 sm:h-9 sm:px-3 sm:text-sm">
+            className="h-7 shrink-0 whitespace-nowrap rounded-lg px-2.5 text-xs font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/15 sm:h-9 sm:px-3 sm:text-sm">
             {t('cancel')}
           </button>
 
@@ -90,7 +90,7 @@ export function DrawingBar({
               type="button"
               onClick={onFinish}
               disabled={!canFinish}
-              className="h-7 shrink-0 whitespace-nowrap rounded-lg bg-accent px-3 text-xs font-semibold text-white shadow-sm transition-colors duration-150 disabled:bg-on-ink/15 disabled:text-on-ink/40 sm:h-9 sm:px-3.5 sm:text-sm">
+              className="h-7 shrink-0 whitespace-nowrap rounded-lg bg-accent px-3 text-xs font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-accent/90 disabled:bg-white/15 disabled:text-white/40 sm:h-9 sm:px-3.5 sm:text-sm">
               {t('finish')}
             </button>
           )}
