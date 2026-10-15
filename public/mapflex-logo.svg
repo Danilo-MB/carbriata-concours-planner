@@ -1,82 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" fill="none">
-  <defs>
-    <linearGradient id="full-mono-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="100%" stop-color="#0B0F17" />
-    </linearGradient>
-    <linearGradient id="full-mono-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#334155" />
-      <stop offset="100%" stop-color="#172033" />
-    </linearGradient>
-    <linearGradient id="full-mono-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="100%" stop-color="#0B0F17" />
-    </linearGradient>
-
-    <linearGradient id="full-mono-pin" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#E2E8F0" />
-    </linearGradient>
-
-    <filter id="full-mono-shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="2" stdDeviation="1.8" flood-color="#000000" flood-opacity="0.65" />
-    </filter>
-  </defs>
-
-  <!-- Logo Mark on the left (scaled down to 38x38 inside 48 height) -->
-  <g transform="translate(4, 5) scale(0.8)">
-    <path d="M6 16.5L18 11.5V37.5L6 42.5V16.5Z" fill="url(#full-mono-fold-left)" stroke="#475569" stroke-width="0.75" />
-    <path d="M18 11.5L30 17.5V43.5L18 37.5V11.5Z" fill="url(#full-mono-fold-mid)" stroke="#475569" stroke-width="0.75" />
-    <path d="M30 17.5L42 12.5V38.5L30 43.5V17.5Z" fill="url(#full-mono-fold-right)" stroke="#475569" stroke-width="0.75" />
-
-    <path d="M18 11.5V37.5" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1" />
-    <path d="M30 17.5V43.5" stroke="#000000" stroke-opacity="0.6" stroke-width="1" />
-
-    <!-- Grid lines -->
-    <path d="M6 25L18 20 M6 33.5L18 28.5" stroke="#94A3B8" stroke-opacity="0.2" stroke-width="0.75" stroke-dasharray="2 2" />
-    <path d="M18 20L30 26 M18 28.5L30 34.5" stroke="#94A3B8" stroke-opacity="0.2" stroke-width="0.75" stroke-dasharray="2 2" />
-    <path d="M30 26L42 21 M30 34.5L42 29.5" stroke="#94A3B8" stroke-opacity="0.2" stroke-width="0.75" stroke-dasharray="2 2" />
-
-    <!-- Area 1 -->
-    <path d="M8 22L16 18.5V30.5L8 34V22Z" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.8" />
-    <circle cx="8" cy="22" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-    <circle cx="16" cy="18.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-    <circle cx="16" cy="30.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-    <circle cx="8" cy="34" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-
-    <!-- Area 3 -->
-    <path d="M32 23.5L40 20V31.5L32 35V23.5Z" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.8" />
-    <circle cx="32" cy="23.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-    <circle cx="40" cy="20" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-    <circle cx="40" cy="31.5" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-    <circle cx="32" cy="35" r="0.8" fill="#FFFFFF" fill-opacity="0.6" />
-
-    <!-- Area 2 (Center) -->
-    <path d="M20 20L28 24V35L20 31V20Z" fill="#FFFFFF" fill-opacity="0.18" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="0.9" />
-    <circle cx="20" cy="20" r="1" fill="#FFFFFF" />
-    <circle cx="28" cy="24" r="1" fill="#FFFFFF" />
-    <circle cx="28" cy="35" r="1" fill="#FFFFFF" />
-    <circle cx="20" cy="31" r="1" fill="#FFFFFF" />
-
-    <!-- Dotted Trail -->
-    <path d="M12 26.5 C 15 25 17 21 21 23 C 24 24.5 26 27 30 25 C 33 23.5 36 25.5 36 25.5" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.5 1.5" stroke-opacity="0.65" />
-
-    <!-- Target Ground Pulse -->
-    <ellipse cx="24.5" cy="26" rx="5" ry="2" fill="#FFFFFF" fill-opacity="0.14" />
-    <ellipse cx="24.5" cy="26" rx="4" ry="1.6" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="0.8" stroke-dasharray="2 1.5" />
-    <circle cx="24.5" cy="26" r="1.2" fill="#FFFFFF" />
-
-    <!-- Pin -->
-    <g filter="url(#full-mono-shadow)">
-      <path d="M24.5 5.5 C 21.46 5.5 19 7.96 19 11 C 19 15.3 23.8 21.6 24.15 22.1 C 24.32 22.3 24.68 22.3 24.85 22.1 C 25.2 21.6 30 15.3 30 11 C 30 7.96 27.54 5.5 24.5 5.5 Z" fill="url(#full-mono-pin)" stroke="#0F172A" stroke-width="0.6" />
-      <circle cx="24.5" cy="11" r="2.4" fill="#0B0F19" />
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" fill="none">
+  <!-- Subtle Pin Icon at the beginning -->
+  <g transform="translate(4, 7)">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M12 2C7.858 2 4.5 5.358 4.5 9.5C4.5 14.364 10.916 21.284 11.232 21.623C11.638 22.06 12.362 22.06 12.768 21.623C13.084 21.284 19.5 14.364 19.5 9.5C19.5 5.358 16.142 2 12 2ZM12 12.5C10.343 12.5 9 11.157 9 9.5C9 7.843 10.343 6.5 12 6.5C13.657 6.5 15 7.843 15 9.5C15 11.157 13.657 12.5 12 12.5Z"
+        fill="#0F172A"
+      />
+    </svg>
   </g>
 
-  <!-- Typography: MapFlex (WITHOUT .APP) -->
-  <g transform="translate(48, 31)">
-    <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" letter-spacing="-0.03em" fill="#0F172A">
-      Map<tspan fill="#64748B">Flex</tspan>
-    </text>
-  </g>
+  <!-- Typography: mapflex as the logo -->
+  <text x="32" y="24.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" letter-spacing="-0.04em">
+    <tspan fill="#0F172A">map</tspan><tspan fill="#64748B" font-weight="600">flex</tspan>
+  </text>
 </svg>

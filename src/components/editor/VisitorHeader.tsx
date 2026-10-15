@@ -5,7 +5,7 @@ import { ThemeToggle } from '../ThemeToggle';
 import { PlaceSearch } from '../PlaceSearch';
 import { LanguageToggle } from '../LanguageToggle';
 import { ShareModal } from './ShareModal';
-import { MapFlexBadge } from '../common/MapFlexLogo';
+import { MapFlexLogo } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { canSharePlan } from '../../utils/plan';
@@ -32,12 +32,9 @@ export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: Visito
           to="/"
           aria-label={t('backToPlans')}
           title={t('backToPlans')}
-          className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-ink transition-colors duration-150 hover:bg-subtle">
+          className="flex items-center gap-2 rounded-lg px-2 py-1 text-ink transition-colors duration-150 hover:bg-subtle">
           <ArrowLeftIcon className="h-4 w-4 text-muted" aria-hidden="true" />
-          <MapFlexBadge size={28} />
-          <span className="hidden md:inline-flex font-black text-xs tracking-tight text-ink">
-            Map<span className="text-slate-500 dark:text-slate-400 font-semibold">Flex</span>
-          </span>
+          <MapFlexLogo variant="full" size="sm" />
         </Link>
 
         {/* Project Name & Location */}

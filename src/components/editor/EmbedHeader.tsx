@@ -2,7 +2,7 @@ import React from 'react';
 import { ExternalLinkIcon, GlobeIcon, Maximize2Icon } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { LanguageToggle } from '../LanguageToggle';
-import { MapFlexBadge } from '../common/MapFlexLogo';
+import { MapFlexBadge, MapFlexLogo } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
 import type { Project } from '../../types/plan';
 
@@ -62,10 +62,10 @@ export function EmbedHeader({ project }: EmbedHeaderProps) {
           href="https://mapflex.app"
           target="_blank"
           rel="noopener noreferrer"
-          title="MapFlex - Mapas Interactivos"
-          className="hidden md:inline-flex items-center gap-1 text-[10px] font-medium text-muted hover:text-ink transition-colors">
+          title="mapflex - Planos Interactivos"
+          className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-medium text-muted hover:text-ink transition-colors">
           <span>by</span>
-          <span className="font-extrabold text-ink">Map<span className="text-sky-500">Flex</span></span>
+          <MapFlexLogo variant="full" size="xs" />
         </a>
 
         <LanguageToggle className="h-7 px-1.5 text-[11px] sm:h-8 sm:px-2" />
