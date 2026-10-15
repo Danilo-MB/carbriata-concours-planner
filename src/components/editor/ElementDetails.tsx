@@ -78,7 +78,7 @@ export function ElementDetails({
           <ActionButton
             onClick={() => onOpenStreetView(0)}
             icon={<FootprintsIcon className="h-4 w-4 text-amber-500" aria-hidden />}
-            label="Street View"
+            label="Recorrido 360°"
           />
         )}
         <button

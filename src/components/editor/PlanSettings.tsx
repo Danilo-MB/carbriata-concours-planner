@@ -188,7 +188,7 @@ export function PlanSettings({ project, editor, onRename, onSaveCenter, onGoToCe
             Exportar
           </h3>
           <p className="mt-1 text-sm text-muted">
-            Descarga todos los elementos en formato GeoJSON para abrir en Google Earth, QGIS o compartir con proveedores.
+            Descarga todos los elementos en formato GeoJSON para abrir en visores 3D, herramientas de mapas o compartir con proveedores.
           </p>
           <button
             type="button"

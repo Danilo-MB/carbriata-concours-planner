@@ -114,10 +114,10 @@ export function ElementList({ project, readOnly = false, onSelect, onToggleLayer
                                 onSelect(f.id);
                               }
                             }}
-                            title="Recorrer en Street View"
+                            title="Recorrer en paseo virtual 360°"
                             className="inline-flex shrink-0 items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-500/30 transition-colors">
                             <FootprintsIcon className="h-3 w-3" />
-                            <span>Street View</span>
+                            <span>Recorrido 360°</span>
                           </button>
                         )}
                         {f.kind !== 'point' &&

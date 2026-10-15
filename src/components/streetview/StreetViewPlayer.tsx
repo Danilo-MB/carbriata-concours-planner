@@ -227,7 +227,7 @@ export function StreetViewPlayer({
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/90 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-black shadow-md backdrop-blur-md">
                 <FootprintsIcon className="h-3 w-3" />
-                Street View Virtual
+                Recorrido Virtual 360°
               </span>
               <span className="rounded-md bg-black/60 px-2 py-0.5 text-xs font-semibold text-white/90 backdrop-blur-md">
                 Paso {currentIndex + 1} de {waypoints.length}
@@ -304,7 +304,7 @@ export function StreetViewPlayer({
               <button
                 type="button"
                 onClick={onClose}
-                aria-label="Cerrar Street View"
+                aria-label="Cerrar recorrido virtual"
                 className="grid h-9 w-9 place-items-center rounded-xl border border-white/20 bg-black/60 text-white backdrop-blur-md transition-all hover:bg-red-500/80 hover:border-red-400 active:scale-95"
               >
                 <XIcon className="h-4 w-4" />

@@ -91,7 +91,7 @@ export function RouteWaypointManager({
             </span>
             <div>
               <h4 className="text-sm font-bold text-ink flex items-center gap-1.5">
-                Street View Virtual
+                Recorrido Virtual 360°
               </h4>
               <p className="text-[11px] text-muted">
                 {photosCount} de {waypoints.length} puntos con foto a nivel de suelo
@@ -192,7 +192,7 @@ export function RouteWaypointManager({
                         e.stopPropagation();
                         onOpenStreetView(idx);
                       }}
-                      title="Ver Street View desde aquí"
+                      title="Ver recorrido desde aquí"
                       className="grid h-7 w-7 place-items-center rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
                     >
                       <FootprintsIcon className="h-3.5 w-3.5" />

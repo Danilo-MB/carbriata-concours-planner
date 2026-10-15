@@ -186,7 +186,7 @@ export function PlanEditor({
                 <span className="grid h-6 w-6 place-items-center rounded-lg bg-amber-500 text-black shadow-sm">
                   <FootprintsIcon className="h-3.5 w-3.5" />
                 </span>
-                <span>Paseo Street View 360</span>
+                <span>Recorrido Virtual 360°</span>
               </button>
             </div>
           )}
@@ -285,7 +285,7 @@ export function PlanEditor({
               editor.updateFeature(route.id, { routeWaypoints: samples });
               editor.setNewlyCreatedRoute(null);
               handleOpenStreetView({ ...route, routeWaypoints: samples }, 0);
-              toast.success('¡Fotos de Street View asignadas a tu ruta!');
+              toast.success('¡Fotos asignadas a tu recorrido virtual!');
             }}
             onOpenWaypointManager={() => {
               const route = editor.newlyCreatedRoute!;

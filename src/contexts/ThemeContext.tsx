@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { applyTheme, hasSavedTheme, readTheme, saveTheme, type Theme } from '../theme';
+import { applyTheme, type Theme } from '../theme';
 
 interface ThemeContextValue {
   theme: Theme;
@@ -8,29 +8,16 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-export function ThemeProvider({ children }: {children: React.ReactNode;}) {
-  const [theme, setTheme] = useState<Theme>(readTheme);
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme] = useState<Theme>('dark');
 
   useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
-
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => {
-      if (hasSavedTheme()) return;
-      setTheme(media.matches ? 'dark' : 'light');
-    };
-    media.addEventListener('change', onChange);
-    return () => media.removeEventListener('change', onChange);
+    applyTheme('dark');
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme((current) => {
-      const next = current === 'dark' ? 'light' : 'dark';
-      saveTheme(next);
-      return next;
-    });
+    // Hardcoded to dark mode for now
+    applyTheme('dark');
   }, []);
 
   return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;

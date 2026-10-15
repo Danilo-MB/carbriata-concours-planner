@@ -221,7 +221,7 @@ function routeBadgeIcon(feature: PlanFeature, category: Category, selected: bool
         <span class="route-badge-name">${name}</span>
         <span class="route-badge-sep">·</span>
         <span class="route-badge-len">${len}</span>
-        ${hasStreetView ? '<span class="route-badge-icon" title="Street View">🚶‍♂️</span>' : hasPhotos ? '<span class="route-badge-icon" title="Fotos">📷</span>' : ''}
+        ${hasStreetView ? '<span class="route-badge-icon" title="Recorrido 360°">🚶‍♂️</span>' : hasPhotos ? '<span class="route-badge-icon" title="Fotos">📷</span>' : ''}
       </div>
     </div>
   `;

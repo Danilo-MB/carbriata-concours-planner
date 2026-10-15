@@ -70,7 +70,7 @@ export function ProjectsPage() {
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
-            <ThemeToggle className="h-9 w-9" />
+            {/* <ThemeToggle className="h-9 w-9" /> */}
             <UserMenu />
           </div>
         </div>

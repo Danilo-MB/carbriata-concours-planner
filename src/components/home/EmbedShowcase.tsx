@@ -72,7 +72,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
                         : 'text-muted hover:text-ink'
                     }`}>
                     <FootprintsIcon className="h-3.5 w-3.5" />
-                    <span>Street View 360</span>
+                    <span>Recorrido 360°</span>
                   </button>
                   <button
                     type="button"
@@ -99,7 +99,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
                   <div className="relative h-full w-full">
                     <img
                       src="/streetview/point2_promenade.jpg"
-                      alt="MapFlex - Paseo Street View virtual a nivel de suelo"
+                      alt="MapFlex - Paseo virtual a nivel de suelo"
                       className="h-full w-full object-cover transition-opacity duration-300"
                       loading="lazy"
                     />

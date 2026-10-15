@@ -69,7 +69,7 @@ export function EmbedHeader({ project }: EmbedHeaderProps) {
         </a>
 
         <LanguageToggle className="h-7 px-1.5 text-[11px] sm:h-8 sm:px-2" />
-        <ThemeToggle className="h-7 w-7 sm:h-8 sm:w-8" />
+        {/* <ThemeToggle className="h-7 w-7 sm:h-8 sm:w-8" /> */}
       </div>
     </header>
   );

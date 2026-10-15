@@ -154,7 +154,7 @@ export function SidePanel({
                       </span>
                       <div className="min-w-0">
                         <h3 className="truncate text-xs font-bold text-ink">
-                          Paseo Street View 360
+                          Recorrido Virtual 360°
                         </h3>
                         <p className="truncate text-[11px] text-muted">
                           {streetViewRoutes.length} {streetViewRoutes.length === 1 ? 'recorrido interactivo' : 'recorridos interactivos'}

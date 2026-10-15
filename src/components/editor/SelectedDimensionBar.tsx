@@ -103,11 +103,11 @@ export function SelectedDimensionBar({
             <button
               type="button"
               onClick={() => onOpenStreetView(0)}
-              title="Abrir Street View"
-              aria-label="Abrir Street View"
+              title="Abrir recorrido 360°"
+              aria-label="Abrir recorrido 360°"
               className="inline-flex h-7 items-center gap-1 rounded-lg bg-amber-500/25 px-2 text-xs font-bold text-amber-300 transition-colors hover:bg-amber-500/40 hover:text-amber-200">
               <FootprintsIcon className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">Street View</span>
+              <span className="hidden sm:inline">Recorrido 360°</span>
             </button>
           )}
           <button

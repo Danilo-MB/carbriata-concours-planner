@@ -74,11 +74,11 @@ export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: Visito
             <button
               type="button"
               onClick={() => onOpenStreetView(streetViewRoute, 0)}
-              title="Recorrer evento en Street View virtual"
+              title="Recorrer en paseo virtual 360°"
               className="flex h-9 items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3 text-xs font-bold text-black shadow-sm transition-all hover:scale-105 active:scale-95"
             >
               <FootprintsIcon className="h-4 w-4" />
-              <span>Street View</span>
+              <span>Recorrido 360°</span>
             </button>
           );
         })()}
@@ -96,7 +96,7 @@ export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: Visito
         )}
 
         <LanguageToggle />
-        <ThemeToggle className="h-9 w-9 shrink-0" />
+        {/* <ThemeToggle className="h-9 w-9 shrink-0" /> */}
 
         {/* Search Place (Desktop) */}
         <div className="hidden w-64 md:block lg:w-72">

@@ -101,7 +101,7 @@ export function VisitorElementDetails({
             </span>
             <div className="min-w-0 flex-1">
               <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                Street View Virtual
+                Recorrido Virtual 360°
               </span>
               <h3 className="truncate text-sm font-bold text-ink sm:text-base">
                 Recorrer camino foto a foto
@@ -119,7 +119,7 @@ export function VisitorElementDetails({
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-2.5 px-4 text-xs font-bold text-black shadow-md hover:from-amber-400 hover:to-orange-400 transition-all active:scale-98"
           >
             <FootprintsIcon className="h-4 w-4" />
-            Comenzar paseo Street View
+            Comenzar recorrido virtual
           </button>
         </div>
       )}

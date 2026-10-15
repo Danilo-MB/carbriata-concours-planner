@@ -128,7 +128,7 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
         </div>
 
         <LanguageToggle className="h-8 px-2 sm:h-9 sm:px-2.5" />
-        <ThemeToggle className="h-8 w-8 shrink-0 sm:h-10 sm:w-10" />
+        {/* <ThemeToggle className="h-8 w-8 shrink-0 sm:h-10 sm:w-10" /> */}
         <UserMenu />
 
         {/* Place Search on desktop */}

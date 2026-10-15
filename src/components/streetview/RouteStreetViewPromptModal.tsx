@@ -79,7 +79,7 @@ export function RouteStreetViewPromptModal({
                 </span>
               </div>
               <h2 className="text-lg font-bold text-ink sm:text-xl">
-                ¿Quieres activar el modo Street View virtual?
+                ¿Quieres activar el recorrido virtual 360°?
               </h2>
             </div>
           </div>
@@ -100,7 +100,7 @@ export function RouteStreetViewPromptModal({
           <div className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-transparent p-4 text-xs sm:text-sm text-ink leading-relaxed">
             <p className="font-semibold text-ink flex items-center gap-1.5">
               <SparklesIcon className="h-4 w-4 text-amber-500 shrink-0" />
-              Emula la experiencia de Google Street View sobre tu plano
+              Ofrece una experiencia inmersiva a nivel del suelo sobre tu plano
             </p>
             <p className="mt-1 text-muted">
               Puedes subir fotos en cada punto de tu recorrido. Al explorar tu mapa, los visitantes podrán <strong>hacer clic y caminar virtualmente</strong> de foto en foto con indicadores de dirección, nombres de zonas y mini-mapa en tiempo real.
