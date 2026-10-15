@@ -16,6 +16,8 @@ import { ProjectsService } from './projects.service';
 import { AuthService } from '../auth/auth.service';
 import type { FeatureEntity, ProjectEntity } from '../storage/storage.service';
 
+const UNLIMITED_TIER_EMAIL = 'dmarinobata@gmail.com';
+
 @Controller('projects')
 export class ProjectsController {
   constructor(
@@ -66,6 +68,34 @@ export class ProjectsController {
   async create(@Body() body: Partial<ProjectEntity>, @Headers('authorization') auth?: string) {
     const user = await this.getUser(auth);
     this.checkVerified(user);
+
+    const userEmail = (user?.email || '').toLowerCase().trim();
+    const isUnlimited = userEmail === UNLIMITED_TIER_EMAIL;
+
+    if (!isUnlimited) {
+      let existing: ProjectEntity | undefined;
+      if (body.id) {
+        try {
+          existing = await this.projectsService.getOne(body.id);
+        } catch {
+          existing = undefined;
+        }
+      }
+
+      const isExistingOwned = existing && !existing.isDeleted && (
+        existing.userId === user?.id || (userEmail && existing.authorEmail?.toLowerCase() === userEmail)
+      );
+
+      if (!isExistingOwned) {
+        const activeCount = await this.projectsService.countActiveProjectsByUser(user?.id, userEmail);
+        if (activeCount >= 1) {
+          throw new ForbiddenException(
+            'Has alcanzado el límite de 1 plano guardado en la nube. Los planos adicionales funcionan de manera local en tu navegador.'
+          );
+        }
+      }
+    }
+
     return this.projectsService.create({
       ...body,
       userId: user?.id,
@@ -104,6 +134,19 @@ export class ProjectsController {
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException('Solo el administrador o el autor del plano pueden restaurarlo.');
     }
+
+    const userEmail = (user?.email || '').toLowerCase().trim();
+    const isUnlimited = userEmail === UNLIMITED_TIER_EMAIL;
+
+    if (!isUnlimited) {
+      const activeCount = await this.projectsService.countActiveProjectsByUser(user?.id, userEmail);
+      if (activeCount >= 1) {
+        throw new ForbiddenException(
+          'No puedes restaurar este plano en la nube porque ya tienes 1 plano activo. Elimina el plano activo primero o utilízalo localmente.'
+        );
+      }
+    }
+
     return this.projectsService.restore(id);
   }
 

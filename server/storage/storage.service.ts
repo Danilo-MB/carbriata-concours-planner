@@ -462,6 +462,20 @@ export class StorageService implements OnModuleInit {
     return restored;
   }
 
+  /**
+   * Count active (non-deleted) projects owned by a specific user.
+   */
+  async countActiveProjectsByUser(userId?: string, email?: string): Promise<number> {
+    const projects = await this.findProjects();
+    const cleanEmail = email ? email.toLowerCase().trim() : '';
+    return projects.filter((p) => {
+      if (p.isDeleted) return false;
+      if (userId && p.userId === userId) return true;
+      if (cleanEmail && p.authorEmail && p.authorEmail.toLowerCase().trim() === cleanEmail) return true;
+      return false;
+    }).length;
+  }
+
   // Features within project
   async updateProjectFeatures(projectId: string, features: FeatureEntity[]): Promise<ProjectEntity | null> {
     const project = await this.findProjectById(projectId);

@@ -3,6 +3,8 @@ import { CrosshairIcon, DownloadIcon, GlobeIcon, HouseIcon, PlusIcon } from 'luc
 import { basemaps } from '../../data/basemaps';
 import { LayerRow } from './LayerRow';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { canExportGeoJSON } from '../../utils/plan';
 import type { Editor } from '../../hooks/useEditor';
 import type { Basemap, Project } from '../../types/plan';
 
@@ -17,6 +19,8 @@ interface PlanSettingsProps {
 
 export function PlanSettings({ project, editor, onRename, onSaveCenter, onGoToCenter, onExport }: PlanSettingsProps) {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const showGeoJSON = canExportGeoJSON(user);
   const [expandedLayer, setExpandedLayer] = useState<string | null>(null);
   const inputClass =
     'mt-1 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:outline-none';
@@ -177,23 +181,25 @@ export function PlanSettings({ project, editor, onRename, onSaveCenter, onGoToCe
         </ul>
       </section>
 
-      {/* Export Section */}
-      <section aria-labelledby="plan-export" className="px-4 py-5">
-        <h3 id="plan-export" className="text-sm font-semibold text-ink">
-          Exportar
-        </h3>
-        <p className="mt-1 text-sm text-muted">
-          Descarga todos los elementos en formato GeoJSON para abrir en Google Earth, QGIS o compartir con proveedores.
-        </p>
-        <button
-          type="button"
-          onClick={onExport}
-          disabled={project.features.length === 0}
-          className="mt-3 inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg border border-line px-3 text-sm font-medium text-ink transition-colors duration-150 hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-50 active:scale-95">
-          <DownloadIcon className="h-4 w-4" aria-hidden="true" />
-          {t('exportGeoJSON')}
-        </button>
-      </section>
+      {/* Export Section (Only for unlimited tier) */}
+      {showGeoJSON && (
+        <section aria-labelledby="plan-export" className="px-4 py-5">
+          <h3 id="plan-export" className="text-sm font-semibold text-ink">
+            Exportar
+          </h3>
+          <p className="mt-1 text-sm text-muted">
+            Descarga todos los elementos en formato GeoJSON para abrir en Google Earth, QGIS o compartir con proveedores.
+          </p>
+          <button
+            type="button"
+            onClick={onExport}
+            disabled={project.features.length === 0}
+            className="mt-3 inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg border border-line px-3 text-sm font-medium text-ink transition-colors duration-150 hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-50 active:scale-95">
+            <DownloadIcon className="h-4 w-4" aria-hidden="true" />
+            {t('exportGeoJSON')}
+          </button>
+        </section>
+      )}
     </div>
   );
 }

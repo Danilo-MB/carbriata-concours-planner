@@ -97473,6 +97473,19 @@ var StorageService = class {
     }
     return restored;
   }
+  /**
+   * Count active (non-deleted) projects owned by a specific user.
+   */
+  async countActiveProjectsByUser(userId, email) {
+    const projects = await this.findProjects();
+    const cleanEmail = email ? email.toLowerCase().trim() : "";
+    return projects.filter((p) => {
+      if (p.isDeleted) return false;
+      if (userId && p.userId === userId) return true;
+      if (cleanEmail && p.authorEmail && p.authorEmail.toLowerCase().trim() === cleanEmail) return true;
+      return false;
+    }).length;
+  }
   // Features within project
   async updateProjectFeatures(projectId, features) {
     const project = await this.findProjectById(projectId);
@@ -105516,6 +105529,9 @@ var ProjectsService = class {
     if (!restored) throw new NotFoundException(`Proyecto "${id}" no encontrado.`);
     return restored;
   }
+  async countActiveProjectsByUser(userId, email) {
+    return this.storage.countActiveProjectsByUser(userId, email);
+  }
   // Feature operations for map elements
   async syncFeatures(projectId, features) {
     const project = await this.storage.updateProjectFeatures(projectId, features);
@@ -105539,6 +105555,7 @@ ProjectsService = __decorateClass([
 ], ProjectsService);
 
 // server/projects/projects.controller.ts
+var UNLIMITED_TIER_EMAIL = "dmarinobata@gmail.com";
 var ProjectsController = class {
   constructor(projectsService, authService) {
     this.projectsService = projectsService;
@@ -105579,6 +105596,27 @@ var ProjectsController = class {
   async create(body, auth) {
     const user = await this.getUser(auth);
     this.checkVerified(user);
+    const userEmail = (user?.email || "").toLowerCase().trim();
+    const isUnlimited = userEmail === UNLIMITED_TIER_EMAIL;
+    if (!isUnlimited) {
+      let existing;
+      if (body.id) {
+        try {
+          existing = await this.projectsService.getOne(body.id);
+        } catch {
+          existing = void 0;
+        }
+      }
+      const isExistingOwned = existing && !existing.isDeleted && (existing.userId === user?.id || userEmail && existing.authorEmail?.toLowerCase() === userEmail);
+      if (!isExistingOwned) {
+        const activeCount = await this.projectsService.countActiveProjectsByUser(user?.id, userEmail);
+        if (activeCount >= 1) {
+          throw new ForbiddenException(
+            "Has alcanzado el l\xEDmite de 1 plano guardado en la nube. Los planos adicionales funcionan de manera local en tu navegador."
+          );
+        }
+      }
+    }
     return this.projectsService.create({
       ...body,
       userId: user?.id,
@@ -105610,6 +105648,16 @@ var ProjectsController = class {
     const project = await this.projectsService.getOne(id);
     if (!this.checkCanEditOrDelete(project, user)) {
       throw new ForbiddenException("Solo el administrador o el autor del plano pueden restaurarlo.");
+    }
+    const userEmail = (user?.email || "").toLowerCase().trim();
+    const isUnlimited = userEmail === UNLIMITED_TIER_EMAIL;
+    if (!isUnlimited) {
+      const activeCount = await this.projectsService.countActiveProjectsByUser(user?.id, userEmail);
+      if (activeCount >= 1) {
+        throw new ForbiddenException(
+          "No puedes restaurar este plano en la nube porque ya tienes 1 plano activo. Elimina el plano activo primero o util\xEDzalo localmente."
+        );
+      }
     }
     return this.projectsService.restore(id);
   }

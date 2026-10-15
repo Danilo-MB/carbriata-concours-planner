@@ -65,6 +65,10 @@ export class ProjectsService {
     return restored;
   }
 
+  async countActiveProjectsByUser(userId?: string, email?: string): Promise<number> {
+    return this.storage.countActiveProjectsByUser(userId, email);
+  }
+
   // Feature operations for map elements
   async syncFeatures(projectId: string, features: FeatureEntity[]): Promise<ProjectEntity> {
     const project = await this.storage.updateProjectFeatures(projectId, features);

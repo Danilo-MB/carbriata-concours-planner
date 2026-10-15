@@ -10,6 +10,7 @@ import { MapFlexBadge } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProjects } from '../../contexts/ProjectsContext';
+import { canSharePlan } from '../../utils/plan';
 import type { PlaceResult, Project, ViewMode } from '../../types/plan';
 
 interface EditorHeaderProps {
@@ -21,10 +22,11 @@ interface EditorHeaderProps {
 
 export function EditorHeader({ project, mode, onModeChange, onPickPlace }: EditorHeaderProps) {
   const { t } = useLanguage();
-  const { isAuthenticated, openAuthModal } = useAuth();
+  const { isAuthenticated, user, openAuthModal } = useAuth();
   const { saveLocalToCloud } = useProjects();
   const [searchOpen, setSearchOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const showShare = canSharePlan(user);
 
   return (
     <>
@@ -37,7 +39,7 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
           <ArrowLeftIcon className="h-4 w-4 text-muted" aria-hidden="true" />
           <MapFlexBadge size={28} />
           <span className="hidden md:inline-flex font-black text-xs tracking-tight text-ink">
-            Map<span className="bg-gradient-to-r from-sky-400 via-indigo-500 to-emerald-400 bg-clip-text text-transparent">Flex</span>
+            Map<span className="text-slate-500 dark:text-slate-400 font-semibold">Flex</span>
           </span>
         </Link>
 
@@ -86,15 +88,17 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
           </a>
         )}
 
-        {/* Share & Embed button */}
-        <button
-          type="button"
-          onClick={() => setShareOpen(true)}
-          title={t('shareAndEmbed')}
-          className="flex h-8 items-center gap-1.5 rounded-lg border border-line bg-surface px-2 text-xs font-semibold text-ink shadow-2xs transition-colors hover:bg-subtle active:scale-95 sm:h-9 sm:px-2.5">
-          <Share2Icon className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
-          <span className="hidden sm:inline">{t('share')}</span>
-        </button>
+        {/* Share & Embed button (Only for unlimited tier) */}
+        {showShare && (
+          <button
+            type="button"
+            onClick={() => setShareOpen(true)}
+            title={t('shareAndEmbed')}
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-line bg-surface px-2 text-xs font-semibold text-ink shadow-2xs transition-colors hover:bg-subtle active:scale-95 sm:h-9 sm:px-2.5">
+            <Share2Icon className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
+            <span className="hidden sm:inline">{t('share')}</span>
+          </button>
+        )}
 
         {/* Mode Switcher: Editor vs. Visitor */}
         <div className="flex shrink-0 items-center rounded-xl border border-line bg-subtle/80 p-0.5 shadow-2xs">
@@ -164,11 +168,13 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
         )}
       </header>
 
-      <ShareModal
-        project={project}
-        isOpen={shareOpen}
-        onClose={() => setShareOpen(false)}
-      />
+      {showShare && (
+        <ShareModal
+          project={project}
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { ArrowRightIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
+import { ArrowRightIcon, CloudIcon, CloudOffIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
 import { PlanThumbnail } from '../PlanThumbnail';
 import { canDeleteProject, summarizeKinds } from '../../utils/plan';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -43,9 +43,22 @@ export function FeaturedPlan({ project, onDelete }: FeaturedPlanProps) {
           )}
         </div>
 
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-[28px] sm:leading-tight">
-          {project.name}
-        </h2>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-[28px] sm:leading-tight">
+            {project.name}
+          </h2>
+          {project.isLocalOnly ? (
+            <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0" title="Guardado de forma local en tu navegador">
+              <CloudOffIcon className="h-3.5 w-3.5" />
+              <span>Local</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0" title="Sincronizado en la nube">
+              <CloudIcon className="h-3.5 w-3.5" />
+              <span>Nube</span>
+            </span>
+          )}
+        </div>
         {project.description && (
           <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted">
             {project.description}

@@ -7,6 +7,8 @@ import { LanguageToggle } from '../LanguageToggle';
 import { ShareModal } from './ShareModal';
 import { MapFlexBadge } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { canSharePlan } from '../../utils/plan';
 import { hasStreetViewPhotos } from '../../data/streetViewSamples';
 import type { PlaceResult, PlanFeature, Project } from '../../types/plan';
 
@@ -18,8 +20,10 @@ interface VisitorHeaderProps {
 
 export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: VisitorHeaderProps) {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const showShare = canSharePlan(user);
 
   return (
     <>
@@ -32,7 +36,7 @@ export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: Visito
           <ArrowLeftIcon className="h-4 w-4 text-muted" aria-hidden="true" />
           <MapFlexBadge size={28} />
           <span className="hidden md:inline-flex font-black text-xs tracking-tight text-ink">
-            Map<span className="bg-gradient-to-r from-sky-400 via-indigo-500 to-emerald-400 bg-clip-text text-transparent">Flex</span>
+            Map<span className="text-slate-500 dark:text-slate-400 font-semibold">Flex</span>
           </span>
         </Link>
 
@@ -82,15 +86,17 @@ export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: Visito
           );
         })()}
 
-        {/* Share & Embed Button */}
-        <button
-          type="button"
-          onClick={() => setShareOpen(true)}
-          title={t('shareAndEmbed')}
-          className="flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-xs font-semibold text-ink shadow-2xs transition-colors hover:bg-subtle active:scale-95">
-          <Share2Icon className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
-          <span className="hidden sm:inline">{t('share')}</span>
-        </button>
+        {/* Share & Embed Button (Only for unlimited tier) */}
+        {showShare && (
+          <button
+            type="button"
+            onClick={() => setShareOpen(true)}
+            title={t('shareAndEmbed')}
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-xs font-semibold text-ink shadow-2xs transition-colors hover:bg-subtle active:scale-95">
+            <Share2Icon className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
+            <span className="hidden sm:inline">{t('share')}</span>
+          </button>
+        )}
 
         <LanguageToggle />
         <ThemeToggle className="h-9 w-9 shrink-0" />
@@ -129,11 +135,13 @@ export function VisitorHeader({ project, onPickPlace, onOpenStreetView }: Visito
         )}
       </header>
 
-      <ShareModal
-        project={project}
-        isOpen={shareOpen}
-        onClose={() => setShareOpen(false)}
-      />
+      {showShare && (
+        <ShareModal
+          project={project}
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </>
   );
 }

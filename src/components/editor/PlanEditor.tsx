@@ -3,11 +3,12 @@ import { AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import type L from 'leaflet';
 import { useProjects } from '../../contexts/ProjectsContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useEditor } from '../../hooks/useEditor';
 import { downloadTextFile, geojsonFileName, toGeoJSON } from '../../utils/geojson';
 import { formatArea, formatLength, getFeaturesBounds, getFeaturesGeometricCenter, getOptimalZoomForBounds, pathLength, polygonArea } from '../../utils/geo';
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
-import { fallbackCategory, pickCategory } from '../../utils/plan';
+import { canExportGeoJSON, fallbackCategory, pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
 import { DrawingBar } from './DrawingBar';
 import { EditorHeader } from './EditorHeader';
@@ -38,6 +39,7 @@ export function PlanEditor({
   isVisitorOnly = false
 }: PlanEditorProps) {
   const effectiveInitialMode = isEmbed || isVisitorOnly ? 'visitor' : initialMode;
+  const { user } = useAuth();
   const { updateProject } = useProjects();
   const update = useCallback((fn: (p: Project) => Project) => updateProject(project.id, fn), [project.id, updateProject]);
   const editor = useEditor(project, update, effectiveInitialMode);
@@ -123,8 +125,12 @@ export function PlanEditor({
   };
 
   const handleExport = () => {
+    if (!canExportGeoJSON(user)) {
+      toast.error('La exportación de archivos GeoJSON está reservada para el plan PRO.');
+      return;
+    }
     downloadTextFile(geojsonFileName(project), JSON.stringify(toGeoJSON(project), null, 2), 'application/geo+json');
-    toast.success('GeoJSON downloaded');
+    toast.success('GeoJSON descargado');
   };
 
   const handleRename = (patch: Partial<Pick<Project, 'name' | 'location' | 'description' | 'websiteUrl'>>) =>

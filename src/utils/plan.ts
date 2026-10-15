@@ -35,6 +35,22 @@ export function summarizeKinds(features: PlanFeature[]): string {
   return parts.length ? parts.join(' · ') : 'No elements yet';
 }
 
+export const UNLIMITED_TIER_EMAIL = 'dmarinobata@gmail.com';
+
+export function isUnlimitedUser(user: { email?: string; role?: string; isAdmin?: boolean } | null | undefined): boolean {
+  if (!user) return false;
+  const email = (user.email || '').toLowerCase().trim();
+  return email === UNLIMITED_TIER_EMAIL;
+}
+
+export function canSharePlan(user: { email?: string; role?: string; isAdmin?: boolean } | null | undefined): boolean {
+  return isUnlimitedUser(user);
+}
+
+export function canExportGeoJSON(user: { email?: string; role?: string; isAdmin?: boolean } | null | undefined): boolean {
+  return isUnlimitedUser(user);
+}
+
 export function canDeleteProject(
   project: { id: string; userId?: string; authorEmail?: string; isLocalOnly?: boolean },
   user: { id?: string; email?: string; role?: string; isAdmin?: boolean } | null
@@ -49,7 +65,7 @@ export function canDeleteProject(
   if (user.isAdmin || user.role === 'admin') return true;
   const email = (user.email || '').toLowerCase().trim();
   if (
-    email === 'dmarinobata@gmail.com' ||
+    email === UNLIMITED_TIER_EMAIL ||
     email.startsWith('danilo') ||
     email.includes('danilo') ||
     email === 'admin@mapflex.app'

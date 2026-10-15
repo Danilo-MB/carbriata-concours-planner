@@ -7,6 +7,7 @@ import { loadProjects, loadProjectsFromIdb, saveProjects } from '../utils/storag
 import { api } from '../utils/api';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
+import { isUnlimitedUser } from '../utils/plan';
 import type { NewPlanInput, Project, MapView } from '../types/plan';
 
 interface ProjectsContextValue {
@@ -188,6 +189,13 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       ? { lat: place.lat, lng: place.lng, zoom: 17 }
       : defaultMapView;
 
+    const isUnlimited = isUnlimitedUser(user);
+    const userCloudProjects = projects.filter(
+      (p) => !p.isDeleted && !p.isLocalOnly && (p.userId === user?.id || (user?.email && p.authorEmail?.toLowerCase() === user.email.toLowerCase()))
+    );
+    const exceedsCloudLimit = Boolean(isAuthenticated && !isUnlimited && userCloudProjects.length >= 1);
+    const isLocalOnly = !isAuthenticated || exceedsCloudLimit;
+
     const project: Project = {
       id: createId(),
       name: input.name.trim(),
@@ -203,33 +211,57 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       userId: isAuthenticated ? user?.id : undefined,
       authorEmail: isAuthenticated ? user?.email : undefined,
       authorName: isAuthenticated ? user?.name : undefined,
-      isLocalOnly: !isAuthenticated,
+      isLocalOnly,
       createdAt: now,
       updatedAt: now
     };
 
     setProjects((ps) => [project, ...ps]);
-    if (isAuthenticated) {
+
+    if (exceedsCloudLimit) {
+      toast.warning('Límite de planos en la nube alcanzado (máx. 1)', {
+        description: 'Has alcanzado el límite de 1 plano en la nube. Este nuevo plano se guardará únicamente de forma local en tu navegador.',
+        duration: 6500
+      });
+    } else if (isAuthenticated) {
       api.projects.create(project).catch(() => undefined);
     }
+
     return project;
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, projects]);
 
   const importProject = useCallback((project: Project): Project => {
+    const isUnlimited = isUnlimitedUser(user);
+    const userCloudProjects = projects.filter(
+      (p) => !p.isDeleted && !p.isLocalOnly && (p.userId === user?.id || (user?.email && p.authorEmail?.toLowerCase() === user.email.toLowerCase()))
+    );
+    const exceedsCloudLimit = Boolean(isAuthenticated && !isUnlimited && userCloudProjects.length >= 1);
+    const finalProject: Project = {
+      ...project,
+      isLocalOnly: !isAuthenticated || exceedsCloudLimit || Boolean(project.isLocalOnly)
+    };
+
     setProjects((ps) => {
-      const existingIdx = ps.findIndex((p) => p.id === project.id);
+      const existingIdx = ps.findIndex((p) => p.id === finalProject.id);
       if (existingIdx >= 0) {
         const next = [...ps];
-        next[existingIdx] = { ...ps[existingIdx], ...project, updatedAt: Date.now() };
+        next[existingIdx] = { ...ps[existingIdx], ...finalProject, updatedAt: Date.now() };
         return next;
       }
-      return [project, ...ps];
+      return [finalProject, ...ps];
     });
-    if (isAuthenticated) {
-      api.projects.create(project).catch(() => undefined);
+
+    if (exceedsCloudLimit) {
+      toast.warning('Límite de planos en la nube alcanzado (máx. 1)', {
+        description: 'Has alcanzado el límite de 1 plano en la nube. Este plano importado funcionará solo de forma local.',
+        duration: 6500
+      });
+    } else if (isAuthenticated && !finalProject.isLocalOnly) {
+      api.projects.create(finalProject).catch(() => undefined);
     }
-    return project;
-  }, [isAuthenticated]);
+
+    return finalProject;
+  }, [isAuthenticated, user, projects]);
 
   const updateProject = useCallback((id: string, fn: (p: Project) => Project) => {
     setProjects((ps) => {
@@ -259,20 +291,52 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   const restoreProject = useCallback((project: Project, index: number) => {
     setProjects((ps) => {
       if (ps.some((p) => p.id === project.id)) return ps;
+      const isUnlimited = isUnlimitedUser(user);
+      const userCloudProjects = ps.filter(
+        (p) => !p.isDeleted && !p.isLocalOnly && (p.userId === user?.id || (user?.email && p.authorEmail?.toLowerCase() === user.email.toLowerCase()))
+      );
+      const exceedsCloudLimit = Boolean(isAuthenticated && !isUnlimited && userCloudProjects.length >= 1);
+
+      const restoredProject: Project = {
+        ...project,
+        isDeleted: false,
+        isLocalOnly: Boolean(project.isLocalOnly) || exceedsCloudLimit
+      };
+
       const next = [...ps];
-      next.splice(Math.min(index, next.length), 0, { ...project, isDeleted: false });
-      if (isAuthenticated && !project.isLocalOnly) {
-        api.projects.restore(project.id).catch(() => api.projects.create(project).catch(() => undefined));
+      next.splice(Math.min(index, next.length), 0, restoredProject);
+
+      if (exceedsCloudLimit && !project.isLocalOnly) {
+        toast.warning('Restaurado como copia local (máx. 1 en la nube)', {
+          description: 'Ya tienes 1 plano activo en la nube. Este plano se ha restaurado de forma local en tu navegador.',
+          duration: 6500
+        });
+      } else if (isAuthenticated && !restoredProject.isLocalOnly) {
+        api.projects.restore(restoredProject.id).catch(() => api.projects.create(restoredProject).catch(() => undefined));
       }
+
       return next;
     });
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   const saveLocalToCloud = useCallback(async (id: string) => {
     if (!isAuthenticated || !user) {
       toast.error('Inicia sesión para guardar tu plano en la nube.');
       return;
     }
+    const isUnlimited = isUnlimitedUser(user);
+    const userCloudProjects = projects.filter(
+      (p) => !p.isDeleted && !p.isLocalOnly && p.id !== id && (p.userId === user.id || (user.email && p.authorEmail?.toLowerCase() === user.email.toLowerCase()))
+    );
+
+    if (!isUnlimited && userCloudProjects.length >= 1) {
+      toast.warning('Límite de planos en la nube alcanzado (máx. 1)', {
+        description: 'Ya tienes 1 plano guardado en la nube. Este plano permanecerá guardado únicamente de forma local en tu navegador.',
+        duration: 6500
+      });
+      return;
+    }
+
     const proj = projects.find((p) => p.id === id);
     if (!proj) return;
     const cloudVersion: Project = {
@@ -283,9 +347,13 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
       isLocalOnly: false,
       updatedAt: Date.now()
     };
-    await api.projects.create(cloudVersion);
-    setProjects((ps) => ps.map((p) => (p.id === id ? cloudVersion : p)));
-    toast.success('¡Plano guardado y sincronizado en la nube!');
+    try {
+      await api.projects.create(cloudVersion);
+      setProjects((ps) => ps.map((p) => (p.id === id ? cloudVersion : p)));
+      toast.success('¡Plano guardado y sincronizado en la nube!');
+    } catch (err: any) {
+      toast.error(err?.message || 'Error al guardar en la nube.');
+    }
   }, [isAuthenticated, user, projects]);
 
   const value = useMemo(

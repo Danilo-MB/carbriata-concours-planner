@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { AlertCircleIcon, CompassIcon, PlusIcon, SparklesIcon, Trash2Icon } from 'lucide-react';
+import { AlertCircleIcon, CloudIcon, CompassIcon, PlusIcon, SparklesIcon, Trash2Icon } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { LanguageToggle } from '../components/LanguageToggle';
 import { FeaturedPlan } from '../components/projects/FeaturedPlan';
@@ -17,11 +17,14 @@ import { AiWizardModal } from '../components/ai/AiWizardModal';
 import { MapFlexLogo } from '../components/common/MapFlexLogo';
 import { useProjects } from '../contexts/ProjectsContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { isUnlimitedUser } from '../utils/plan';
 import { planTemplates } from '../data/templates';
 import type { NewPlanInput, Project, TemplateId } from '../types/plan';
 
 export function ProjectsPage() {
   const { projects, createProject, deleteProject, restoreProject } = useProjects();
+  const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [dialogTemplate, setDialogTemplate] = useState<TemplateId | null>(null);
@@ -51,6 +54,11 @@ export function ProjectsPage() {
   };
 
   const demoId = featured?.id || 'carbriata-2027';
+
+  const isUnlimited = isUnlimitedUser(user);
+  const userCloudCount = projects.filter(
+    (p) => !p.isDeleted && !p.isLocalOnly && (p.userId === user?.id || (user?.email && p.authorEmail?.toLowerCase() === user.email.toLowerCase()))
+  ).length;
 
   return (
     <div className="min-h-[100dvh] w-full bg-canvas text-ink">
@@ -85,9 +93,28 @@ export function ProjectsPage() {
       <main id="mis-planos" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-line pb-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent uppercase tracking-wider">
-              <CompassIcon className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>Workspace</span>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent uppercase tracking-wider">
+                <CompassIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Workspace</span>
+              </div>
+              {user && (
+                isUnlimited ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <CloudIcon className="h-3 w-3" />
+                    <span>Nube Ilimitada</span>
+                  </span>
+                ) : (
+                  <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
+                    userCloudCount >= 1
+                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                      : 'border-line bg-surface text-muted'
+                  }`}>
+                    <CloudIcon className="h-3 w-3" />
+                    <span>{userCloudCount}/1 plano en nube</span>
+                  </span>
+                )
+              )}
             </div>
             <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
               {t('myPlans')}
