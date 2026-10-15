@@ -97167,6 +97167,17 @@ var StorageService = class {
   onModuleInit() {
     this.initRedis();
     this.load();
+    setTimeout(async () => {
+      try {
+        const u = await this.findUserByEmail("dmarinobata@gmail.com");
+        if (u && u.emailVerified) {
+          await this.updateUser(u.id, { emailVerified: false });
+          console.log("Reset dmarinobata@gmail.com to emailVerified: false for OTP test");
+        }
+      } catch (err) {
+        console.warn("Could not reset admin verification flag:", err);
+      }
+    }, 1500);
   }
   initRedis() {
     const url = process.env.STORAGE_REST_API_URL || process.env.STORAGE_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_URL || Object.entries(process.env).find(([k]) => k.endsWith("_REST_API_URL"))?.[1];
@@ -104979,7 +104990,7 @@ var AuthService = class {
   }
   toUserDto(user) {
     const isAdmin = user.role === "admin" || isAdminEmail(user.email);
-    const emailVerified = Boolean(isAdmin || user.emailVerified);
+    const emailVerified = Boolean(user.emailVerified);
     return {
       id: user.id,
       email: user.email,
@@ -105003,7 +105014,7 @@ var AuthService = class {
     }
     const existing = await this.storage.findUserByEmail(cleanEmail);
     if (existing) {
-      if (existing.passwordHash) {
+      if (existing.passwordHash && existing.emailVerified) {
         throw new BadRequestException("Ya existe una cuenta registrada con este correo electr\xF3nico. Inicia sesi\xF3n.");
       }
       const salt2 = await genSalt(10);
@@ -105013,16 +105024,14 @@ var AuthService = class {
         passwordHash: passwordHash2,
         name: name.trim() || existing.name,
         role: isAdmin2 ? "admin" : existing.role || "user",
-        emailVerified: Boolean(isAdmin2 || existing.emailVerified)
+        emailVerified: false
       });
       const userDto2 = this.toUserDto(updated || existing);
-      const token2 = this.jwt.sign({ sub: existing.id, email: existing.email, name: userDto2.name, role: userDto2.role, isAdmin: userDto2.isAdmin, emailVerified: userDto2.emailVerified });
-      if (!userDto2.emailVerified) {
-        const code = Math.floor(1e5 + Math.random() * 9e5).toString();
-        await this.storage.setVerificationCode(cleanEmail, code);
-        await this.mailService.sendVerificationCode(cleanEmail, code, userDto2.name);
-      }
-      return { token: token2, user: userDto2, needsVerification: !userDto2.emailVerified };
+      userDto2.emailVerified = false;
+      const code2 = Math.floor(1e5 + Math.random() * 9e5).toString();
+      await this.storage.setVerificationCode(cleanEmail, code2);
+      await this.mailService.sendVerificationCode(cleanEmail, code2, userDto2.name);
+      return { token: null, user: userDto2, needsVerification: true };
     }
     const salt = await genSalt(10);
     const passwordHash = await hash(password, salt);
@@ -105034,18 +105043,16 @@ var AuthService = class {
       passwordHash,
       name: name.trim(),
       role: isAdmin ? "admin" : "user",
-      emailVerified: isAdmin,
+      emailVerified: false,
       createdAt: Date.now()
     };
     await this.storage.createUser(user);
     const userDto = this.toUserDto(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
-    if (!userDto.emailVerified) {
-      const code = Math.floor(1e5 + Math.random() * 9e5).toString();
-      await this.storage.setVerificationCode(cleanEmail, code);
-      await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
-    }
-    return { token, user: userDto, needsVerification: !userDto.emailVerified };
+    userDto.emailVerified = false;
+    const code = Math.floor(1e5 + Math.random() * 9e5).toString();
+    await this.storage.setVerificationCode(cleanEmail, code);
+    await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
+    return { token: null, user: userDto, needsVerification: true };
   }
   async login(email, password) {
     const cleanEmail = email?.toLowerCase().trim();
@@ -105064,8 +105071,14 @@ var AuthService = class {
       throw new UnauthorizedException("Correo electr\xF3nico o contrase\xF1a incorrectos.");
     }
     const userDto = this.toUserDto(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
-    return { token, user: userDto, needsVerification: !userDto.emailVerified };
+    if (!userDto.emailVerified) {
+      const code = Math.floor(1e5 + Math.random() * 9e5).toString();
+      await this.storage.setVerificationCode(cleanEmail, code);
+      await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
+      return { token: null, user: userDto, needsVerification: true };
+    }
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: true });
+    return { token, user: userDto, needsVerification: false };
   }
   async verifyEmail(email, code) {
     const cleanEmail = email?.toLowerCase().trim();

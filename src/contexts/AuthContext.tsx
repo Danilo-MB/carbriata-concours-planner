@@ -103,6 +103,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       try {
         const profile = await api.auth.me();
+        if (profile.emailVerified === false) {
+          setAuthToken(null);
+          setStoredUser(null);
+          setToken(null);
+          setUser(null);
+          return;
+        }
         setUser(profile);
         setStoredUser(profile);
         setToken(savedToken);

@@ -28,7 +28,7 @@ export class AuthService {
 
   private toUserDto(user: UserEntity) {
     const isAdmin = user.role === 'admin' || isAdminEmail(user.email);
-    const emailVerified = Boolean(isAdmin || user.emailVerified);
+    const emailVerified = Boolean(user.emailVerified);
     return {
       id: user.id,
       email: user.email,
@@ -56,10 +56,10 @@ export class AuthService {
 
     const existing = await this.storage.findUserByEmail(cleanEmail);
     if (existing) {
-      if (existing.passwordHash) {
+      if (existing.passwordHash && existing.emailVerified) {
         throw new BadRequestException('Ya existe una cuenta registrada con este correo electrónico. Inicia sesión.');
       }
-      // User existed without password (e.g. from social/magic link), set password now
+      // User existed without password or was unverified, set password and send verification code
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(password, salt);
       const isAdmin = isAdminEmail(cleanEmail);
@@ -67,18 +67,16 @@ export class AuthService {
         passwordHash,
         name: name.trim() || existing.name,
         role: isAdmin ? 'admin' : (existing.role || 'user'),
-        emailVerified: Boolean(isAdmin || existing.emailVerified)
+        emailVerified: false
       });
       const userDto = this.toUserDto(updated || existing);
-      const token = this.jwt.sign({ sub: existing.id, email: existing.email, name: userDto.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
+      userDto.emailVerified = false;
 
-      if (!userDto.emailVerified) {
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
-        await this.storage.setVerificationCode(cleanEmail, code);
-        await this.mailService.sendVerificationCode(cleanEmail, code, userDto.name);
-      }
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      await this.storage.setVerificationCode(cleanEmail, code);
+      await this.mailService.sendVerificationCode(cleanEmail, code, userDto.name);
 
-      return { token, user: userDto, needsVerification: !userDto.emailVerified };
+      return { token: null, user: userDto, needsVerification: true };
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -92,23 +90,21 @@ export class AuthService {
       passwordHash,
       name: name.trim(),
       role: isAdmin ? 'admin' : 'user',
-      emailVerified: isAdmin,
+      emailVerified: false,
       createdAt: Date.now()
     };
 
     await this.storage.createUser(user);
 
     const userDto = this.toUserDto(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
+    userDto.emailVerified = false;
 
-    // Send 6-digit OTP code via Resend if not admin
-    if (!userDto.emailVerified) {
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
-      await this.storage.setVerificationCode(cleanEmail, code);
-      await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
-    }
+    // Send 6-digit OTP code via Resend
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.storage.setVerificationCode(cleanEmail, code);
+    await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
 
-    return { token, user: userDto, needsVerification: !userDto.emailVerified };
+    return { token: null, user: userDto, needsVerification: true };
   }
 
   async login(email: string, password: string) {
@@ -131,9 +127,18 @@ export class AuthService {
     }
 
     const userDto = this.toUserDto(user);
-    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: userDto.emailVerified });
 
-    return { token, user: userDto, needsVerification: !userDto.emailVerified };
+    // If account has not verified email via OTP yet, send code and demand verification
+    if (!userDto.emailVerified) {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      await this.storage.setVerificationCode(cleanEmail, code);
+      await this.mailService.sendVerificationCode(cleanEmail, code, user.name);
+      return { token: null, user: userDto, needsVerification: true };
+    }
+
+    const token = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: true });
+
+    return { token, user: userDto, needsVerification: false };
   }
 
   async verifyEmail(email: string, code: string) {
