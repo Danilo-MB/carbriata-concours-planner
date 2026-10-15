@@ -301,12 +301,12 @@ export function ProjectsPage() {
             <div
               ref={carouselRef}
               onScroll={checkCarouselScroll}
-              className="flex gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth"
+              className="flex gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth items-stretch"
             >
               {sorted.map((p) => (
                 <div
                   key={p.id}
-                  className="w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)] shrink-0 snap-start flex"
+                  className="w-full sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col"
                 >
                   <ProjectCard project={p} onDelete={() => setProjectToDelete(p)} />
                 </div>
