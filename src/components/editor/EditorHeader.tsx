@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeftIcon, CloudIcon, CloudOffIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, PencilIcon, SearchIcon, Share2Icon, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, CloudIcon, CloudOffIcon, ExternalLinkIcon, EyeIcon, GlobeIcon, PencilIcon, SearchIcon, Share2Icon, SparklesIcon, XIcon } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { PlaceSearch } from '../PlaceSearch';
 import { UserMenu } from '../auth/UserMenu';
@@ -17,11 +17,21 @@ interface EditorHeaderProps {
   project: Project;
   mode: ViewMode;
   canEdit?: boolean;
+  isDemoProject?: boolean;
+  onOpenDemoNotice?: () => void;
   onModeChange: (mode: ViewMode) => void;
   onPickPlace: (place: PlaceResult) => void;
 }
 
-export function EditorHeader({ project, mode, canEdit = true, onModeChange, onPickPlace }: EditorHeaderProps) {
+export function EditorHeader({
+  project,
+  mode,
+  canEdit = true,
+  isDemoProject = false,
+  onOpenDemoNotice,
+  onModeChange,
+  onPickPlace
+}: EditorHeaderProps) {
   const { t } = useLanguage();
   const { isAuthenticated, user, openAuthModal } = useAuth();
   const { saveLocalToCloud } = useProjects();
@@ -66,6 +76,17 @@ export function EditorHeader({ project, mode, canEdit = true, onModeChange, onPi
                 <span>Guardar en nube</span>
               </button>
             ) : null}
+            {isDemoProject && (
+              <button
+                type="button"
+                onClick={onOpenDemoNotice}
+                className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/25 transition-colors cursor-pointer"
+                title="Este mapa es el de la demo pública. Haz clic para ver detalles o cambiarlo."
+              >
+                <SparklesIcon className="h-2.5 w-2.5" />
+                <span>Demo Pública</span>
+              </button>
+            )}
           </div>
           <p className="truncate text-[11px] text-muted sm:text-xs">
             {project.location}

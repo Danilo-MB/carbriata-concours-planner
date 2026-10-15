@@ -140,6 +140,12 @@ export const api = {
       request<any>(`/api/projects/${projectId}/features`, {
         method: 'PUT',
         body: JSON.stringify({ features })
+      }),
+    getDemoProject: () => request<{ demoProjectId: string }>('/api/projects/demo/current'),
+    setDemoProject: (demoProjectId: string) =>
+      request<{ demoProjectId: string }>('/api/projects/demo/current', {
+        method: 'PUT',
+        body: JSON.stringify({ demoProjectId })
       })
   }
 };

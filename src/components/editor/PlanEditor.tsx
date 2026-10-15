@@ -10,6 +10,7 @@ import { formatArea, formatLength, getFeaturesBounds, getFeaturesGeometricCenter
 import { goToPlace, goToView, readView, zoomToFeature } from '../../utils/mapNavigation';
 import { canEditProject, canExportGeoJSON, fallbackCategory, pickCategory } from '../../utils/plan';
 import { ClearAllModal } from './ClearAllModal';
+import { DemoMapNoticeModal } from './DemoMapNoticeModal';
 import { DrawingBar } from './DrawingBar';
 import { EditorHeader } from './EditorHeader';
 import { EmbedHeader } from './EmbedHeader';
@@ -38,10 +39,21 @@ export function PlanEditor({
   isEmbed = false,
   isVisitorOnly = false
 }: PlanEditorProps) {
-  const { user, openAuthModal } = useAuth();
+  const { user, isAdmin, openAuthModal } = useAuth();
+  const { updateProject, demoProjectId } = useProjects();
+  const isDemoProject = Boolean(demoProjectId && project.id === demoProjectId);
+  const [showDemoNotice, setShowDemoNotice] = useState(false);
+  const hasPromptedDemoRef = useRef(false);
+
+  useEffect(() => {
+    if (isAdmin && isDemoProject && !isEmbed && !isVisitorOnly && !hasPromptedDemoRef.current) {
+      hasPromptedDemoRef.current = true;
+      setShowDemoNotice(true);
+    }
+  }, [isAdmin, isDemoProject, isEmbed, isVisitorOnly]);
+
   const canEdit = canEditProject(project, user);
   const effectiveInitialMode = !canEdit || isEmbed || isVisitorOnly ? 'visitor' : initialMode;
-  const { updateProject } = useProjects();
   const update = useCallback((fn: (p: Project) => Project) => updateProject(project.id, fn), [project.id, updateProject]);
   const editor = useEditor(project, update, effectiveInitialMode);
 
@@ -167,6 +179,8 @@ export function PlanEditor({
           project={project}
           mode={editor.mode}
           canEdit={canEdit}
+          isDemoProject={isDemoProject}
+          onOpenDemoNotice={() => setShowDemoNotice(true)}
           onModeChange={handleModeChange}
           onPickPlace={handlePickPlace}
         />
@@ -289,6 +303,14 @@ export function PlanEditor({
         onConfirm={editor.deleteAllFeatures}
         onClose={() => setShowClearAllModal(false)}
       />
+
+      {isAdmin && (
+        <DemoMapNoticeModal
+          project={project}
+          isOpen={showDemoNotice}
+          onClose={() => setShowDemoNotice(false)}
+        />
+      )}
 
       {/* Street View Prompt Modal after drawing a route */}
       <AnimatePresence>

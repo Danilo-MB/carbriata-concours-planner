@@ -72,9 +72,10 @@ export interface ProjectEntity {
 interface DataStore {
   users: Record<string, UserEntity>;
   projects: Record<string, ProjectEntity>;
+  settings?: Record<string, any>;
 }
 
-let bundledSeedData: DataStore = { users: {}, projects: {} };
+let bundledSeedData: DataStore = { users: {}, projects: {}, settings: {} };
 try {
   bundledSeedData = require('../../carbriata_data.json');
 } catch {
@@ -85,7 +86,8 @@ try {
 export class StorageService implements OnModuleInit {
   private static memoryStore: DataStore = {
     users: { ...bundledSeedData.users },
-    projects: { ...bundledSeedData.projects }
+    projects: { ...bundledSeedData.projects },
+    settings: { ...((bundledSeedData as any).settings || {}) }
   };
 
   private store: DataStore = StorageService.memoryStore;
@@ -145,7 +147,8 @@ export class StorageService implements OnModuleInit {
   private load(): void {
     const mergedStore: DataStore = {
       users: { ...bundledSeedData.users, ...StorageService.memoryStore.users },
-      projects: { ...bundledSeedData.projects, ...StorageService.memoryStore.projects }
+      projects: { ...bundledSeedData.projects, ...StorageService.memoryStore.projects },
+      settings: { ...bundledSeedData.settings, ...StorageService.memoryStore.settings }
     };
 
     try {
@@ -154,6 +157,7 @@ export class StorageService implements OnModuleInit {
         const parsed = JSON.parse(raw);
         if (parsed.users) Object.assign(mergedStore.users, parsed.users);
         if (parsed.projects) Object.assign(mergedStore.projects, parsed.projects);
+        if (parsed.settings) Object.assign(mergedStore.settings, parsed.settings);
       }
     } catch (err) {
       console.warn('Could not read runtime storage file', err);
@@ -169,6 +173,32 @@ export class StorageService implements OnModuleInit {
       fs.writeFileSync(this.filePath, JSON.stringify(this.store, null, 2), 'utf-8');
     } catch (err) {
       console.warn('Could not persist storage file', err);
+    }
+  }
+
+  // System Settings
+  async getSetting<T = any>(key: string, defaultValue?: T): Promise<T> {
+    if (this.redis) {
+      try {
+        const val = await this.redis.get<T>(`setting:${key}`);
+        if (val !== null && val !== undefined) return val;
+      } catch (err) {
+        console.warn('Redis getSetting error:', err);
+      }
+    }
+    return (this.store.settings?.[key] !== undefined ? this.store.settings[key] : defaultValue) as T;
+  }
+
+  async setSetting(key: string, value: any): Promise<void> {
+    if (!this.store.settings) this.store.settings = {};
+    this.store.settings[key] = value;
+    this.save();
+    if (this.redis) {
+      try {
+        await this.redis.set(`setting:${key}`, value);
+      } catch (err) {
+        console.warn('Redis setSetting error:', err);
+      }
     }
   }
 

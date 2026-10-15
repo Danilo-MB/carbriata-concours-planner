@@ -87,4 +87,12 @@ export class ProjectsService {
     if (!project) throw new NotFoundException(`Proyecto "${projectId}" o elemento no encontrado.`);
     return project;
   }
+
+  async getDemoProjectId(): Promise<string> {
+    return this.storage.getSetting('demoProjectId', 'i6666hqmv8mdpge');
+  }
+
+  async setDemoProjectId(id: string): Promise<void> {
+    await this.storage.setSetting('demoProjectId', id);
+  }
 }

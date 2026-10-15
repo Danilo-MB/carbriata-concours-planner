@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { isUnlimitedUser } from '../utils/plan';
 import type { NewPlanInput, Project, MapView } from '../types/plan';
 
+export const DEFAULT_DEMO_PROJECT_ID = 'i6666hqmv8mdpge';
+
 interface ProjectsContextValue {
   projects: Project[];
   createProject: (input: NewPlanInput) => Project;
@@ -18,6 +20,8 @@ interface ProjectsContextValue {
   deleteProject: (id: string) => void;
   restoreProject: (project: Project, index: number) => void;
   saveLocalToCloud: (id: string) => Promise<void>;
+  demoProjectId: string;
+  setDemoProjectId: (id: string) => Promise<void>;
 }
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
@@ -107,6 +111,28 @@ function ensureStreetViewSeed(projs: Project[]): Project[] {
 
 export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useAuth();
+  const [demoProjectId, setDemoProjectIdState] = useState<string>(() => {
+    try {
+      return localStorage.getItem('mapflex_demo_project_id') || DEFAULT_DEMO_PROJECT_ID;
+    } catch {
+      return DEFAULT_DEMO_PROJECT_ID;
+    }
+  });
+
+  // Fetch configured demoProjectId from server
+  useEffect(() => {
+    api.projects.getDemoProject()
+      .then((res) => {
+        if (res?.demoProjectId) {
+          setDemoProjectIdState(res.demoProjectId);
+          try {
+            localStorage.setItem('mapflex_demo_project_id', res.demoProjectId);
+          } catch {}
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
   const [projects, setProjects] = useState<Project[]>(() => {
     const loaded = loadProjects();
     const initial = loaded && loaded.length > 0 ? loaded : seedProjects;
@@ -356,9 +382,32 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, user, projects]);
 
+  const setDemoProjectId = useCallback(async (newId: string) => {
+    setDemoProjectIdState(newId);
+    try {
+      localStorage.setItem('mapflex_demo_project_id', newId);
+    } catch {}
+
+    try {
+      await api.projects.setDemoProject(newId);
+    } catch (err: any) {
+      console.warn('Could not persist demoProjectId to server:', err);
+    }
+  }, []);
+
   const value = useMemo(
-    () => ({ projects, createProject, importProject, updateProject, deleteProject, restoreProject, saveLocalToCloud }),
-    [projects, createProject, importProject, updateProject, deleteProject, restoreProject, saveLocalToCloud]
+    () => ({
+      projects,
+      createProject,
+      importProject,
+      updateProject,
+      deleteProject,
+      restoreProject,
+      saveLocalToCloud,
+      demoProjectId,
+      setDemoProjectId
+    }),
+    [projects, createProject, importProject, updateProject, deleteProject, restoreProject, saveLocalToCloud, demoProjectId, setDemoProjectId]
   );
 
   return <ProjectsContext.Provider value={value}>{children}</ProjectsContext.Provider>;

@@ -33,7 +33,7 @@ import { planTemplates } from '../data/templates';
 import type { NewPlanInput, Project, TemplateId } from '../types/plan';
 
 export function ProjectsPage() {
-  const { projects, createProject, deleteProject, restoreProject } = useProjects();
+  const { projects, createProject, deleteProject, restoreProject, demoProjectId } = useProjects();
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ export function ProjectsPage() {
     navigate(`/plan/${project.id}`);
   };
 
-  const demoId = sorted[0]?.id || 'carbriata-2027';
+  const demoId = demoProjectId || 'i6666hqmv8mdpge';
 
   return (
     <div className="min-h-[100dvh] w-full bg-canvas text-ink">

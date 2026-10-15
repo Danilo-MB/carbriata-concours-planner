@@ -97827,7 +97827,7 @@ function isAdminEmail(email) {
   const customAdmins = (process.env.ADMIN_EMAILS || "").toLowerCase().split(",").map((s) => s.trim()).filter(Boolean);
   return customAdmins.includes(clean);
 }
-var bundledSeedData = { users: {}, projects: {} };
+var bundledSeedData = { users: {}, projects: {}, settings: {} };
 try {
   bundledSeedData = require_carbriata_data();
 } catch {
@@ -97868,7 +97868,8 @@ var StorageService = class {
   load() {
     const mergedStore = {
       users: { ...bundledSeedData.users, ...StorageService.memoryStore.users },
-      projects: { ...bundledSeedData.projects, ...StorageService.memoryStore.projects }
+      projects: { ...bundledSeedData.projects, ...StorageService.memoryStore.projects },
+      settings: { ...bundledSeedData.settings, ...StorageService.memoryStore.settings }
     };
     try {
       if (fs.existsSync(this.filePath)) {
@@ -97876,6 +97877,7 @@ var StorageService = class {
         const parsed = JSON.parse(raw);
         if (parsed.users) Object.assign(mergedStore.users, parsed.users);
         if (parsed.projects) Object.assign(mergedStore.projects, parsed.projects);
+        if (parsed.settings) Object.assign(mergedStore.settings, parsed.settings);
       }
     } catch (err) {
       console.warn("Could not read runtime storage file", err);
@@ -97889,6 +97891,30 @@ var StorageService = class {
       fs.writeFileSync(this.filePath, JSON.stringify(this.store, null, 2), "utf-8");
     } catch (err) {
       console.warn("Could not persist storage file", err);
+    }
+  }
+  // System Settings
+  async getSetting(key, defaultValue) {
+    if (this.redis) {
+      try {
+        const val = await this.redis.get(`setting:${key}`);
+        if (val !== null && val !== void 0) return val;
+      } catch (err) {
+        console.warn("Redis getSetting error:", err);
+      }
+    }
+    return this.store.settings?.[key] !== void 0 ? this.store.settings[key] : defaultValue;
+  }
+  async setSetting(key, value) {
+    if (!this.store.settings) this.store.settings = {};
+    this.store.settings[key] = value;
+    this.save();
+    if (this.redis) {
+      try {
+        await this.redis.set(`setting:${key}`, value);
+      } catch (err) {
+        console.warn("Redis setSetting error:", err);
+      }
     }
   }
   // Users
@@ -98185,7 +98211,8 @@ var StorageService = class {
 };
 __publicField(StorageService, "memoryStore", {
   users: { ...bundledSeedData.users },
-  projects: { ...bundledSeedData.projects }
+  projects: { ...bundledSeedData.projects },
+  settings: { ...bundledSeedData.settings || {} }
 });
 StorageService = __decorateClass([
   Injectable()
@@ -106244,6 +106271,12 @@ var ProjectsService = class {
     if (!project) throw new NotFoundException(`Proyecto "${projectId}" o elemento no encontrado.`);
     return project;
   }
+  async getDemoProjectId() {
+    return this.storage.getSetting("demoProjectId", "i6666hqmv8mdpge");
+  }
+  async setDemoProjectId(id) {
+    await this.storage.setSetting("demoProjectId", id);
+  }
 };
 ProjectsService = __decorateClass([
   Injectable(),
@@ -106285,6 +106318,21 @@ var ProjectsController = class {
   async getAll(auth) {
     const user = await this.getUser(auth);
     return this.projectsService.getAll(user?.id);
+  }
+  async getDemoProject() {
+    const demoProjectId = await this.projectsService.getDemoProjectId();
+    return { demoProjectId };
+  }
+  async setDemoProject(demoProjectId, auth) {
+    const user = await this.getUser(auth);
+    if (!user || !user.isAdmin) {
+      throw new ForbiddenException("Solo el administrador puede cambiar el mapa de la demo.");
+    }
+    if (!demoProjectId || typeof demoProjectId !== "string") {
+      throw new BadRequestException("ID de mapa inv\xE1lido.");
+    }
+    await this.projectsService.setDemoProjectId(demoProjectId);
+    return { demoProjectId };
   }
   async getOne(id) {
     return this.projectsService.getOne(id);
@@ -106398,6 +106446,14 @@ __decorateClass([
   Get(),
   __decorateParam(0, Headers2("authorization"))
 ], ProjectsController.prototype, "getAll", 1);
+__decorateClass([
+  Get("demo/current")
+], ProjectsController.prototype, "getDemoProject", 1);
+__decorateClass([
+  Put("demo/current"),
+  __decorateParam(0, Body("demoProjectId")),
+  __decorateParam(1, Headers2("authorization"))
+], ProjectsController.prototype, "setDemoProject", 1);
 __decorateClass([
   Get(":id"),
   __decorateParam(0, Param("id"))

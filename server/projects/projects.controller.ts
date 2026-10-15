@@ -59,6 +59,25 @@ export class ProjectsController {
     return this.projectsService.getAll(user?.id);
   }
 
+  @Get('demo/current')
+  async getDemoProject() {
+    const demoProjectId = await this.projectsService.getDemoProjectId();
+    return { demoProjectId };
+  }
+
+  @Put('demo/current')
+  async setDemoProject(@Body('demoProjectId') demoProjectId: string, @Headers('authorization') auth?: string) {
+    const user = await this.getUser(auth);
+    if (!user || !user.isAdmin) {
+      throw new ForbiddenException('Solo el administrador puede cambiar el mapa de la demo.');
+    }
+    if (!demoProjectId || typeof demoProjectId !== 'string') {
+      throw new BadRequestException('ID de mapa inválido.');
+    }
+    await this.projectsService.setDemoProjectId(demoProjectId);
+    return { demoProjectId };
+  }
+
   @Get(':id')
   async getOne(@Param('id') id: string) {
     return this.projectsService.getOne(id);
