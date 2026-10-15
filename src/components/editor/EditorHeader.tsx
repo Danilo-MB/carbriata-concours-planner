@@ -6,6 +6,7 @@ import { PlaceSearch } from '../PlaceSearch';
 import { UserMenu } from '../auth/UserMenu';
 import { LanguageToggle } from '../LanguageToggle';
 import { ShareModal } from './ShareModal';
+import { MapFlexBadge } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
 import type { PlaceResult, Project, ViewMode } from '../../types/plan';
 
@@ -28,8 +29,12 @@ export function EditorHeader({ project, mode, onModeChange, onPickPlace }: Edito
           to="/"
           aria-label={t('backToPlans')}
           title={t('backToPlans')}
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-ink transition-colors duration-150 hover:bg-subtle sm:h-10 sm:w-10">
-          <ArrowLeftIcon className="h-5 w-5" aria-hidden="true" />
+          className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-ink transition-colors duration-150 hover:bg-subtle">
+          <ArrowLeftIcon className="h-4 w-4 text-muted" aria-hidden="true" />
+          <MapFlexBadge size={28} />
+          <span className="hidden md:inline-flex font-black text-xs tracking-tight text-ink">
+            Map<span className="bg-gradient-to-r from-sky-400 via-indigo-500 to-emerald-400 bg-clip-text text-transparent">Flex</span>
+          </span>
         </Link>
 
         {/* Project Title & Location */}

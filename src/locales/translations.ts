@@ -3,7 +3,7 @@ export type Language = 'es' | 'en';
 export const translations = {
   es: {
     // Brand & Marketing
-    brandName: 'TuMapa',
+    brandName: 'MapFlex',
     brandTagline: 'Dibuja tus propios mapas interactivos para lo que necesites',
     heroTopBadgeTitle: 'Donde Google Maps todavía no existe',
     heroTopBadgeSub: 'Mapas interactivos + Street View propio customizable',
@@ -23,7 +23,7 @@ export const translations = {
     featuresTitle: 'Mapas interactivos y Street View donde las apps tradicionales no llegan',
     featuresSubtitle: 'Diseñado para crear el mapa de lo que aún no existe: festivales en el campo, desarrollos inmobiliarios, predios privados, ferias y eventos temporales.',
     feature1Title: 'Mapea lo que todavía no existe',
-    feature1Desc: 'Las apps como Google Maps solo muestran calles públicas y en un campo o predio privado solo ven un descampado. TuMapa te permite dibujar sectores, caminos, estacionamientos y accesos donde todavía no hay ningún mapa definido.',
+    feature1Desc: 'Las apps como Google Maps solo muestran calles públicas y en un campo o predio privado solo ven un descampado. MapFlex te permite dibujar sectores, caminos, estacionamientos y accesos donde todavía no hay ningún mapa definido.',
     feature2Title: 'Street View propio y customizable',
     feature2Desc: 'Emula Google Street View en tus propios caminos y pabellones. Sube fotos a cada punto para que visitantes y clientes caminen virtualmente a nivel de suelo con brújula y mini-mapa interactivo.',
     feature3Title: 'Trazado satelital con medidas reales',
@@ -216,7 +216,7 @@ export const translations = {
   },
   en: {
     // Brand & Marketing
-    brandName: 'TuMapa',
+    brandName: 'MapFlex',
     brandTagline: 'Draw your own interactive maps for whatever you need',
     heroTopBadgeTitle: 'Where Google Maps doesn’t exist yet',
     heroTopBadgeSub: 'Interactive maps + Customizable Street View',
@@ -236,7 +236,7 @@ export const translations = {
     featuresTitle: 'Interactive maps and Street View where traditional apps cannot reach',
     featuresSubtitle: 'Designed to map what doesn’t exist yet: outdoor festivals, land developments, private venues, expos, and temporary events.',
     feature1Title: 'Map what doesn’t exist yet',
-    feature1Desc: 'Standard map apps only show public streets, showing an empty field for private venues. TuMapa lets you draw and name sectors, parking lots, gates, and booths where no map exists yet.',
+    feature1Desc: 'Standard map apps only show public streets, showing an empty field for private venues. MapFlex lets you draw and name sectors, parking lots, gates, and booths where no map exists yet.',
     feature2Title: '100% Customizable Street View',
     feature2Desc: 'Build your own private Street View. Upload photos to each point along your routes so attendees and clients can walk virtually at ground level with real-time orientation, compass, and mini-map.',
     feature3Title: 'Satellite drafting with real metrics',

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="icon-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4338CA"/>
+    </linearGradient>
+
+    <linearGradient id="icon-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+
+    <linearGradient id="icon-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+
+    <filter id="icon-route-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#38BDF8" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+
+  <!-- Fold 1 (Left panel) -->
+  <path d="M6 14.5L18 9V35.5L6 41V14.5Z" fill="url(#icon-fold-left)"/>
+
+  <!-- Fold 2 (Center panel) -->
+  <path d="M18 9L30 16V42.5L18 35.5V9Z" fill="url(#icon-fold-mid)"/>
+
+  <!-- Fold 3 (Right panel) -->
+  <path d="M30 16L42 10.5V37L30 42.5V16Z" fill="url(#icon-fold-right)"/>
+
+  <!-- Folds separation highlights -->
+  <path d="M18 9V35.5" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1"/>
+  <path d="M30 16V42.5" stroke="#000000" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Dynamic flex path -->
+  <path d="M9 27C13 25.5 15 19.5 21 21C26 22.5 28 29.5 34 26.5C37 25 39 21.5 39 21.5" 
+        stroke="#FFFFFF" 
+        stroke-width="2.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#icon-route-glow)"/>
+
+  <circle cx="9" cy="27" r="2" fill="#FFFFFF"/>
+  <circle cx="39" cy="21.5" r="3.5" fill="#FFFFFF"/>
+  <circle cx="39" cy="21.5" r="2" fill="#0284C7"/>
+</svg>

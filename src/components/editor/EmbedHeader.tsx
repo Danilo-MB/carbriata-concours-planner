@@ -2,6 +2,7 @@ import React from 'react';
 import { ExternalLinkIcon, GlobeIcon, Maximize2Icon } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { LanguageToggle } from '../LanguageToggle';
+import { MapFlexBadge } from '../common/MapFlexLogo';
 import { useLanguage } from '../../contexts/LanguageContext';
 import type { Project } from '../../types/plan';
 
@@ -11,14 +12,14 @@ interface EmbedHeaderProps {
 
 export function EmbedHeader({ project }: EmbedHeaderProps) {
   const { t } = useLanguage();
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://mapflex.app';
   const viewUrl = `${origin}/view/${project.id}`;
 
   return (
     <header className="relative z-30 flex h-11 shrink-0 items-center justify-between border-b border-line bg-surface/95 px-3 backdrop-blur-md">
       {/* Event Title & Location */}
       <div className="flex min-w-0 items-center gap-2">
-        <span className="h-2 w-2 shrink-0 rounded-full bg-accent animate-pulse" aria-hidden="true" />
+        <MapFlexBadge size={22} />
         <div className="min-w-0">
           <h1 className="truncate text-xs font-semibold text-ink sm:text-sm">
             {project.name}
@@ -55,6 +56,16 @@ export function EmbedHeader({ project }: EmbedHeaderProps) {
           <Maximize2Icon className="h-3 w-3" aria-hidden="true" />
           <span>{t('openFullMap')}</span>
           <ExternalLinkIcon className="h-3 w-3 text-on-ink/70" aria-hidden="true" />
+        </a>
+
+        <a
+          href="https://mapflex.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="MapFlex - Mapas Interactivos"
+          className="hidden md:inline-flex items-center gap-1 text-[10px] font-medium text-muted hover:text-ink transition-colors">
+          <span>by</span>
+          <span className="font-extrabold text-ink">Map<span className="text-sky-500">Flex</span></span>
         </a>
 
         <LanguageToggle className="h-7 px-1.5 text-[11px] sm:h-8 sm:px-2" />

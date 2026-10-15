@@ -1,7 +1,7 @@
 {
-  "name": "event-planner",
+  "name": "mapflex",
   "version": "1.0.0",
-  "description": "Event & Venue Layout Planner over satellite maps",
+  "description": "MapFlex — Interactive Map Planning, Custom Street View & GIS on Satellite Imagery",
   "private": true,
   "type": "module",
   "scripts": {

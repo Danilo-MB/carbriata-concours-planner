@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { CompassIcon, LandPlotIcon, PlusIcon, SparklesIcon } from 'lucide-react';
+import { CompassIcon, PlusIcon, SparklesIcon } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { LanguageToggle } from '../components/LanguageToggle';
 import { FeaturedPlan } from '../components/projects/FeaturedPlan';
@@ -14,6 +14,7 @@ import { LandingHero } from '../components/home/LandingHero';
 import { FeatureCards } from '../components/home/FeatureCards';
 import { EmbedShowcase } from '../components/home/EmbedShowcase';
 import { AiWizardModal } from '../components/ai/AiWizardModal';
+import { MapFlexLogo } from '../components/common/MapFlexLogo';
 import { useProjects } from '../contexts/ProjectsContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { planTemplates } from '../data/templates';
@@ -50,17 +51,7 @@ export function ProjectsPage() {
       <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-on-ink shadow-2xs">
-              <LandPlotIcon className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold tracking-tight text-ink">{t('brandName')}</span>
-                <span className="hidden sm:inline-flex rounded-full border border-line bg-subtle px-2 py-0.5 text-[10px] font-semibold text-muted">
-                  Interactive GIS
-                </span>
-              </div>
-            </div>
+            <MapFlexLogo variant="full" size="md" showDomain />
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
@@ -167,13 +158,13 @@ export function ProjectsPage() {
       {/* Footer */}
       <footer className="border-t border-line bg-surface py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-center text-xs text-muted sm:flex-row sm:px-6 sm:text-left">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-ink">{t('brandName')}</span>
-            <span>—</span>
-            <span>{t('brandTagline')}</span>
+          <div className="flex items-center gap-3">
+            <MapFlexLogo variant="full" size="sm" showDomain />
+            <span className="hidden sm:inline text-muted/50">|</span>
+            <span className="hidden sm:inline">{t('brandTagline')}</span>
           </div>
           <div>
-            <span>© {new Date().getFullYear()} {t('brandName')}. Todos los derechos reservados.</span>
+            <span>© {new Date().getFullYear()} MapFlex. Todos los derechos reservados.</span>
           </div>
         </div>
       </footer>

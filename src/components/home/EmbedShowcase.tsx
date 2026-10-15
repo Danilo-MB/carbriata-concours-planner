@@ -91,7 +91,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
                 {activeTab === 'map' ? (
                   <img
                     src="/images/embed-mockup.jpg"
-                    alt="TuMapa - Vista interactiva de visitantes incrustada en sitio web"
+                    alt="MapFlex - Vista interactiva de visitantes incrustada en sitio web"
                     className="h-full w-full object-cover transition-opacity duration-300"
                     loading="lazy"
                   />
@@ -99,7 +99,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
                   <div className="relative h-full w-full">
                     <img
                       src="/streetview/point2_promenade.jpg"
-                      alt="TuMapa - Paseo Street View virtual a nivel de suelo"
+                      alt="MapFlex - Paseo Street View virtual a nivel de suelo"
                       className="h-full w-full object-cover transition-opacity duration-300"
                       loading="lazy"
                     />

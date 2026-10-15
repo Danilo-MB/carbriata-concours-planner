@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <!-- Background rounded squircle with subtle depth -->
+    <linearGradient id="mf-fav-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <!-- Folds gradients -->
+    <linearGradient id="fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+
+    <linearGradient id="fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+
+    <linearGradient id="fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <!-- Glowing route line filter -->
+    <filter id="route-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#38BDF8" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <!-- Container Squircle -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#mf-fav-bg)"/>
+  <rect x="2" y="2" width="60" height="60" rx="16" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1.5"/>
+
+  <!-- Fold 1 (Left panel) -->
+  <path d="M12 21.5L25 15V43.5L12 50V21.5Z" fill="url(#fold-left)"/>
+
+  <!-- Fold 2 (Center panel, angled to form M fold) -->
+  <path d="M25 15L39 22.5V51L25 43.5V15Z" fill="url(#fold-mid)"/>
+
+  <!-- Fold 3 (Right panel, angled upward) -->
+  <path d="M39 22.5L52 16V44.5L39 51V22.5Z" fill="url(#fold-right)"/>
+
+  <!-- Crease light lines -->
+  <path d="M25 15V43.5" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.2"/>
+  <path d="M39 22.5V51" stroke="#000000" stroke-opacity="0.25" stroke-width="1.2"/>
+
+  <!-- The "Flex" dynamic GPS route curve -->
+  <path d="M15 36C20 34 22 26 29 28C36 30 38 38 45 34C48 32 49 28 49 28" 
+        stroke="#FFFFFF" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#route-glow)"/>
+
+  <!-- Waypoint markers -->
+  <circle cx="15" cy="36" r="2.5" fill="#FFFFFF"/>
+  <circle cx="49" cy="28" r="4.5" fill="#FFFFFF"/>
+  <circle cx="49" cy="28" r="2.5" fill="#0284C7"/>
+</svg>

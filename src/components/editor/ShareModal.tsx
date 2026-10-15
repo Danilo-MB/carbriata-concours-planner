@@ -43,7 +43,7 @@ export function ShareModal({ project, isOpen, onClose }: ShareModalProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://event-planner-map.vercel.app';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://mapflex.app';
   const { visitorUrl, embedUrl, bareVisitorUrl } = useMemo(() => getShareUrls(project, origin), [project, origin]);
 
   const currentVisitorUrl = useShortLink ? bareVisitorUrl : visitorUrl;

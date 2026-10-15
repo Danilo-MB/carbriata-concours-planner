@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <defs>
+    <linearGradient id="full-fold-left" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4338CA"/>
+    </linearGradient>
+
+    <linearGradient id="full-fold-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+
+    <linearGradient id="full-fold-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+
+    <linearGradient id="full-flex-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+
+    <filter id="full-route-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#38BDF8" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Logo Mark on the left (40x40 scale) -->
+  <g transform="translate(4, 4)">
+    <path d="M4 12L15 7.5V30L4 34.5V12Z" fill="url(#full-fold-left)"/>
+    <path d="M15 7.5L26 13.5V36L15 30V7.5Z" fill="url(#full-fold-mid)"/>
+    <path d="M26 13.5L37 9V31.5L26 36V13.5Z" fill="url(#full-fold-right)"/>
+    
+    <path d="M15 7.5V30" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="0.9"/>
+    <path d="M26 13.5V36" stroke="#000000" stroke-opacity="0.25" stroke-width="0.9"/>
+
+    <path d="M7 23C11 21.5 12 16.5 17 18C22 19.5 24 25.5 29 23C32 21.5 34 18.5 34 18.5" 
+          stroke="#FFFFFF" 
+          stroke-width="2.2" 
+          stroke-linecap="round" 
+          filter="url(#full-route-glow)"/>
+
+    <circle cx="7" cy="23" r="1.6" fill="#FFFFFF"/>
+    <circle cx="34" cy="18.5" r="3" fill="#FFFFFF"/>
+    <circle cx="34" cy="18.5" r="1.6" fill="#0284C7"/>
+  </g>
+
+  <!-- Typography: MapFlex -->
+  <g transform="translate(54, 32)">
+    <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="25" font-weight="900" letter-spacing="-0.03em" fill="currentColor">
+      Map<tspan fill="url(#full-flex-grad)">Flex</tspan>
+    </text>
+  </g>
+
+  <!-- Minimalist .app pill badge -->
+  <g transform="translate(156, 15)">
+    <rect width="36" height="18" rx="5" fill="#38BDF8" fill-opacity="0.12" stroke="#38BDF8" stroke-opacity="0.3" stroke-width="1"/>
+    <text x="18" y="12.5" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="800" fill="#0284C7" text-anchor="middle" letter-spacing="0.04em">.APP</text>
+  </g>
+</svg>

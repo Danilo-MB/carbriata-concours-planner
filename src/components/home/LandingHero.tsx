@@ -73,7 +73,7 @@ export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
           <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
             <img
               src="/images/hero-map-showcase.jpg"
-              alt="TuMapa - Plataforma de trazado satelital interactivo"
+              alt="MapFlex - Plataforma de trazado satelital interactivo"
               className="aspect-[16/9] w-full object-cover"
               loading="eager"
             />

@@ -127,7 +127,7 @@ export function decodeProjectFromUrl(input: string): Project | null {
  * Returns portable visitor and embed URLs.
  */
 export function getShareUrls(project: Project, customOrigin?: string): { visitorUrl: string; embedUrl: string; bareVisitorUrl: string } {
-  const origin = customOrigin || (typeof window !== 'undefined' ? window.location.origin : 'https://event-planner-map.vercel.app');
+  const origin = customOrigin || (typeof window !== 'undefined' ? window.location.origin : 'https://mapflex.app');
   const encoded = encodeProjectForUrl(project);
 
   const bareVisitorUrl = `${origin}/view/${project.id}`;

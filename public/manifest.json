@@ -1,0 +1,21 @@
+{
+  "name": "MapFlex — Mapas interactivos sobre satélite",
+  "short_name": "MapFlex",
+  "description": "Crea y comparte mapas interactivos y recorridos Street View personalizables sobre fotografía satelital.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
