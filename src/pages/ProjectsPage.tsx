@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
 import {
   AlertCircleIcon,
-  CloudIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CompassIcon,
   FootprintsIcon,
   LayersIcon,
@@ -16,7 +17,6 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { LanguageToggle } from '../components/LanguageToggle';
-import { FeaturedPlan } from '../components/projects/FeaturedPlan';
 import { NewPlanDialog } from '../components/projects/NewPlanDialog';
 import { ProjectCard } from '../components/projects/ProjectCard';
 import { TemplateIcon } from '../components/projects/TemplateIcon';
@@ -29,7 +29,6 @@ import { MapFlexLogo } from '../components/common/MapFlexLogo';
 import { useProjects } from '../contexts/ProjectsContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import { isUnlimitedUser } from '../utils/plan';
 import { planTemplates } from '../data/templates';
 import type { NewPlanInput, Project, TemplateId } from '../types/plan';
 
@@ -44,7 +43,33 @@ export function ProjectsPage() {
   const [activeSection, setActiveSection] = useState<string>('inicio');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const sorted = useMemo(() => [...projects].sort((a, b) => b.updatedAt - a.updatedAt), [projects]);
-  const [featured, ...others] = sorted;
+
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkCarouselScroll = useCallback(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 10);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10);
+  }, []);
+
+  useEffect(() => {
+    checkCarouselScroll();
+    window.addEventListener('resize', checkCarouselScroll);
+    return () => window.removeEventListener('resize', checkCarouselScroll);
+  }, [checkCarouselScroll, sorted]);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const scrollAmount = Math.max(el.clientWidth * 0.7, 300);
+    el.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
 
   const navSections = useMemo(
     () => [
@@ -102,12 +127,7 @@ export function ProjectsPage() {
     navigate(`/plan/${project.id}`);
   };
 
-  const demoId = featured?.id || 'carbriata-2027';
-
-  const isUnlimited = isUnlimitedUser(user);
-  const userCloudCount = projects.filter(
-    (p) => !p.isDeleted && !p.isLocalOnly && (p.userId === user?.id || (user?.email && p.authorEmail?.toLowerCase() === user.email.toLowerCase()))
-  ).length;
+  const demoId = sorted[0]?.id || 'carbriata-2027';
 
   return (
     <div className="min-h-[100dvh] w-full bg-canvas text-ink">
@@ -216,28 +236,9 @@ export function ProjectsPage() {
       <main id="mis-planos" className="scroll-mt-16 mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-line pb-6">
           <div>
-            <div className="flex items-center gap-2">
-              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent uppercase tracking-wider">
-                <CompassIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Workspace</span>
-              </div>
-              {user && (
-                isUnlimited ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                    <CloudIcon className="h-3 w-3" />
-                    <span>Nube Ilimitada</span>
-                  </span>
-                ) : (
-                  <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
-                    userCloudCount >= 1
-                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                      : 'border-line bg-surface text-muted'
-                  }`}>
-                    <CloudIcon className="h-3 w-3" />
-                    <span>{userCloudCount}/1 plano en nube</span>
-                  </span>
-                )
-              )}
+            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent uppercase tracking-wider">
+              <CompassIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Workspace</span>
             </div>
             <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
               {t('myPlans')}
@@ -247,6 +248,32 @@ export function ProjectsPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
+            {/* Scroll Navigation Buttons for desktop when there are multiple plans */}
+            {sorted.length > 3 && (
+              <div className="hidden sm:flex items-center gap-1.5 mr-1">
+                <button
+                  type="button"
+                  onClick={() => scrollCarousel('left')}
+                  disabled={!canScrollLeft}
+                  title="Plano anterior"
+                  aria-label="Plano anterior"
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-ink shadow-2xs transition-all hover:bg-subtle active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  <ChevronLeftIcon className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollCarousel('right')}
+                  disabled={!canScrollRight}
+                  title="Siguiente plano"
+                  aria-label="Siguiente plano"
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-ink shadow-2xs transition-all hover:bg-subtle active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  <ChevronRightIcon className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={() => setIsAiWizardOpen(true)}
@@ -264,28 +291,52 @@ export function ProjectsPage() {
           </div>
         </div>
 
-        <div className="mt-8">
-          {featured ? (
-            <FeaturedPlan project={featured} onDelete={() => setProjectToDelete(featured)} />
-          ) : (
-            <div className="rounded-2xl border border-dashed border-line bg-surface px-6 py-14 text-center">
-              <h3 className="text-lg font-semibold text-ink">No hay planos aún</h3>
-              <p className="mt-1 text-sm text-muted">Comienza con una plantilla para crear tu primer plano interactivo.</p>
-            </div>
-          )}
-        </div>
-
-        {others.length > 0 && (
-          <section aria-labelledby="other-plans" className="mt-12">
-            <h3 id="other-plans" className="text-sm font-semibold text-ink">
-              Otros planos
-            </h3>
-            <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {others.map((p) => (
-                <ProjectCard key={p.id} project={p} onDelete={() => setProjectToDelete(p)} />
+        {sorted.length === 0 ? (
+          <div className="mt-8 rounded-2xl border border-dashed border-line bg-surface px-6 py-14 text-center">
+            <h3 className="text-lg font-semibold text-ink">No hay planos aún</h3>
+            <p className="mt-1 text-sm text-muted">Comienza con una plantilla para crear tu primer plano interactivo.</p>
+          </div>
+        ) : (
+          <div className="relative mt-8">
+            <div
+              ref={carouselRef}
+              onScroll={checkCarouselScroll}
+              className="flex gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth"
+            >
+              {sorted.map((p) => (
+                <div
+                  key={p.id}
+                  className="w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)] shrink-0 snap-start flex"
+                >
+                  <ProjectCard project={p} onDelete={() => setProjectToDelete(p)} />
+                </div>
               ))}
             </div>
-          </section>
+
+            {/* Mobile Carousel Navigation Arrows */}
+            {sorted.length > 1 && (
+              <div className="flex sm:hidden items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => scrollCarousel('left')}
+                  disabled={!canScrollLeft}
+                  aria-label="Plano anterior"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink disabled:opacity-30"
+                >
+                  <ChevronLeftIcon className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollCarousel('right')}
+                  disabled={!canScrollRight}
+                  aria-label="Siguiente plano"
+                  className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink disabled:opacity-30"
+                >
+                  <ChevronRightIcon className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         <section id="plantillas" aria-labelledby="start-new" className="scroll-mt-16 mt-12 border-t border-line pt-8">

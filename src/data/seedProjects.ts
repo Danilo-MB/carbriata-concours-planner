@@ -62,7 +62,7 @@ export const seedProjects: Project[] = [
     kind: 'line',
     name: 'Paseo Principal (Recorrido 360°)',
     categoryId: 'accesos',
-    notes: 'Recorrido interactivo con 5 puntos fotografiados a nivel de suelo para caminar virtualmente por el predio.',
+    notes: 'Recorrido interactivo con 5 puntos fotografiados para caminar virtualmente por el predio.',
     coords: [
       [-36.3242, -57.6990],
       [-36.3249, -57.6982],
@@ -859,7 +859,7 @@ export const seedProjects: Project[] = [
 {
   "id": "i6666hqmv8mdpge",
   "name": "Planta Logística",
-  "description": "Predio industrial logístico con accesos para transporte pesado, pesaje de camiones, naves de almacenaje, dársenas de carga y recorridos virtuales a nivel del suelo en cada trazado.",
+  "description": "Predio industrial logístico con accesos para transporte pesado, pesaje de camiones, naves de almacenaje, dársenas de carga y recorridos virtuales en cada trazado.",
   "location": "Ford Argentina, Luis María Drago",
   "websiteUrl": "",
   "template": "event",

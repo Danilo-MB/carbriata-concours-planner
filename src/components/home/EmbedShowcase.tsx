@@ -99,7 +99,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
                   <div className="relative h-full w-full">
                     <img
                       src="/streetview/point2_promenade.jpg"
-                      alt="MapFlex - Paseo virtual a nivel de suelo"
+                      alt="MapFlex - Paseo virtual interactivo"
                       className="h-full w-full object-cover transition-opacity duration-300"
                       loading="lazy"
                     />
@@ -117,7 +117,7 @@ export function EmbedShowcase({ demoProjectId = 'carbriata-2027' }: EmbedShowcas
                         🧭 Rumbo: 215° SO
                       </span>
                       <span className="rounded-lg bg-amber-500 px-2.5 py-1 text-[11px] font-bold text-black shadow-sm">
-                        Foto a nivel de suelo
+                        Foto del recorrido
                       </span>
                     </div>
                   </div>

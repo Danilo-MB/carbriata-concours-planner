@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { CloudIcon, CloudOffIcon, Trash2Icon } from 'lucide-react';
+import { EyeIcon, MapPinIcon, Trash2Icon } from 'lucide-react';
 import { PlanThumbnail } from '../PlanThumbnail';
 import { canDeleteProject, summarizeKinds } from '../../utils/plan';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Project } from '../../types/plan';
 
@@ -14,43 +15,67 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const showDelete = canDeleteProject(project, user);
 
   return (
-    <article className="group relative isolate z-0 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[border-color,box-shadow] duration-200 hover:border-ink/25 hover:shadow-float">
-      <PlanThumbnail project={project} className="aspect-[16/10] w-full" />
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="truncate text-base font-semibold text-ink">
-            <Link to={`/plan/${project.id}`} className="after:absolute after:inset-0 focus-visible:outline-none">
-              {project.name}
-            </Link>
-          </h3>
-          {project.isLocalOnly ? (
-            <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0" title="Guardado de forma local en tu navegador">
-              <CloudOffIcon className="h-3 w-3" />
-              <span>Local</span>
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0" title="Sincronizado en la nube">
-              <CloudIcon className="h-3 w-3" />
-              <span>Nube</span>
-            </span>
-          )}
-        </div>
-        <p className="mt-0.5 truncate text-sm text-muted">{project.location}</p>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-xs text-muted">
+    <article className="group relative isolate z-0 flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[border-color,box-shadow,transform] duration-200 hover:border-ink/30 hover:shadow-float">
+      <Link
+        to={`/plan/${project.id}`}
+        aria-label={`${t('openPlan')} ${project.name}`}
+        className="relative block aspect-[16/10] w-full overflow-hidden bg-zinc-900 focus-visible:outline-hidden"
+      >
+        <PlanThumbnail
+          project={project}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        />
+      </Link>
+
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <h3 className="truncate text-base font-bold text-ink sm:text-lg">
+          <Link to={`/plan/${project.id}`} className="hover:underline focus-visible:outline-hidden">
+            {project.name}
+          </Link>
+        </h3>
+
+        {project.location && (
+          <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-muted">
+            <MapPinIcon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">{project.location}</span>
+          </p>
+        )}
+
+        <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted">
           <span className="truncate">{summarizeKinds(project.features)}</span>
           <span className="shrink-0">{formatDistanceToNow(project.updatedAt, { addSuffix: true })}</span>
         </div>
+
+        <div className="mt-4 flex items-center gap-2 pt-3 border-t border-line">
+          <Link
+            to={`/plan/${project.id}`}
+            className="flex-1 inline-flex h-9 items-center justify-center rounded-xl bg-ink px-3 text-xs font-semibold text-on-ink shadow-2xs hover:bg-ink/90 active:scale-95 transition-all"
+          >
+            <span>{t('openPlan')}</span>
+          </Link>
+          <Link
+            to={`/view/${project.id}`}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-line bg-surface px-3 text-xs font-semibold text-ink hover:bg-subtle active:scale-95 transition-all"
+            title="Vista de visitante"
+          >
+            <EyeIcon className="h-3.5 w-3.5 text-muted" />
+            <span>Visitante</span>
+          </Link>
+        </div>
       </div>
+
       {showDelete && (
         <button
           type="button"
           onClick={onDelete}
-          aria-label={`Delete ${project.name}`}
-          className="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-lg bg-surface text-muted shadow-sm transition-colors duration-150 hover:text-danger">
-          <Trash2Icon className="h-4 w-4" aria-hidden />
+          aria-label={`Eliminar ${project.name}`}
+          className="absolute right-2.5 top-2.5 z-10 grid h-8 w-8 place-items-center rounded-lg bg-surface/90 backdrop-blur-md text-muted shadow-sm transition-all hover:bg-danger hover:text-white active:scale-95"
+        >
+          <Trash2Icon className="h-4 w-4" aria-hidden="true" />
         </button>
       )}
     </article>

@@ -110,7 +110,7 @@ export function VisitorElementDetails({
           </div>
 
           <p className="mt-2 text-xs text-muted leading-relaxed">
-            Camina virtualmente por este trayecto con fotos a nivel de suelo, orientación en tiempo real y mini-mapa interactivo.
+            Camina virtualmente por este trayecto con fotos, orientación en tiempo real y mini-mapa interactivo.
           </p>
 
           <button

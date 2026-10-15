@@ -94,7 +94,7 @@ export function RouteWaypointManager({
                 Recorrido Virtual 360°
               </h4>
               <p className="text-[11px] text-muted">
-                {photosCount} de {waypoints.length} puntos con foto a nivel de suelo
+                {photosCount} de {waypoints.length} puntos con foto en el recorrido
               </p>
             </div>
           </div>
@@ -260,7 +260,7 @@ export function RouteWaypointManager({
                           ? 'Subiendo...'
                           : wp.image
                           ? 'Cambiar foto'
-                          : 'Subir foto a nivel de suelo'}
+                          : 'Subir foto'}
                       </button>
 
                       <p className="text-[11px] text-muted leading-tight">
