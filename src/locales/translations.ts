@@ -5,7 +5,7 @@ export const translations = {
     // Brand & Marketing
     brandName: 'MapFlex',
     brandTagline: 'Dibuja tus propios mapas interactivos para lo que necesites',
-    heroTopBadgeTitle: 'Donde el mapa todavía no existe',
+    heroTopBadgeTitle: 'Donde el mapa no existe',
     heroTopBadgeSub: 'Mapas interactivos + Recorridos virtuales',
     heroBadge: '✨ Mapas satelitales interactivos + Recorrido virtual propio',
     heroTitlePart1: 'No te conformes con un plano estático.',
@@ -225,7 +225,7 @@ export const translations = {
     // Brand & Marketing
     brandName: 'MapFlex',
     brandTagline: 'Draw your own interactive maps for whatever you need',
-    heroTopBadgeTitle: 'Where maps don’t exist yet',
+    heroTopBadgeTitle: 'Where maps don’t exist',
     heroTopBadgeSub: 'Interactive maps + Virtual walkthroughs',
     heroBadge: '✨ Interactive satellite maps + Custom virtual tour',
     heroTitlePart1: 'Don’t settle for a static plan.',

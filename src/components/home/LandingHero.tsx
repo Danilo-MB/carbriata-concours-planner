@@ -72,33 +72,37 @@ export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
               </span>
             </div>
 
-            <div className="relative w-full overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
+            <div className="w-full overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
               <img
                 src="/images/hero-map-showcase.jpg"
                 alt="MapFlex - Plataforma de trazado satelital interactivo"
-                className="aspect-[4/3] sm:aspect-[16/10] w-full object-cover"
+                className="aspect-[4/3] sm:aspect-[16/10] w-full object-cover block"
                 loading="eager"
               />
 
-              {/* Floating Interactive Glassmorphism Badges */}
-              <div className="pointer-events-none absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-lg border border-amber-400/40 bg-black/85 px-2.5 py-1 text-[11px] font-bold text-amber-300 shadow-xl backdrop-blur-md">
-                <FootprintsIcon className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
-                <span>{t('heroBadgeStreetView')}</span>
-              </div>
+              {/* 4 Feature Badges placed outside and beneath the image */}
+              <div className="border-t border-line/70 bg-surface/90 p-2.5 sm:p-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-black/80 px-2.5 py-2 text-[11px] sm:text-xs font-bold text-amber-300 shadow-md backdrop-blur-md">
+                    <FootprintsIcon className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden="true" />
+                    <span className="leading-tight">{t('heroBadgeStreetView')}</span>
+                  </div>
 
-              <div className="pointer-events-none absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-lg border border-white/20 bg-ink/85 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>{t('heroBadgeSatellite')}</span>
-              </div>
+                  <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-ink/80 px-2.5 py-2 text-[11px] sm:text-xs font-semibold text-white shadow-md backdrop-blur-md">
+                    <LayersIcon className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden="true" />
+                    <span className="leading-tight">{t('heroBadgeMetrics')}</span>
+                  </div>
 
-              <div className="pointer-events-none absolute top-2.5 right-2.5 hidden sm:flex items-center gap-1.5 rounded-lg border border-white/20 bg-ink/85 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
-                <LayersIcon className="h-3 w-3 text-amber-400" aria-hidden="true" />
-                <span>{t('heroBadgeMetrics')}</span>
-              </div>
+                  <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-ink/80 px-2.5 py-2 text-[11px] sm:text-xs font-semibold text-white shadow-md backdrop-blur-md">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="leading-tight">{t('heroBadgeSatellite')}</span>
+                  </div>
 
-              <div className="pointer-events-none absolute bottom-2.5 right-2.5 hidden sm:flex items-center gap-1.5 rounded-lg border border-white/20 bg-ink/85 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
-                <MapPinIcon className="h-3 w-3 text-orange-400" aria-hidden="true" />
-                <span>{t('heroBadgeMobile')}</span>
+                  <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-ink/80 px-2.5 py-2 text-[11px] sm:text-xs font-semibold text-white shadow-md backdrop-blur-md">
+                    <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-orange-400" aria-hidden="true" />
+                    <span className="leading-tight">{t('heroBadgeMobile')}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
