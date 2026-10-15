@@ -217,10 +217,12 @@ function routeBadgeIcon(feature: PlanFeature, category: Category, selected: bool
   const html = `
     <div class="route-badge ${selectedCls}" title="${name} (${len}) · Clic para seleccionar">
       <span class="route-badge-dot" style="background-color: ${color};"></span>
-      <span class="route-badge-name">${name}</span>
-      <span class="route-badge-sep">·</span>
-      <span class="route-badge-len">${len}</span>
-      ${hasStreetView ? '<span class="route-badge-icon" title="Street View">🚶‍♂️</span>' : hasPhotos ? '<span class="route-badge-icon" title="Fotos">📷</span>' : ''}
+      <div class="route-badge-details">
+        <span class="route-badge-name">${name}</span>
+        <span class="route-badge-sep">·</span>
+        <span class="route-badge-len">${len}</span>
+        ${hasStreetView ? '<span class="route-badge-icon" title="Street View">🚶‍♂️</span>' : hasPhotos ? '<span class="route-badge-icon" title="Fotos">📷</span>' : ''}
+      </div>
     </div>
   `;
 

@@ -98547,7 +98547,20 @@ var AuthService = class {
     }
     const existing = await this.storage.findUserByEmail(cleanEmail);
     if (existing) {
-      throw new BadRequestException("Ya existe una cuenta registrada con este correo electr\xF3nico.");
+      if (existing.passwordHash) {
+        throw new BadRequestException("Ya existe una cuenta registrada con este correo electr\xF3nico. Inicia sesi\xF3n.");
+      }
+      const salt2 = await genSalt(10);
+      const passwordHash2 = await hash(password, salt2);
+      const isAdmin2 = isAdminEmail(cleanEmail);
+      const updated = await this.storage.updateUser(existing.id, {
+        passwordHash: passwordHash2,
+        name: name.trim() || existing.name,
+        role: isAdmin2 ? "admin" : existing.role || "user"
+      });
+      const userDto2 = this.toUserDto(updated || existing);
+      const token2 = this.jwt.sign({ sub: existing.id, email: existing.email, name: userDto2.name, role: userDto2.role, isAdmin: userDto2.isAdmin });
+      return { token: token2, user: userDto2 };
     }
     const salt = await genSalt(10);
     const passwordHash = await hash(password, salt);
@@ -98572,8 +98585,11 @@ var AuthService = class {
       throw new BadRequestException("Ingresa correo electr\xF3nico y contrase\xF1a.");
     }
     const user = await this.storage.findUserByEmail(cleanEmail);
-    if (!user || !user.passwordHash) {
-      throw new UnauthorizedException("Correo electr\xF3nico o contrase\xF1a incorrectos.");
+    if (!user) {
+      throw new UnauthorizedException('No encontramos una cuenta con este correo. Haz clic en "Crear Cuenta" para registrarte.');
+    }
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('Esta cuenta a\xFAn no tiene contrase\xF1a. Haz clic en "Crear Cuenta" para establecerla.');
     }
     const valid = await compare(password, user.passwordHash);
     if (!valid) {

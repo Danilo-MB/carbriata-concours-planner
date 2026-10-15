@@ -46,7 +46,21 @@ export class AuthService {
 
     const existing = await this.storage.findUserByEmail(cleanEmail);
     if (existing) {
-      throw new BadRequestException('Ya existe una cuenta registrada con este correo electrónico.');
+      if (existing.passwordHash) {
+        throw new BadRequestException('Ya existe una cuenta registrada con este correo electrónico. Inicia sesión.');
+      }
+      // User existed without password (e.g. from social/magic link), set password now
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+      const isAdmin = isAdminEmail(cleanEmail);
+      const updated = await this.storage.updateUser(existing.id, {
+        passwordHash,
+        name: name.trim() || existing.name,
+        role: isAdmin ? 'admin' : (existing.role || 'user')
+      });
+      const userDto = this.toUserDto(updated || existing);
+      const token = this.jwt.sign({ sub: existing.id, email: existing.email, name: userDto.name, role: userDto.role, isAdmin: userDto.isAdmin });
+      return { token, user: userDto };
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -78,8 +92,11 @@ export class AuthService {
     }
 
     const user = await this.storage.findUserByEmail(cleanEmail);
-    if (!user || !user.passwordHash) {
-      throw new UnauthorizedException('Correo electrónico o contraseña incorrectos.');
+    if (!user) {
+      throw new UnauthorizedException('No encontramos una cuenta con este correo. Haz clic en "Crear Cuenta" para registrarte.');
+    }
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('Esta cuenta aún no tiene contraseña. Haz clic en "Crear Cuenta" para establecerla.');
     }
 
     const valid = await bcrypt.compare(password, user.passwordHash);
