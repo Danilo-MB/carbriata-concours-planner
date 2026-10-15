@@ -103,19 +103,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       try {
         const profile = await api.auth.me();
-        if (profile.emailVerified === false) {
-          setAuthToken(null);
-          setStoredUser(null);
-          setToken(null);
-          setUser(null);
-          return;
-        }
         setUser(profile);
         setStoredUser(profile);
         setToken(savedToken);
       } catch (err: any) {
-        // Only clear if server explicitly rejects as expired or invalid
-        if (err?.message?.includes('expirada') || err?.message?.includes('inválido')) {
+        // Only clear if server explicitly rejects as expired or invalid (401)
+        const msg = String(err?.message || '').toLowerCase();
+        if (msg.includes('expirada') || msg.includes('inválido') || msg.includes('unauthorized') || msg.includes('401')) {
           setAuthToken(null);
           setStoredUser(null);
           setToken(null);

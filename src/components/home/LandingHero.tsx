@@ -88,18 +88,18 @@ export function LandingHero({ onCreateClick, onAiClick }: LandingHeroProps) {
                     <span className="leading-tight">{t('heroBadgeStreetView')}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-ink/80 px-2.5 py-2 text-[11px] sm:text-xs font-semibold text-white shadow-md backdrop-blur-md">
+                  <div className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-black/80 px-2.5 py-2 text-[11px] sm:text-xs font-bold text-amber-300 shadow-md backdrop-blur-md">
                     <LayersIcon className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden="true" />
                     <span className="leading-tight">{t('heroBadgeMetrics')}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-ink/80 px-2.5 py-2 text-[11px] sm:text-xs font-semibold text-white shadow-md backdrop-blur-md">
+                  <div className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-black/80 px-2.5 py-2 text-[11px] sm:text-xs font-bold text-amber-300 shadow-md backdrop-blur-md">
                     <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
                     <span className="leading-tight">{t('heroBadgeSatellite')}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-ink/80 px-2.5 py-2 text-[11px] sm:text-xs font-semibold text-white shadow-md backdrop-blur-md">
-                    <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-orange-400" aria-hidden="true" />
+                  <div className="flex items-center gap-2 rounded-lg border border-amber-400/40 bg-black/80 px-2.5 py-2 text-[11px] sm:text-xs font-bold text-amber-300 shadow-md backdrop-blur-md">
+                    <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden="true" />
                     <span className="leading-tight">{t('heroBadgeMobile')}</span>
                   </div>
                 </div>

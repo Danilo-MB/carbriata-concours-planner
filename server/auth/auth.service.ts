@@ -28,7 +28,7 @@ export class AuthService {
 
   private toUserDto(user: UserEntity) {
     const isAdmin = user.role === 'admin' || isAdminEmail(user.email);
-    const emailVerified = Boolean(user.emailVerified);
+    const emailVerified = Boolean(user.emailVerified || isAdmin);
     return {
       id: user.id,
       email: user.email,
@@ -221,10 +221,16 @@ export class AuthService {
         email: cleanEmail,
         name: name || cleanEmail.split('@')[0],
         role: isAdmin ? 'admin' : 'user',
+        emailVerified: true,
         createdAt: Date.now()
       });
-    } else if (isAdmin && user.role !== 'admin') {
-      user = (await this.storage.updateUser(user.id, { role: 'admin' })) || user;
+    } else {
+      const patch: Partial<UserEntity> = {};
+      if (isAdmin && user.role !== 'admin') patch.role = 'admin';
+      if (!user.emailVerified) patch.emailVerified = true;
+      if (Object.keys(patch).length > 0) {
+        user = (await this.storage.updateUser(user.id, patch)) || user;
+      }
     }
 
     const userDto = this.toUserDto(user);
@@ -258,10 +264,16 @@ export class AuthService {
         email: cleanEmail,
         name: name || cleanEmail.split('@')[0],
         role: isAdmin ? 'admin' : 'user',
+        emailVerified: true,
         createdAt: Date.now()
       });
-    } else if (isAdmin && user.role !== 'admin') {
-      user = (await this.storage.updateUser(user.id, { role: 'admin' })) || user;
+    } else {
+      const patch: Partial<UserEntity> = {};
+      if (isAdmin && user.role !== 'admin') patch.role = 'admin';
+      if (!user.emailVerified) patch.emailVerified = true;
+      if (Object.keys(patch).length > 0) {
+        user = (await this.storage.updateUser(user.id, patch)) || user;
+      }
     }
 
     const userDto = this.toUserDto(user);
@@ -340,16 +352,22 @@ export class AuthService {
           email: cleanEmail,
           name: cleanEmail.split('@')[0],
           role: isAdmin ? 'admin' : 'user',
+          emailVerified: true,
           createdAt: Date.now()
         });
-      } else if (isAdmin && user.role !== 'admin') {
-        user = (await this.storage.updateUser(user.id, { role: 'admin' })) || user;
+      } else {
+        const patch: Partial<UserEntity> = {};
+        if (isAdmin && user.role !== 'admin') patch.role = 'admin';
+        if (!user.emailVerified) patch.emailVerified = true;
+        if (Object.keys(patch).length > 0) {
+          user = (await this.storage.updateUser(user.id, patch)) || user;
+        }
       }
 
       await this.storage.deleteMagicEntry(cleanEmail);
 
       const userDto = this.toUserDto(user);
-      const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+      const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: true });
 
       return { token: authToken, user: userDto };
     } catch {
@@ -379,16 +397,22 @@ export class AuthService {
         email: cleanEmail,
         name: cleanEmail.split('@')[0],
         role: isAdmin ? 'admin' : 'user',
+        emailVerified: true,
         createdAt: Date.now()
       });
-    } else if (isAdmin && user.role !== 'admin') {
-      user = (await this.storage.updateUser(user.id, { role: 'admin' })) || user;
+    } else {
+      const patch: Partial<UserEntity> = {};
+      if (isAdmin && user.role !== 'admin') patch.role = 'admin';
+      if (!user.emailVerified) patch.emailVerified = true;
+      if (Object.keys(patch).length > 0) {
+        user = (await this.storage.updateUser(user.id, patch)) || user;
+      }
     }
 
     await this.storage.deleteMagicEntry(cleanEmail);
 
     const userDto = this.toUserDto(user);
-    const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin });
+    const authToken = this.jwt.sign({ sub: user.id, email: user.email, name: user.name, role: userDto.role, isAdmin: userDto.isAdmin, emailVerified: true });
 
     return { token: authToken, user: userDto };
   }

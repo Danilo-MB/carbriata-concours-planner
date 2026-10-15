@@ -103,14 +103,14 @@ export class StorageService implements OnModuleInit {
     setTimeout(async () => {
       try {
         const u = await this.findUserByEmail('dmarinobata@gmail.com');
-        if (u && u.emailVerified) {
-          await this.updateUser(u.id, { emailVerified: false });
-          console.log('Reset dmarinobata@gmail.com to emailVerified: false for OTP test');
+        if (u && (!u.emailVerified || u.role !== 'admin')) {
+          await this.updateUser(u.id, { emailVerified: true, role: 'admin' });
+          console.log('Ensured dmarinobata@gmail.com is emailVerified: true and role: admin');
         }
       } catch (err) {
-        console.warn('Could not reset admin verification flag:', err);
+        console.warn('Could not verify admin on startup:', err);
       }
-    }, 1500);
+    }, 1000);
   }
 
   private initRedis(): void {
