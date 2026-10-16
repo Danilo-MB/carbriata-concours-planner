@@ -248,15 +248,15 @@ export function ProjectsPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Scroll Navigation Buttons for desktop when there are multiple plans */}
-            {sorted.length > 3 && (
-              <div className="hidden sm:flex items-center gap-1.5 mr-1">
+            {/* Scroll Navigation Buttons: on mobile when > 1 plan, on desktop when > 3 plans */}
+            {sorted.length > 1 && (
+              <div className={`items-center gap-1.5 mr-1 ${sorted.length <= 3 ? 'flex sm:hidden' : 'flex'}`}>
                 <button
                   type="button"
                   onClick={() => scrollCarousel('left')}
                   disabled={!canScrollLeft}
-                  title="Plano anterior"
-                  aria-label="Plano anterior"
+                  title={t('prevPlan')}
+                  aria-label={t('prevPlan')}
                   className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-ink shadow-2xs transition-all hover:bg-subtle active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
                 >
                   <ChevronLeftIcon className="h-4 w-4" />
@@ -265,8 +265,8 @@ export function ProjectsPage() {
                   type="button"
                   onClick={() => scrollCarousel('right')}
                   disabled={!canScrollRight}
-                  title="Siguiente plano"
-                  aria-label="Siguiente plano"
+                  title={t('nextPlan')}
+                  aria-label={t('nextPlan')}
                   className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-ink shadow-2xs transition-all hover:bg-subtle active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
                 >
                   <ChevronRightIcon className="h-4 w-4" />
@@ -297,43 +297,109 @@ export function ProjectsPage() {
             <p className="mt-1 text-sm text-muted">Comienza con una plantilla para crear tu primer plano interactivo.</p>
           </div>
         ) : (
-          <div className="relative mt-8">
+          <div className="relative mt-6 sm:mt-8">
+            {/* Mobile Carousel Swipe Indicator Bar */}
+            {sorted.length > 1 && (
+              <div className="flex sm:hidden items-center justify-between mb-3 px-1 text-xs text-muted">
+                <span className="inline-flex items-center gap-1.5 font-medium text-ink/80">
+                  <span className="text-accent font-bold">↔</span>
+                  <span>{t('swipeMorePlans')}</span>
+                  <span className="rounded-full bg-surface px-2 py-0.5 font-mono text-[10px] text-accent border border-line font-semibold">
+                    {sorted.length}
+                  </span>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('left')}
+                    disabled={!canScrollLeft}
+                    title={t('prevPlan')}
+                    aria-label={t('prevPlan')}
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink shadow-2xs transition-all active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
+                  >
+                    <ChevronLeftIcon className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('right')}
+                    disabled={!canScrollRight}
+                    title={t('nextPlan')}
+                    aria-label={t('nextPlan')}
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink shadow-2xs transition-all active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
+                  >
+                    <ChevronRightIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Floating Navigation Arrows directly on the carousel sides */}
+            {sorted.length > 1 && (
+              <>
+                {canScrollLeft && (
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('left')}
+                    title={t('prevPlan')}
+                    aria-label={t('prevPlan')}
+                    className="absolute -left-2 sm:-left-3 top-36 sm:top-40 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-line bg-surface/95 text-ink shadow-lg backdrop-blur-md transition-all active:scale-90 hover:bg-surface hover:scale-105"
+                  >
+                    <ChevronLeftIcon className="h-5 w-5" />
+                  </button>
+                )}
+                {canScrollRight && (
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('right')}
+                    title={t('nextPlan')}
+                    aria-label={t('nextPlan')}
+                    className="absolute -right-2 sm:-right-3 top-36 sm:top-40 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-line bg-surface/95 text-ink shadow-lg backdrop-blur-md transition-all active:scale-90 hover:bg-surface hover:scale-105 shadow-accent/20"
+                  >
+                    <ChevronRightIcon className="h-5 w-5" />
+                  </button>
+                )}
+              </>
+            )}
+
             <div
               ref={carouselRef}
               onScroll={checkCarouselScroll}
-              className="flex gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth items-stretch"
+              className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth items-stretch"
             >
               {sorted.map((p) => (
                 <div
                   key={p.id}
-                  className="w-full sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col"
+                  className="w-[86%] xs:w-[88%] sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col"
                 >
                   <ProjectCard project={p} onDelete={() => setProjectToDelete(p)} />
                 </div>
               ))}
             </div>
 
-            {/* Mobile Carousel Navigation Arrows */}
+            {/* Mobile Carousel Navigation Arrows at Bottom */}
             {sorted.length > 1 && (
-              <div className="flex sm:hidden items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => scrollCarousel('left')}
-                  disabled={!canScrollLeft}
-                  aria-label="Plano anterior"
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink disabled:opacity-30"
-                >
-                  <ChevronLeftIcon className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => scrollCarousel('right')}
-                  disabled={!canScrollRight}
-                  aria-label="Siguiente plano"
-                  className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink disabled:opacity-30"
-                >
-                  <ChevronRightIcon className="h-4 w-4" />
-                </button>
+              <div className="flex sm:hidden items-center justify-between gap-2 pt-2 px-1 text-xs text-muted">
+                <span className="text-muted/70">{t('swipeMorePlans')}</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('left')}
+                    disabled={!canScrollLeft}
+                    aria-label={t('prevPlan')}
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink disabled:opacity-30 active:scale-95"
+                  >
+                    <ChevronLeftIcon className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('right')}
+                    disabled={!canScrollRight}
+                    aria-label={t('nextPlan')}
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface text-ink disabled:opacity-30 active:scale-95"
+                  >
+                    <ChevronRightIcon className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             )}
           </div>

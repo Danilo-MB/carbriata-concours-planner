@@ -176,6 +176,9 @@ export const translations = {
 
     // Home & Projects
     myPlans: 'Mis planos y eventos',
+    swipeMorePlans: 'Desliza para ver más planos',
+    prevPlan: 'Plano anterior',
+    nextPlan: 'Siguiente plano',
     newPlan: 'Crear nuevo plano',
     openPlan: 'Abrir mapa',
     edited: 'Editado',
@@ -397,6 +400,9 @@ export const translations = {
 
     // Home & Projects
     myPlans: 'My plans & events',
+    swipeMorePlans: 'Swipe to see more plans',
+    prevPlan: 'Previous plan',
+    nextPlan: 'Next plan',
     newPlan: 'New plan',
     openPlan: 'Open map',
     edited: 'Edited',
