@@ -3,7 +3,7 @@
     "u_demo": {
       "id": "u_demo",
       "email": "demo@carbriata.com",
-      "name": "Danilo Carbriata",
+      "name": "Juan Pérez",
       "passwordHash": "$2b$10$JbDMUFLryePevo.tCFnjieKbJQjoCyqegn9jjI0fSilC4ymg/.LTS",
       "createdAt": 1791499033432
     }
@@ -1584,7 +1584,7 @@
       "id": "xfb7p5vmva1kcj5",
       "userId": "u_goog_w1ihdcum",
       "authorEmail": "dmarinobata@gmail.com",
-      "authorName": "Danilo",
+      "authorName": "Juan Pérez",
       "name": "Aeropuerto San Fernando",
       "description": "Plano aeroportuario interactivo de San Fernando con terminal FBO, hangares, rampa de aeronaves, calle de rodaje y recorrido virtual 360° foto a foto.",
       "location": "Aeropuerto San Fernando, Avenida Hipólito Yrigoyen",

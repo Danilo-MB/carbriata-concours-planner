@@ -16,11 +16,13 @@ import {
   XIcon
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { toast } from 'sonner';
 
 type AuthView = 'login' | 'register' | 'access-link' | 'verify-email';
 
 export function AuthModal() {
+  const { t } = useLanguage();
   const {
     isAuthModalOpen,
     closeAuthModal,
@@ -348,7 +350,7 @@ export function AuthModal() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="ej. Danilo Marino"
+                      placeholder={t('fullNamePlaceholder')}
                       className="h-10 w-full rounded-xl border border-line bg-surface pl-9 pr-3 text-sm text-ink placeholder:text-muted/60 focus:border-ink focus:outline-none"
                     />
                   </div>

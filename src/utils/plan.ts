@@ -61,7 +61,7 @@ export function canDeleteProject(
   // For any cloud or shared project, a user must be logged in
   if (!user) return false;
 
-  // Admin (Danilo) can delete any project
+  // Admin can delete any project
   if (user.isAdmin || user.role === 'admin') return true;
   const email = (user.email || '').toLowerCase().trim();
   if (

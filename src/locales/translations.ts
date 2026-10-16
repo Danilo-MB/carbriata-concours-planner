@@ -63,6 +63,7 @@ export const translations = {
     shareAndEmbed: 'Compartir e Insertar',
     share: 'Compartir',
     embed: 'Insertar',
+    fullNamePlaceholder: 'ej. Juan Pérez',
 
     // Modes
     editorMode: 'Editor',
@@ -283,6 +284,7 @@ export const translations = {
     shareAndEmbed: 'Share & Embed',
     share: 'Share',
     embed: 'Embed',
+    fullNamePlaceholder: 'e.g. John Doe',
 
     // Modes
     editorMode: 'Editor',

@@ -85141,7 +85141,7 @@ var require_carbriata_data = __commonJS({
         u_demo: {
           id: "u_demo",
           email: "demo@carbriata.com",
-          name: "Danilo Carbriata",
+          name: "Juan P\xE9rez",
           passwordHash: "$2b$10$JbDMUFLryePevo.tCFnjieKbJQjoCyqegn9jjI0fSilC4ymg/.LTS",
           createdAt: 1791499033432
         }
@@ -86722,7 +86722,7 @@ var require_carbriata_data = __commonJS({
           id: "xfb7p5vmva1kcj5",
           userId: "u_goog_w1ihdcum",
           authorEmail: "dmarinobata@gmail.com",
-          authorName: "Danilo",
+          authorName: "Juan P\xE9rez",
           name: "Aeropuerto San Fernando",
           description: "Plano aeroportuario interactivo de San Fernando con terminal FBO, hangares, rampa de aeronaves, calle de rodaje y recorrido virtual 360\xB0 foto a foto.",
           location: "Aeropuerto San Fernando, Avenida Hip\xF3lito Yrigoyen",
