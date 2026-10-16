@@ -87389,6 +87389,504 @@ var require_carbriata_data = __commonJS({
           createdAt: 1792099153265,
           updatedAt: 1792101358201,
           isLocalOnly: false
+        },
+        dlcvnqemvb8auwk: {
+          id: "dlcvnqemvb8auwk",
+          userId: "u_goog_w1ihdcum",
+          authorEmail: "dmarinobata@gmail.com",
+          authorName: "Danilo",
+          name: "Planta de Producci\xF3n de Hormig\xF3n Vial",
+          description: "Planta de producci\xF3n de hormig\xF3n elaborado para obras viales e infraestructura en Sant'Agata di Militello (Sicilia), junto al lecho del r\xEDo Rosmarino, con silos verticales, acopio de \xE1ridos fluviales, tolvas de dosificaci\xF3n y recorrido fotogr\xE1fico interactivo.",
+          location: "98070, Sant'Agata di Militello",
+          template: "logistics",
+          center: {
+            lat: 38.053011,
+            lng: 14.613175,
+            zoom: 17
+          },
+          basemap: "satellite",
+          categories: [
+            {
+              id: "docks",
+              name: "Muelles & Dosificaci\xF3n",
+              color: "#E8590C",
+              icon: "door",
+              kindHint: "area"
+            },
+            {
+              id: "storage",
+              name: "Almac\xE9n & Racks",
+              color: "#1C7ED6",
+              icon: "warehouse",
+              kindHint: "area"
+            },
+            {
+              id: "yard",
+              name: "Acopio & Playa",
+              color: "#F59F00",
+              icon: "parking",
+              kindHint: "area"
+            },
+            {
+              id: "aisles",
+              name: "Rutas y Pasillos",
+              color: "#0CA678",
+              icon: "route",
+              kindHint: "line"
+            },
+            {
+              id: "office",
+              name: "Control & Laboratorio",
+              color: "#AE3EC9",
+              icon: "building"
+            },
+            {
+              id: "safety",
+              name: "Seguridad & Ambiente",
+              color: "#E03131",
+              icon: "shield",
+              kindHint: "point"
+            },
+            {
+              id: "zones",
+              name: "Silos & Mezcla",
+              color: "#E8590C",
+              icon: "tent",
+              kindHint: "area"
+            },
+            {
+              id: "stages",
+              name: "Stages & shows",
+              color: "#AE3EC9",
+              icon: "music"
+            },
+            {
+              id: "food",
+              name: "Food & drinks",
+              color: "#F59F00",
+              icon: "food"
+            },
+            {
+              id: "parking",
+              name: "Parking Mixers",
+              color: "#1C7ED6",
+              icon: "parking"
+            },
+            {
+              id: "access",
+              name: "Access & paths",
+              color: "#F06595",
+              icon: "door",
+              kindHint: "line"
+            }
+          ],
+          features: [
+            {
+              id: "8x8cud9mvb8bs3x",
+              kind: "area",
+              coords: [
+                [
+                  38.050620090098306,
+                  14.614172821065075
+                ],
+                [
+                  38.050779896075966,
+                  14.61403057545135
+                ],
+                [
+                  38.050950156266445,
+                  14.614303687029702
+                ],
+                [
+                  38.05079035066047,
+                  14.614459208900723
+                ]
+              ],
+              name: "Nave de Dosificaci\xF3n y Carga de Mixers",
+              categoryId: "docks",
+              notes: "Estructura principal con tolvas elevadas y bocas de carga directa de hormig\xF3n elaborado a camiones mixer.",
+              images: [
+                "/streetview/hormigon/area1_dosificacion_hormigon.jpg"
+              ],
+              createdAt: 1792170977037
+            },
+            {
+              id: "lg3s5camvb8c179",
+              kind: "point",
+              coords: [
+                [
+                  38.05075301285181,
+                  14.614239202351465
+                ]
+              ],
+              name: "Tolva de Carga Directa a Mixer",
+              categoryId: "docks",
+              notes: "Punto de vertido directo de mezcla dosificada con manga retr\xE1ctil y mangas de despolvoreo.",
+              images: [
+                "/streetview/hormigon/marker1_tolva_carga.jpg"
+              ],
+              createdAt: 1792170988821
+            },
+            {
+              id: "n4gckbumvb8cnri",
+              kind: "area",
+              coords: [
+                [
+                  38.051114442039726,
+                  14.614770252642725
+                ],
+                [
+                  38.05116671470843,
+                  14.614677318841752
+                ],
+                [
+                  38.05128022094629,
+                  14.614764562818154
+                ],
+                [
+                  38.05121749383661,
+                  14.614876462700956
+                ]
+              ],
+              name: "Oficinas Centrales, B\xE1scula y Laboratorio",
+              categoryId: "office",
+              notes: "Edificio de administraci\xF3n t\xE9cnica, control de pesaje vehicular y laboratorio de ensayos de resistencia de probetas de hormig\xF3n.",
+              images: [
+                "/streetview/hormigon/area2_oficinas_laboratorio.jpg"
+              ],
+              createdAt: 1792171018062
+            },
+            {
+              id: "26ymfjemvb8cv5l",
+              kind: "point",
+              coords: [
+                [
+                  38.051195091284406,
+                  14.614779735683637
+                ]
+              ],
+              name: "B\xE1scula Puente de Pesaje",
+              categoryId: "office",
+              notes: "B\xE1scula electr\xF3nica de 60 toneladas para control de tara y carga neta despachada por cada cami\xF3n.",
+              images: [
+                "/streetview/hormigon/marker2_bascula_pesaje.jpg"
+              ],
+              createdAt: 1792171027641
+            },
+            {
+              id: "u2034ormvb8d903",
+              kind: "area",
+              coords: [
+                [
+                  38.05035322308227,
+                  14.613868296146395
+                ],
+                [
+                  38.050465167343724,
+                  14.613667130470278
+                ],
+                [
+                  38.05082000839955,
+                  14.613908529281618
+                ],
+                [
+                  38.05058767218836,
+                  14.61411774158478
+                ]
+              ],
+              name: "Playa de Estacionamiento y Maniobra de Mixers",
+              categoryId: "parking",
+              notes: "Sector pavimentado para estacionamiento, inspecci\xF3n diaria y maniobra de la flota de camiones mixer.",
+              images: [
+                "/streetview/hormigon/area3_playa_mixers.jpg"
+              ],
+              createdAt: 1792171045587
+            },
+            {
+              id: "q59usyomvb8dcrq",
+              kind: "point",
+              coords: [
+                [
+                  38.05048206457584,
+                  14.613887071609499
+                ]
+              ],
+              name: "Bah\xEDa de Lavado de Cubas y Reciclado",
+              categoryId: "parking",
+              notes: "Bah\xEDa de lavado a presi\xF3n de trompos con fosa decantadora y sistema de reciclaje de \xE1ridos y agua recuperada.",
+              images: [
+                "/streetview/hormigon/marker3_lavado_cubas.jpg"
+              ],
+              createdAt: 1792171050470
+            },
+            {
+              id: "6wf9ve9mvb8e7mm",
+              kind: "line",
+              coords: [
+                [
+                  38.056032594240136,
+                  14.611473083496096
+                ],
+                [
+                  38.05562709034359,
+                  14.612524509429933
+                ],
+                [
+                  38.054511943043394,
+                  14.612953662872316
+                ],
+                [
+                  38.05317712317725,
+                  14.61361885070801
+                ],
+                [
+                  38.052112629128324,
+                  14.613575935363771
+                ],
+                [
+                  38.05153813384469,
+                  14.614048004150392
+                ]
+              ],
+              name: "Ruta de Acceso Fluvial desde Ruta SS113",
+              categoryId: "aisles",
+              notes: "Traza vial consolidada que conecta la ruta costera SS113 de Sant'Agata di Militello con la planta, bordeando el lecho del r\xEDo Rosmarino.",
+              images: [
+                "/streetview/hormigon/path1_wp0_desvio_ss113.jpg"
+              ],
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Desv\xEDo Costero / Conexi\xF3n SS113",
+                  image: "/streetview/hormigon/path1_wp0_desvio_ss113.jpg",
+                  caption: "Empalme y desv\xEDo desde la ruta costera hacia el camino del lecho del r\xEDo Rosmarino."
+                },
+                {
+                  index: 1,
+                  title: "Traza del Lecho Fluvial",
+                  image: "/streetview/hormigon/path1_wp1_lecho_rio.jpg",
+                  caption: "Camino ancho de ripio nivelado sobre los cantos rodados del cauce seco."
+                },
+                {
+                  index: 2,
+                  title: "Paso Bajo Colinas Sicilianas",
+                  image: "/streetview/hormigon/path1_wp2_colinas_sicilia.jpg",
+                  caption: "Corredor natural flanqueado por olivos y colinas rumbo hacia el interior de Alcara Li Fusi."
+                },
+                {
+                  index: 3,
+                  title: "Aproximaci\xF3n a la Planta de Hormig\xF3n",
+                  image: "/streetview/hormigon/path1_wp3_vista_planta.jpg",
+                  caption: "Primer contacto visual con las torres de silos, tolvas y cinta transportadora de la planta."
+                },
+                {
+                  index: 4,
+                  title: "Portal de Ingreso y Control Industrial",
+                  image: "/streetview/hormigon/path1_wp4_portal_acceso.jpg",
+                  caption: "Ingreso al predio industrial de la planta con se\xF1alizaci\xF3n de seguridad y velocidad m\xE1xima."
+                },
+                {
+                  index: 5,
+                  title: "Bifurcaci\xF3n de Tr\xE1nsito Pesado",
+                  image: "/streetview/hormigon/path1_wp5_bifurcacion.jpg",
+                  caption: "Distribuidor interno hacia la b\xE1scula de pesaje, acopios y d\xE1rsena de carga de mixers."
+                }
+              ],
+              createdAt: 1792171090462
+            },
+            {
+              id: "ud50pkmmvb8eneo",
+              kind: "area",
+              coords: [
+                [
+                  38.050993468006084,
+                  14.614497141064374
+                ],
+                [
+                  38.05114580564547,
+                  14.614250582000567
+                ],
+                [
+                  38.051286194953924,
+                  14.614419380128842
+                ],
+                [
+                  38.05117567573362,
+                  14.614614730771704
+                ]
+              ],
+              name: "Bater\xEDa de Silos Verticales de Cemento",
+              categoryId: "zones",
+              notes: "Conjunto de silos met\xE1licos verticales con filtros despolvoreadores para almacenamiento de cemento Portland y puzolana.",
+              images: [
+                "/streetview/hormigon/area4_silos_cemento.jpg"
+              ],
+              color: "#F97316",
+              createdAt: 1792171110912
+            },
+            {
+              id: "6kgqlj0mvb8ewsn",
+              kind: "point",
+              coords: [
+                [
+                  38.05106515634644,
+                  14.614497141064374
+                ]
+              ],
+              name: "Cabezal de Dosificaci\xF3n Neum\xE1tica",
+              categoryId: "zones",
+              notes: "Tornillos sinf\xEDn con compuertas mariposa y actuadores neum\xE1ticos para dosificaci\xF3n exacta de cemento a tolva balanza.",
+              images: [
+                "/streetview/hormigon/marker4_dosificador_neumatico.jpg"
+              ],
+              createdAt: 1792171123079
+            },
+            {
+              id: "idu7t06mvb8fl0q",
+              kind: "area",
+              coords: [
+                [
+                  38.051790996838484,
+                  14.613923417089005
+                ],
+                [
+                  38.051792490330044,
+                  14.613949021299476
+                ],
+                [
+                  38.05192541095462,
+                  14.613923417089005
+                ],
+                [
+                  38.05192391746578,
+                  14.613894967966267
+                ]
+              ],
+              name: "Cinta Transportadora Inclinada y Tolvas de Grava",
+              categoryId: "docks",
+              notes: "Cintas industriales para elevaci\xF3n y alimentaci\xF3n continua de \xE1ridos clasificados hacia las tolvas superiores de mezcla.",
+              images: [
+                "/streetview/hormigon/area5_cinta_transportadora.jpg"
+              ],
+              createdAt: 1792171154474
+            },
+            {
+              id: "yu12x06mvb8fsmn",
+              kind: "point",
+              coords: [
+                [
+                  38.051830574353886,
+                  14.613932900129916
+                ]
+              ],
+              name: "Puesto de Control Ambiental y Defensas de Ribera",
+              categoryId: "safety",
+              notes: "Monitoreo de cauce del r\xEDo Rosmarino, gaviones de protecci\xF3n de ribera y estaci\xF3n meteorol\xF3gica ambiental.",
+              images: [
+                "/streetview/hormigon/marker5_control_ambiental.jpg"
+              ],
+              createdAt: 1792171164335
+            },
+            {
+              id: "bxyr3nzmvb8gkch",
+              kind: "line",
+              coords: [
+                [
+                  38.050996455021675,
+                  14.613871260363986
+                ],
+                [
+                  38.05066788257679,
+                  14.613674013112933
+                ],
+                [
+                  38.050620090098306,
+                  14.61376505030572
+                ],
+                [
+                  38.050620090098306,
+                  14.61376505030572
+                ]
+              ],
+              name: "Corredor Interno de Transferencia de \xC1ridos",
+              categoryId: "aisles",
+              notes: "Circuito interno para tr\xE1nsito exclusivo de palas cargadoras y volquetes entre acopios y tolvas receptoras.",
+              images: [
+                "/streetview/hormigon/path2_wp0_cabecera_acopio.jpg"
+              ],
+              routeWaypoints: [
+                {
+                  index: 0,
+                  title: "Cabecera de Carga en Acopio",
+                  image: "/streetview/hormigon/path2_wp0_cabecera_acopio.jpg",
+                  caption: "Zona de carga con pala frontal junto a los mont\xEDculos de grava seleccionada."
+                },
+                {
+                  index: 1,
+                  title: "Carril de Tr\xE1nsito de Palas y Volquetes",
+                  image: "/streetview/hormigon/path2_wp1_carril_palas.jpg",
+                  caption: "Pista de rodamiento reforzada para maquinaria pesada bajo la estructura de transporte."
+                },
+                {
+                  index: 2,
+                  title: "Rampa de Vuelco a Tolva Receptora",
+                  image: "/streetview/hormigon/path2_wp2_rampa_vuelco.jpg",
+                  caption: "Rampa de descarga a tolva vibrante subterr\xE1nea con rejilla cribadora de \xE1ridos."
+                }
+              ],
+              createdAt: 1792171200257
+            },
+            {
+              id: "t8nqwmwmvb8hjk2",
+              kind: "area",
+              coords: [
+                [
+                  38.05027296105361,
+                  14.61385488510132
+                ],
+                [
+                  38.05035955955447,
+                  14.613667130470278
+                ],
+                [
+                  38.05007652992801,
+                  14.613533020019533
+                ],
+                [
+                  38.049987818924336,
+                  14.613766372203829
+                ]
+              ],
+              name: "Parque de Acopio y Clasificaci\xF3n de \xC1ridos Fluviales",
+              categoryId: "yard",
+              notes: "Extenso sector junto a la ribera para dep\xF3sito, cribado y lavado de cantos rodados, grava y arena extra\xEDdos del lecho del r\xEDo.",
+              images: [
+                "/streetview/hormigon/area6_acopio_aridos.jpg"
+              ],
+              createdAt: 1792171245890
+            },
+            {
+              id: "nge6xhxmvb8hmi3",
+              kind: "point",
+              coords: [
+                [
+                  38.05011243673228,
+                  14.613747596740724
+                ]
+              ],
+              name: "Frente de Carga con Pala Frontal",
+              categoryId: "yard",
+              notes: "Operaci\xF3n continua de pala cargadora de ruedas de gran porte alimentando tolvas y clasificando pilas de \xE1rido vial.",
+              images: [
+                "/streetview/hormigon/marker6_pala_cargadora.jpg"
+              ],
+              createdAt: 1792171249707
+            }
+          ],
+          hiddenCategoryIds: [],
+          createdAt: 1792170934004,
+          updatedAt: 1792171968881,
+          isLocalOnly: false
         }
       }
     };
