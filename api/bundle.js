@@ -87395,9 +87395,9 @@ var require_carbriata_data = __commonJS({
           userId: "u_goog_w1ihdcum",
           authorEmail: "dmarinobata@gmail.com",
           authorName: "Danilo",
-          name: "Planta de Producci\xF3n de Hormig\xF3n Vial",
-          description: "Planta de producci\xF3n de hormig\xF3n elaborado para obras viales e infraestructura en Sant'Agata di Militello (Sicilia), junto al lecho del r\xEDo Rosmarino, con silos verticales, acopio de \xE1ridos fluviales, tolvas de dosificaci\xF3n y recorrido fotogr\xE1fico interactivo.",
-          location: "98070, Sant'Agata di Militello",
+          name: "Impianto di Calcestruzzo per Infrastrutture Viarie",
+          description: "Impianto di betonaggio e produzione calcestruzzo preconfezionato per opere viarie e infrastrutturali a Sant'Agata di Militello (ME), lungo il greto alluvionale della fiumara Rosmarino verso Alcara Li Fusi. Dotato di torre di dosaggio, silos verticali di cemento, stoccaggio e lavaggio inerti fluviali e tour fotografico interattivo a 360\xB0.",
+          location: "98070, Sant'Agata di Militello (ME)",
           template: "logistics",
           center: {
             lat: 38.053011,
@@ -87408,73 +87408,73 @@ var require_carbriata_data = __commonJS({
           categories: [
             {
               id: "docks",
-              name: "Muelles & Dosificaci\xF3n",
+              name: "Dosaggio & Carico Betoniere",
               color: "#E8590C",
               icon: "door",
               kindHint: "area"
             },
             {
               id: "storage",
-              name: "Almac\xE9n & Racks",
+              name: "Magazzino & Officina",
               color: "#1C7ED6",
               icon: "warehouse",
               kindHint: "area"
             },
             {
               id: "yard",
-              name: "Acopio & Playa",
+              name: "Piazzale Inerti & Movimentazione",
               color: "#F59F00",
               icon: "parking",
               kindHint: "area"
             },
             {
               id: "aisles",
-              name: "Rutas y Pasillos",
+              name: "Percorsi e Viabilit\xE0 Interna",
               color: "#0CA678",
               icon: "route",
               kindHint: "line"
             },
             {
               id: "office",
-              name: "Control & Laboratorio",
+              name: "Uffici Direzione & Controllo Qualit\xE0",
               color: "#AE3EC9",
               icon: "building"
             },
             {
               id: "safety",
-              name: "Seguridad & Ambiente",
+              name: "Sicurezza & Difesa Idraulica",
               color: "#E03131",
               icon: "shield",
               kindHint: "point"
             },
             {
               id: "zones",
-              name: "Silos & Mezcla",
+              name: "Batteria Silos Cemento",
               color: "#E8590C",
               icon: "tent",
               kindHint: "area"
             },
             {
               id: "stages",
-              name: "Stages & shows",
+              name: "Eventi & Presentazioni",
               color: "#AE3EC9",
               icon: "music"
             },
             {
               id: "food",
-              name: "Food & drinks",
+              name: "Ristoro & Area Break",
               color: "#F59F00",
               icon: "food"
             },
             {
               id: "parking",
-              name: "Parking Mixers",
+              name: "Parcheggio & Manovra Betoniere",
               color: "#1C7ED6",
               icon: "parking"
             },
             {
               id: "access",
-              name: "Access & paths",
+              name: "Accesso & Viabilit\xE0 Fluviale",
               color: "#F06595",
               icon: "door",
               kindHint: "line"
@@ -87502,9 +87502,9 @@ var require_carbriata_data = __commonJS({
                   14.614459208900723
                 ]
               ],
-              name: "Nave de Dosificaci\xF3n y Carga de Mixers",
+              name: "Torre di Betonaggio e Punto di Carico Betoniere",
               categoryId: "docks",
-              notes: "Estructura principal con tolvas elevadas y bocas de carga directa de hormig\xF3n elaborado a camiones mixer.",
+              notes: "Struttura principale sopraelevata dotata di tramogge pesatrici e manica telescopica di scarico diretto per il carico rapido del calcestruzzo preconfezionato nelle autobetoniere.",
               images: [
                 "/streetview/hormigon/area1_dosificacion_hormigon.jpg"
               ],
@@ -87519,9 +87519,9 @@ var require_carbriata_data = __commonJS({
                   14.614239202351465
                 ]
               ],
-              name: "Tolva de Carga Directa a Mixer",
+              name: "Bocca di Scarico Calcestruzzo su Betoniera",
               categoryId: "docks",
-              notes: "Punto de vertido directo de mezcla dosificada con manga retr\xE1ctil y mangas de despolvoreo.",
+              notes: "Punto esatto di allineamento del tamburo rotante dell'autobetoniera sotto la cuffia antipolvere per l'immissione della miscela fresca.",
               images: [
                 "/streetview/hormigon/marker1_tolva_carga.jpg"
               ],
@@ -87548,9 +87548,9 @@ var require_carbriata_data = __commonJS({
                   14.614876462700956
                 ]
               ],
-              name: "Oficinas Centrales, B\xE1scula y Laboratorio",
+              name: "Palazzina Uffici, Pesa a Ponte e Laboratorio Prove",
               categoryId: "office",
-              notes: "Edificio de administraci\xF3n t\xE9cnica, control de pesaje vehicular y laboratorio de ensayos de resistencia de probetas de hormig\xF3n.",
+              notes: "Centro direzionale e gestionale dell'impianto con postazione operatore pesa a ponte, emissione bolle di consegna e laboratorio tecnologico per lo schiacciamento dei provini di calcestruzzo.",
               images: [
                 "/streetview/hormigon/area2_oficinas_laboratorio.jpg"
               ],
@@ -87565,9 +87565,9 @@ var require_carbriata_data = __commonJS({
                   14.614779735683637
                 ]
               ],
-              name: "B\xE1scula Puente de Pesaje",
+              name: "Pesa a Ponte Elettronica da 60 Tonnellate",
               categoryId: "office",
-              notes: "B\xE1scula electr\xF3nica de 60 toneladas para control de tara y carga neta despachada por cada cami\xF3n.",
+              notes: "Piattaforma metallica a celle di carico per la determinazione della tara e del peso lordo/netto dei mezzi di trasporto calcestruzzo e bilici inerti.",
               images: [
                 "/streetview/hormigon/marker2_bascula_pesaje.jpg"
               ],
@@ -87594,9 +87594,9 @@ var require_carbriata_data = __commonJS({
                   14.61411774158478
                 ]
               ],
-              name: "Playa de Estacionamiento y Maniobra de Mixers",
+              name: "Piazzale di Sosta e Manovra Autobetoniere",
               categoryId: "parking",
-              notes: "Sector pavimentado para estacionamiento, inspecci\xF3n diaria y maniobra de la flota de camiones mixer.",
+              notes: "Ampia area piazzale pavimentata riservata allo stazionamento, manutenzione giornaliera e manovra della flotta aziendale di autobetoniere.",
               images: [
                 "/streetview/hormigon/area3_playa_mixers.jpg"
               ],
@@ -87611,9 +87611,9 @@ var require_carbriata_data = __commonJS({
                   14.613887071609499
                 ]
               ],
-              name: "Bah\xEDa de Lavado de Cubas y Reciclado",
+              name: "Baia di Lavaggio Tamburi e Recupero Acque",
               categoryId: "parking",
-              notes: "Bah\xEDa de lavado a presi\xF3n de trompos con fosa decantadora y sistema de reciclaje de \xE1ridos y agua recuperada.",
+              notes: "Postazione attrezzata con lance ad alta pressione per il risciacquo delle canaline e del tamburo, con vasca di decantazione fanghi e riciclo acque reflue.",
               images: [
                 "/streetview/hormigon/marker3_lavado_cubas.jpg"
               ],
@@ -87648,48 +87648,48 @@ var require_carbriata_data = __commonJS({
                   14.614048004150392
                 ]
               ],
-              name: "Ruta de Acceso Fluvial desde Ruta SS113",
+              name: "Tracciato di Accesso Fluviale dalla SS113",
               categoryId: "aisles",
-              notes: "Traza vial consolidada que conecta la ruta costera SS113 de Sant'Agata di Militello con la planta, bordeando el lecho del r\xEDo Rosmarino.",
+              notes: "Pista di transito pesante consolidata che collega la strada statale costiera SS113 Settentrionale Sicula con l'impianto industriale, risalendo il greto della fiumara Rosmarino.",
               images: [
                 "/streetview/hormigon/path1_wp0_desvio_ss113.jpg"
               ],
               routeWaypoints: [
                 {
                   index: 0,
-                  title: "Desv\xEDo Costero / Conexi\xF3n SS113",
+                  title: "Bivio Costiero / Innesto Strada Statale SS113",
                   image: "/streetview/hormigon/path1_wp0_desvio_ss113.jpg",
-                  caption: "Empalme y desv\xEDo desde la ruta costera hacia el camino del lecho del r\xEDo Rosmarino."
+                  caption: "Deviazione dalla carreggiata asfaltata litoranea verso la pista carrabile in ghiaia lungo il greto fluviale."
                 },
                 {
                   index: 1,
-                  title: "Traza del Lecho Fluvial",
+                  title: "Pista Carrabile sul Greto Alluvionale",
                   image: "/streetview/hormigon/path1_wp1_lecho_rio.jpg",
-                  caption: "Camino ancho de ripio nivelado sobre los cantos rodados del cauce seco."
+                  caption: "Tracciato largo e livellato a fondo naturale su ciottoli e ghiaia di fiumara, idoneo al transito di mezzi d'opera pesanti."
                 },
                 {
                   index: 2,
-                  title: "Paso Bajo Colinas Sicilianas",
+                  title: "Fondo Valle verso le Colline di Alcara Li Fusi",
                   image: "/streetview/hormigon/path1_wp2_colinas_sicilia.jpg",
-                  caption: "Corredor natural flanqueado por olivos y colinas rumbo hacia el interior de Alcara Li Fusi."
+                  caption: "Passaggio paesaggistico fiancheggiato da macchia mediterranea, uliveti e pendii rocciosi dei Nebrodi verso l'entroterra."
                 },
                 {
                   index: 3,
-                  title: "Aproximaci\xF3n a la Planta de Hormig\xF3n",
+                  title: "Visuale di Avvicinamento all'Impianto",
                   image: "/streetview/hormigon/path1_wp3_vista_planta.jpg",
-                  caption: "Primer contacto visual con las torres de silos, tolvas y cinta transportadora de la planta."
+                  caption: "Primo scorcio visivo della torre di betonaggio, della rampa di carico e dei silos svettanti nel paesaggio."
                 },
                 {
                   index: 4,
-                  title: "Portal de Ingreso y Control Industrial",
+                  title: "Portale d'Ingresso e Controllo Stabilimento",
                   image: "/streetview/hormigon/path1_wp4_portal_acceso.jpg",
-                  caption: "Ingreso al predio industrial de la planta con se\xF1alizaci\xF3n de seguridad y velocidad m\xE1xima."
+                  caption: "Ingresso perimetrale dello stabilimento con segnaletica di cantiere, limiti di velocit\xE0 e recinzione industriale."
                 },
                 {
                   index: 5,
-                  title: "Bifurcaci\xF3n de Tr\xE1nsito Pesado",
+                  title: "Biforcazione Viabilit\xE0 Interna Mezzi Pesanti",
                   image: "/streetview/hormigon/path1_wp5_bifurcacion.jpg",
-                  caption: "Distribuidor interno hacia la b\xE1scula de pesaje, acopios y d\xE1rsena de carga de mixers."
+                  caption: "Snodo centrale di smistamento del traffico pesante verso la pesa a ponte, le baie di carico o il piazzale inerti."
                 }
               ],
               createdAt: 1792171090462
@@ -87715,9 +87715,9 @@ var require_carbriata_data = __commonJS({
                   14.614614730771704
                 ]
               ],
-              name: "Bater\xEDa de Silos Verticales de Cemento",
+              name: "Batteria Silos Verticali di Stoccaggio Cemento",
               categoryId: "zones",
-              notes: "Conjunto de silos met\xE1licos verticales con filtros despolvoreadores para almacenamiento de cemento Portland y puzolana.",
+              notes: "Gruppo di silos cilindrici metallici verticali ad alta capacit\xE0 (cemento Portland Tipo R 42.5 e 52.5 R) completi di filtri depolveratori a maniche ed elettrocompressori.",
               images: [
                 "/streetview/hormigon/area4_silos_cemento.jpg"
               ],
@@ -87733,9 +87733,9 @@ var require_carbriata_data = __commonJS({
                   14.614497141064374
                 ]
               ],
-              name: "Cabezal de Dosificaci\xF3n Neum\xE1tica",
+              name: "Coclee di Estrazione e Dosaggio Pneumatico",
               categoryId: "zones",
-              notes: "Tornillos sinf\xEDn con compuertas mariposa y actuadores neum\xE1ticos para dosificaci\xF3n exacta de cemento a tolva balanza.",
+              notes: "Condotti a coclea inclinati con valvole a farfalla pneumatiche per il trasporto continuo e la pesatura micrometrica del legante cementizio.",
               images: [
                 "/streetview/hormigon/marker4_dosificador_neumatico.jpg"
               ],
@@ -87762,9 +87762,9 @@ var require_carbriata_data = __commonJS({
                   14.613894967966267
                 ]
               ],
-              name: "Cinta Transportadora Inclinada y Tolvas de Grava",
+              name: "Nastro Trasportatore Inclinato e Tramogge Inerti",
               categoryId: "docks",
-              notes: "Cintas industriales para elevaci\xF3n y alimentaci\xF3n continua de \xE1ridos clasificados hacia las tolvas superiores de mezcla.",
+              notes: "Linea di trasporto a nastro in gomma rinforzata per il sollevamento continuo di sabbie e ghiaie selezionate verso le tramogge di dosaggio aeree.",
               images: [
                 "/streetview/hormigon/area5_cinta_transportadora.jpg"
               ],
@@ -87779,9 +87779,9 @@ var require_carbriata_data = __commonJS({
                   14.613932900129916
                 ]
               ],
-              name: "Puesto de Control Ambiental y Defensas de Ribera",
+              name: "Stazione di Monitoraggio Ambientale e Gabbionate",
               categoryId: "safety",
-              notes: "Monitoreo de cauce del r\xEDo Rosmarino, gaviones de protecci\xF3n de ribera y estaci\xF3n meteorol\xF3gica ambiental.",
+              notes: "Opera di difesa spondale fluviale con scogliere in gabbioni metallici a pietra e stazione idrometrica/meteo ad energia solare per il presidio dell'alveo.",
               images: [
                 "/streetview/hormigon/marker5_control_ambiental.jpg"
               ],
@@ -87808,30 +87808,30 @@ var require_carbriata_data = __commonJS({
                   14.61376505030572
                 ]
               ],
-              name: "Corredor Interno de Transferencia de \xC1ridos",
+              name: "Corridoio Interno di Movimentazione Inerti",
               categoryId: "aisles",
-              notes: "Circuito interno para tr\xE1nsito exclusivo de palas cargadoras y volquetes entre acopios y tolvas receptoras.",
+              notes: "Pista di scorrimento interna riservata al ciclo continuo di pale gommate e dumper tra le baie di cumulo e la tramoggia sotterranea.",
               images: [
                 "/streetview/hormigon/path2_wp0_cabecera_acopio.jpg"
               ],
               routeWaypoints: [
                 {
                   index: 0,
-                  title: "Cabecera de Carga en Acopio",
+                  title: "Testata di Prelievo Inerti nei Cumuli",
                   image: "/streetview/hormigon/path2_wp0_cabecera_acopio.jpg",
-                  caption: "Zona de carga con pala frontal junto a los mont\xEDculos de grava seleccionada."
+                  caption: "Zona di manovra della pala caricatrice gommata a ridosso dei cumuli di sabbia e pietrisco vagliato."
                 },
                 {
                   index: 1,
-                  title: "Carril de Tr\xE1nsito de Palas y Volquetes",
+                  title: "Corsia di Scorrimento Pale e Autocarri",
                   image: "/streetview/hormigon/path2_wp1_carril_palas.jpg",
-                  caption: "Pista de rodamiento reforzada para maquinaria pesada bajo la estructura de transporte."
+                  caption: "Corsia protetta ad alta portanza sottostante il traliccio dei nastri elevatori."
                 },
                 {
                   index: 2,
-                  title: "Rampa de Vuelco a Tolva Receptora",
+                  title: "Rampa di Ribaltamento su Tramoggia Sotterranea",
                   image: "/streetview/hormigon/path2_wp2_rampa_vuelco.jpg",
-                  caption: "Rampa de descarga a tolva vibrante subterr\xE1nea con rejilla cribadora de \xE1ridos."
+                  caption: "Rampa di scarico con griglia grigliata vibrante a protezione della bocca di carico del nastro trasportatore."
                 }
               ],
               createdAt: 1792171200257
@@ -87857,9 +87857,9 @@ var require_carbriata_data = __commonJS({
                   14.613766372203829
                 ]
               ],
-              name: "Parque de Acopio y Clasificaci\xF3n de \xC1ridos Fluviales",
+              name: "Bacino di Stoccaggio e Selezione Inerti Alluvionali",
               categoryId: "yard",
-              notes: "Extenso sector junto a la ribera para dep\xF3sito, cribado y lavado de cantos rodados, grava y arena extra\xEDdos del lecho del r\xEDo.",
+              notes: "Ampio parco di deposito e cernita lungo l'alveo fluviale per ghiaie tonde, pietrisco frantumato e sabbie alluvionali lavate della fiumara Rosmarino, con barriere in calcestruzzo e nebulizzatori antipolvere.",
               images: [
                 "/streetview/hormigon/area6_acopio_aridos.jpg"
               ],
@@ -87874,9 +87874,9 @@ var require_carbriata_data = __commonJS({
                   14.613747596740724
                 ]
               ],
-              name: "Frente de Carga con Pala Frontal",
+              name: "Fronte di Carico con Pala Meccanica Gommata",
               categoryId: "yard",
-              notes: "Operaci\xF3n continua de pala cargadora de ruedas de gran porte alimentando tolvas y clasificando pilas de \xE1rido vial.",
+              notes: "Operazione continuativa della pala caricatrice frontale Caterpillar per il prelievo degli inerti selezionati e l'alimentazione delle tramogge a terra.",
               images: [
                 "/streetview/hormigon/marker6_pala_cargadora.jpg"
               ],
@@ -87885,7 +87885,7 @@ var require_carbriata_data = __commonJS({
           ],
           hiddenCategoryIds: [],
           createdAt: 1792170934004,
-          updatedAt: 1792171968881,
+          updatedAt: 1792173256869,
           isLocalOnly: false
         }
       }
